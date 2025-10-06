@@ -4,25 +4,76 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const validateCNPJ = (cnpj: string): boolean => {
+  const cleaned = cnpj.replace(/[^\d]/g, '');
+  if (cleaned.length !== 14) return false;
+  if (/^(\d)\1+$/.test(cleaned)) return false;
+  
+  let size = cleaned.length - 2;
+  let numbers = cleaned.substring(0, size);
+  const digits = cleaned.substring(size);
+  let sum = 0;
+  let pos = size - 7;
+  
+  for (let i = size; i >= 1; i--) {
+    sum += parseInt(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  if (result !== parseInt(digits.charAt(0))) return false;
+  
+  size = size + 1;
+  numbers = cleaned.substring(0, size);
+  sum = 0;
+  pos = size - 7;
+  
+  for (let i = size; i >= 1; i--) {
+    sum += parseInt(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  return result === parseInt(digits.charAt(1));
+};
+
+const signupSchema = z.object({
+  companyName: z.string().trim().min(1, "Nome da empresa é obrigatório").max(100, "Nome muito longo"),
+  cnpj: z.string().trim().refine(validateCNPJ, "CNPJ inválido"),
+  managerName: z.string().trim().min(1, "Nome do gestor é obrigatório").max(100, "Nome muito longo"),
+  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo"),
+  employeeCount: z.string().optional(),
+  honeypot: z.string().max(0, "Detecção de bot"),
+  confirmHuman: z.boolean().refine((val) => val === true, "Confirmação obrigatória")
+});
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     companyName: "",
+    cnpj: "",
     managerName: "",
     email: "",
     employeeCount: "",
+    honeypot: "",
+    confirmHuman: false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.companyName || !formData.managerName || !formData.email) {
+    const validation = signupSchema.safeParse(formData);
+    
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
       toast({
-        title: "Campos obrigatórios",
-        description: "Preencha todos os campos",
+        title: "Erro de validação",
+        description: firstError.message,
         variant: "destructive",
       });
       return;
@@ -40,6 +91,19 @@ const Signup = () => {
     navigate("/welcome");
   };
 
+  const formatCNPJ = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})$/);
+    if (match) {
+      return [match[1], match[2], match[3], match[4], match[5]]
+        .filter(Boolean)
+        .join('.')
+        .replace(/\.(\d{3})\./, '.$1/')
+        .replace(/(\d{4})\.(\d{2})$/, '$1-$2');
+    }
+    return value;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12">
       <div className="container mx-auto px-4">
@@ -53,7 +117,7 @@ const Signup = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="companyName">Nome da Empresa</Label>
+                <Label htmlFor="companyName">Nome da Empresa *</Label>
                 <Input
                   id="companyName"
                   value={formData.companyName}
@@ -65,7 +129,20 @@ const Signup = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="managerName">Nome do Gestor</Label>
+                <Label htmlFor="cnpj">CNPJ *</Label>
+                <Input
+                  id="cnpj"
+                  value={formData.cnpj}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cnpj: formatCNPJ(e.target.value) })
+                  }
+                  placeholder="XX.XXX.XXX/XXXX-XX"
+                  maxLength={18}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="managerName">Nome do Gestor *</Label>
                 <Input
                   id="managerName"
                   value={formData.managerName}
@@ -77,7 +154,7 @@ const Signup = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
+                <Label htmlFor="email">E-mail *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -100,6 +177,29 @@ const Signup = () => {
                   }
                   placeholder="Ex: 50"
                 />
+              </div>
+
+              <input
+                type="text"
+                name="website"
+                value={formData.honeypot}
+                onChange={(e) => setFormData({ ...formData, honeypot: e.target.value })}
+                className="absolute -left-[9999px]"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="confirmHuman"
+                  checked={formData.confirmHuman}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, confirmHuman: checked as boolean })
+                  }
+                />
+                <Label htmlFor="confirmHuman" className="text-sm font-normal cursor-pointer">
+                  Confirmo que sou humano e li os termos *
+                </Label>
               </div>
 
               <Button type="submit" size="lg" className="w-full">
