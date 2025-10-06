@@ -10,50 +10,80 @@ const Footer = () => {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">MicroLearn</span>
+              <span className="text-xl font-bold">FinHero 1% Better Daily. CNPJ 60.806.192.0001/50</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Educação corporativa que se encaixa na sua rotina.
-            </p>
+            <p className="text-sm text-muted-foreground">Educação corporativa que se encaixa na sua rotina.</p>
           </div>
-          
+
           <div>
             <h3 className="mb-4 font-semibold">Produto</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Funcionalidades</a></li>
-              <li><a href="#" className="hover:text-foreground">Preços</a></li>
-              <li><a href="#" className="hover:text-foreground">Casos de uso</a></li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Funcionalidades
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Preços
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Casos de uso
+                </a>
+              </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="mb-4 font-semibold">Empresa</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Sobre nós</a></li>
-              <li><a href="#" className="hover:text-foreground">Blog</a></li>
-              <li><a href="#" className="hover:text-foreground">Carreiras</a></li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Sobre nós
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Carreiras
+                </a>
+              </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="mb-4 font-semibold">Suporte</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Central de ajuda</a></li>
               <li>
-                <a 
-                  href="https://wa.me/5511955842951" 
-                  target="_blank" 
+                <a href="#" className="hover:text-foreground">
+                  Central de ajuda
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/5511955842951"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground"
                 >
                   WhatsApp: (11) 95584-2951
                 </a>
               </li>
-              <li><a href="#" className="hover:text-foreground">Status</a></li>
+              <li>
+                <a href="#" className="hover:text-foreground">
+                  Status
+                </a>
+              </li>
             </ul>
           </div>
         </div>
-        
+
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
           <p>&copy; 2025 MicroLearn. Todos os direitos reservados.</p>
         </div>

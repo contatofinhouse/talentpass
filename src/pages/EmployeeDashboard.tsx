@@ -42,7 +42,7 @@ const EmployeeDashboard = () => {
       },
     };
     saveProgress(newProgress);
-    
+
     if (!progress[courseId]?.completed) {
       toast({
         title: "Curso concluído!",
@@ -92,7 +92,7 @@ const EmployeeDashboard = () => {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div>
-            <h1 className="text-xl font-bold">MicroLearn</h1>
+            <h1 className="text-xl font-bold">FinHero</h1>
             <p className="text-sm text-muted-foreground">Meu Aprendizado</p>
           </div>
           <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -151,8 +151,8 @@ const EmployeeDashboard = () => {
                   className="group cursor-pointer transition-shadow hover:shadow-lg overflow-hidden"
                 >
                   <div className="aspect-video w-full overflow-hidden">
-                    <img 
-                      src={course.image} 
+                    <img
+                      src={course.image}
                       alt={course.title}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
                     />
@@ -173,9 +173,7 @@ const EmployeeDashboard = () => {
                         >
                           <Heart
                             className={`h-4 w-4 ${
-                              progress[course.id]?.favorite
-                                ? "fill-red-500 text-red-500"
-                                : "text-muted-foreground"
+                              progress[course.id]?.favorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
                             }`}
                           />
                         </button>
@@ -185,12 +183,7 @@ const EmployeeDashboard = () => {
                     <CardDescription>{course.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => setSelectedCourse(course.id)}
-                    >
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => setSelectedCourse(course.id)}>
                       <Play className="mr-2 h-4 w-4" />
                       Assistir
                     </Button>
@@ -223,9 +216,7 @@ const EmployeeDashboard = () => {
                 <Card className="col-span-full">
                   <CardContent className="py-12 text-center">
                     <Heart className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                    <p className="text-muted-foreground">
-                      Você ainda não favoritou nenhum curso
-                    </p>
+                    <p className="text-muted-foreground">Você ainda não favoritou nenhum curso</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -236,8 +227,8 @@ const EmployeeDashboard = () => {
                     onClick={() => setSelectedCourse(course.id)}
                   >
                     <div className="aspect-video w-full overflow-hidden">
-                      <img 
-                        src={course.image} 
+                      <img
+                        src={course.image}
                         alt={course.title}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
@@ -271,9 +262,7 @@ const EmployeeDashboard = () => {
                 <Card className="col-span-full">
                   <CardContent className="py-12 text-center">
                     <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                    <p className="text-muted-foreground">
-                      Você ainda não concluiu nenhum curso
-                    </p>
+                    <p className="text-muted-foreground">Você ainda não concluiu nenhum curso</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -282,8 +271,8 @@ const EmployeeDashboard = () => {
                   .map((course) => (
                     <Card key={course.id} className="group transition-shadow hover:shadow-lg overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
-                        <img 
-                          src={course.image} 
+                        <img
+                          src={course.image}
                           alt={course.title}
                           className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         />
@@ -329,10 +318,7 @@ const EmployeeDashboard = () => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
           onClick={() => setSelectedCourse(null)}
         >
-          <Card
-            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <Card className="max-h-[90vh] w-full max-w-3xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <CardHeader>
               <div className="mb-2 flex items-center justify-between">
                 <Badge variant="secondary">{selectedCourseData.category}</Badge>
@@ -368,9 +354,7 @@ const EmployeeDashboard = () => {
               </div>
 
               <div className="prose prose-sm max-w-none">
-                <div
-                  dangerouslySetInnerHTML={{ __html: selectedCourseData.content }}
-                />
+                <div dangerouslySetInnerHTML={{ __html: selectedCourseData.content }} />
               </div>
 
               <div>
@@ -386,9 +370,7 @@ const EmployeeDashboard = () => {
 
               <div className="flex gap-3">
                 <Button
-                  variant={
-                    progress[selectedCourseData.id]?.completed ? "default" : "outline"
-                  }
+                  variant={progress[selectedCourseData.id]?.completed ? "default" : "outline"}
                   onClick={() => toggleComplete(selectedCourseData.id)}
                   className="flex-1"
                 >

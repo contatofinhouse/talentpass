@@ -12,9 +12,9 @@ const Navbar = () => {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
             <GraduationCap className="h-6 w-6 text-white" />
           </div>
-          <span className="text-xl font-bold">MicroLearn</span>
+          <span className="text-xl font-bold">FinHero</span>
         </div>
-        
+
         <div className="hidden items-center gap-8 md:flex">
           <a href="#categorias" className="font-medium transition-colors hover:text-primary">
             Categorias
@@ -26,7 +26,7 @@ const Navbar = () => {
             Benefícios
           </a>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => navigate("/login")}>
             Entrar
