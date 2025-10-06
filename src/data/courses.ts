@@ -1,9 +1,8 @@
 import comunicacaoImg from "@/assets/course-comunicacao.jpg";
 import vendasImg from "@/assets/course-vendas.jpg";
-import tiImg from "@/assets/course-ti.jpg";
 import marketingImg from "@/assets/course-marketing.jpg";
-import suporteImg from "@/assets/course-suporte.jpg";
 import gestaoImg from "@/assets/course-gestao.jpg";
+import tiImg from "@/assets/course-ti.jpg";
 
 export interface Course {
   id: string;
@@ -20,28 +19,8 @@ export interface Course {
 export const courses: Course[] = [
   {
     id: "1",
-    title: "Comunicação Assertiva em 5 Minutos",
-    category: "Comunicação",
-    duration: "5 min",
-    description: "Aprenda técnicas práticas para se comunicar de forma clara e objetiva em qualquer situação profissional.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: comunicacaoImg,
-    content: `
-      **Pontos-chave:**
-      - Use linguagem clara e direta
-      - Estruture sua mensagem: contexto, objetivo, ação
-      - Pratique a escuta ativa
-      - Adapte sua comunicação ao público
-      
-      **Exercício prático:**
-      Hoje, em uma reunião ou conversa, pratique estruturar sua fala em 3 partes: o que aconteceu, o que você precisa, e qual a próxima ação.
-    `,
-    skills: ["Comunicação", "Soft Skills", "Liderança"],
-  },
-  {
-    id: "2",
     title: "Técnicas de Fechamento de Vendas",
-    category: "Vendas",
+    category: "Vendas e Marketing",
     duration: "7 min",
     description: "Domine as principais técnicas de fechamento que aumentam sua taxa de conversão.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -59,35 +38,9 @@ export const courses: Course[] = [
     skills: ["Vendas", "Negociação", "Persuasão"],
   },
   {
-    id: "3",
-    title: "Git e GitHub: Fundamentos",
-    category: "TI",
-    duration: "8 min",
-    description: "Entenda os comandos essenciais de Git e como colaborar em projetos usando GitHub.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: tiImg,
-    content: `
-      **Comandos essenciais:**
-      \`\`\`
-      git init - Iniciar repositório
-      git add . - Adicionar arquivos
-      git commit -m "mensagem" - Salvar alterações
-      git push - Enviar para repositório remoto
-      git pull - Baixar atualizações
-      \`\`\`
-      
-      **Workflow básico:**
-      1. Clone o repositório
-      2. Crie uma branch para sua feature
-      3. Faça commits pequenos e descritivos
-      4. Abra um Pull Request para revisão
-    `,
-    skills: ["TI", "Desenvolvimento", "Versionamento"],
-  },
-  {
-    id: "4",
+    id: "2",
     title: "SEO Básico para Iniciantes",
-    category: "Marketing",
+    category: "Vendas e Marketing",
     duration: "6 min",
     description: "Aprenda os fundamentos de SEO para melhorar o ranqueamento do seu site no Google.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -109,32 +62,81 @@ export const courses: Course[] = [
     skills: ["Marketing", "SEO", "Marketing Digital"],
   },
   {
-    id: "5",
-    title: "Atendimento ao Cliente de Excelência",
-    category: "Suporte",
-    duration: "5 min",
-    description: "Técnicas para transformar problemas em oportunidades de fidelização.",
+    id: "3",
+    title: "ChatGPT para Produtividade",
+    category: "Automação com IA",
+    duration: "6 min",
+    description: "Aprenda a usar ChatGPT para automatizar tarefas do dia a dia e aumentar sua produtividade.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: suporteImg,
+    image: tiImg,
     content: `
-      **Pilares do atendimento:**
-      1. Empatia: coloque-se no lugar do cliente
-      2. Agilidade: responda rápido, mesmo que seja para dizer que está verificando
-      3. Solução: foque em resolver, não em justificar
-      4. Personalização: trate cada cliente como único
+      **Casos de uso práticos:**
+      - Redigir e-mails profissionais em segundos
+      - Criar resumos de reuniões e documentos
+      - Gerar ideias e brainstorming
+      - Revisar e melhorar textos
+      - Automatizar pesquisas e análises
       
-      **Frase de ouro:**
-      "Entendo sua frustração. Vou resolver isso agora mesmo. Aqui está o que vou fazer..."
+      **Prompts eficazes:**
+      Seja específico: "Aja como um [papel] e [ação] considerando [contexto]"
       
-      **Transforme reclamações em oportunidades:**
-      Cliente insatisfeito bem atendido é o melhor promotor da marca.
+      **Exemplo:**
+      "Aja como um gerente de vendas e crie um e-mail de follow-up para um cliente que demonstrou interesse em nosso produto de automação, mas ainda não fechou negócio."
     `,
-    skills: ["Atendimento", "Soft Skills", "CX"],
+    skills: ["IA", "Produtividade", "Automação"],
+  },
+  {
+    id: "4",
+    title: "Automação de Marketing com IA",
+    category: "Automação com IA",
+    duration: "7 min",
+    description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: marketingImg,
+    content: `
+      **Ferramentas de IA para marketing:**
+      - Criação de conteúdo: copy, imagens, vídeos
+      - Personalização de campanhas em escala
+      - Análise preditiva de comportamento
+      - Segmentação automática de audiência
+      - Otimização de anúncios em tempo real
+      
+      **Workflow automatizado:**
+      1. IA analisa dados do cliente
+      2. Segmenta audiências automaticamente
+      3. Gera conteúdo personalizado
+      4. Testa e otimiza campanhas
+      5. Reporta resultados e insights
+      
+      **ROI:**
+      Empresas que usam IA em marketing reportam aumento de 30-40% em conversões.
+    `,
+    skills: ["Marketing", "IA", "Automação", "Growth"],
+  },
+  {
+    id: "5",
+    title: "Comunicação Assertiva em 5 Minutos",
+    category: "Gestão, Liderança e Comunicação",
+    duration: "5 min",
+    description: "Aprenda técnicas práticas para se comunicar de forma clara e objetiva em qualquer situação profissional.",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: comunicacaoImg,
+    content: `
+      **Pontos-chave:**
+      - Use linguagem clara e direta
+      - Estruture sua mensagem: contexto, objetivo, ação
+      - Pratique a escuta ativa
+      - Adapte sua comunicação ao público
+      
+      **Exercício prático:**
+      Hoje, em uma reunião ou conversa, pratique estruturar sua fala em 3 partes: o que aconteceu, o que você precisa, e qual a próxima ação.
+    `,
+    skills: ["Comunicação", "Soft Skills", "Liderança"],
   },
   {
     id: "6",
     title: "Gestão de Tempo e Prioridades",
-    category: "Comunicação",
+    category: "Gestão, Liderança e Comunicação",
     duration: "6 min",
     description: "Métodos práticos para organizar seu dia e aumentar sua produtividade.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",

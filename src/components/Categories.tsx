@@ -1,36 +1,24 @@
-import { MessageSquare, TrendingUp, Code, Megaphone, Headphones } from "lucide-react";
+import { TrendingUp, Sparkles, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const categories = [
   {
-    icon: MessageSquare,
-    title: "Comunicação",
-    description: "Desenvolva habilidades de comunicação clara e efetiva",
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
     icon: TrendingUp,
-    title: "Vendas",
-    description: "Técnicas modernas de vendas e negociação",
+    title: "Vendas e Marketing",
+    description: "Técnicas modernas de vendas, SEO e estratégias de marketing digital",
     color: "from-green-500 to-emerald-500",
   },
   {
-    icon: Code,
-    title: "TI",
-    description: "Fundamentos técnicos e melhores práticas em tecnologia",
+    icon: Sparkles,
+    title: "Automação com IA",
+    description: "Ferramentas de IA para automatizar processos e aumentar produtividade",
     color: "from-purple-500 to-pink-500",
   },
   {
-    icon: Megaphone,
-    title: "Marketing",
-    description: "Estratégias de marketing digital e branding",
-    color: "from-orange-500 to-red-500",
-  },
-  {
-    icon: Headphones,
-    title: "Suporte",
-    description: "Excelência no atendimento e suporte ao cliente",
-    color: "from-indigo-500 to-purple-500",
+    icon: Users,
+    title: "Gestão, Liderança e Comunicação",
+    description: "Desenvolva habilidades de gestão, liderança e comunicação efetiva",
+    color: "from-blue-500 to-cyan-500",
   },
 ];
 
@@ -47,7 +35,7 @@ const Categories = () => {
           </p>
         </div>
         
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category, index) => {
             const Icon = category.icon;
             return (

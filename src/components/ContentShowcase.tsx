@@ -1,53 +1,53 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Play, FileText } from "lucide-react";
-import escutaAtivaImg from "@/assets/content-escuta-ativa.jpg";
 import spinSellingImg from "@/assets/content-spin-selling.jpg";
-import gitFlowImg from "@/assets/content-git-flow.jpg";
 import seoImg from "@/assets/content-seo.jpg";
-import conflitosImg from "@/assets/content-conflitos.jpg";
+import escutaAtivaImg from "@/assets/content-escuta-ativa.jpg";
 import feedbackImg from "@/assets/content-feedback.jpg";
+import gitFlowImg from "@/assets/content-git-flow.jpg";
+import conflitosImg from "@/assets/content-conflitos.jpg";
 
 const contentItems = [
   {
+    type: "text",
+    title: "Método SPIN Selling",
+    category: "Vendas e Marketing",
+    duration: "5 min",
+    image: spinSellingImg,
+  },
+  {
+    type: "text",
+    title: "SEO para Iniciantes",
+    category: "Vendas e Marketing",
+    duration: "6 min",
+    image: seoImg,
+  },
+  {
+    type: "text",
+    title: "Prompts Eficazes para ChatGPT",
+    category: "Automação com IA",
+    duration: "4 min",
+    image: gitFlowImg,
+  },
+  {
+    type: "video",
+    title: "Automação no Make.com",
+    category: "Automação com IA",
+    duration: "5 min",
+    image: conflitosImg,
+  },
+  {
     type: "video",
     title: "Técnicas de Escuta Ativa",
-    category: "Comunicação",
+    category: "Gestão, Liderança e Comunicação",
     duration: "3 min",
     image: escutaAtivaImg,
   },
   {
     type: "text",
-    title: "Método SPIN Selling",
-    category: "Vendas",
-    duration: "5 min",
-    image: spinSellingImg,
-  },
-  {
-    type: "video",
-    title: "Git Flow Simplificado",
-    category: "TI",
-    duration: "4 min",
-    image: gitFlowImg,
-  },
-  {
-    type: "text",
-    title: "SEO para Iniciantes",
-    category: "Marketing",
-    duration: "6 min",
-    image: seoImg,
-  },
-  {
-    type: "video",
-    title: "Gestão de Conflitos",
-    category: "Suporte",
-    duration: "4 min",
-    image: conflitosImg,
-  },
-  {
-    type: "text",
     title: "Feedback Construtivo",
-    category: "Comunicação",
+    category: "Gestão, Liderança e Comunicação",
     duration: "3 min",
     image: feedbackImg,
   },
