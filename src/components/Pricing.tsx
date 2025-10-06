@@ -5,24 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 const plans = [
   {
-    name: "Starter",
-    icon: "🟢",
-    price: "R$ 9,90",
-    period: "/mês",
-    description: "Aprendizado diário em doses curtas e práticas.",
-    features: [
-      "Acesso a todos os conteúdos",
-      "Drops diários (soft e hard skills)",
-      "Trilhas por área de conhecimento",
-      "Certificados digitais",
-      "Acesso via web e mobile",
-      "Suporte via chat",
-    ],
-    idealFor: "profissionais individuais, estudantes e freelancers",
-    cta: "Começar agora",
-    highlight: false,
-  },
-  {
     name: "Teams",
     icon: "🟣",
     price: "R$ 49",
@@ -88,7 +70,7 @@ const Pricing = () => {
           </p>
         </div>
 
-        <div className="mb-12 grid gap-8 lg:grid-cols-3">
+        <div className="mb-12 grid gap-8 lg:grid-cols-2">
           {plans.map((plan, index) => (
             <Card
               key={index}
