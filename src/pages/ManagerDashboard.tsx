@@ -85,9 +85,16 @@ const ManagerDashboard = () => {
               {courses.map((course) => (
                 <Card
                   key={course.id}
-                  className="group cursor-pointer transition-shadow hover:shadow-lg"
+                  className="group cursor-pointer transition-shadow hover:shadow-lg overflow-hidden"
                   onClick={() => setSelectedCourse(course.id)}
                 >
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img 
+                      src={course.image} 
+                      alt={course.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  </div>
                   <CardHeader>
                     <div className="mb-2 flex items-start justify-between">
                       <Badge variant="secondary">{course.category}</Badge>

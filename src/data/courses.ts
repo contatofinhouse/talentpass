@@ -7,6 +7,7 @@ export interface Course {
   videoUrl: string;
   content: string;
   skills: string[];
+  image: string;
 }
 
 export const courses: Course[] = [
@@ -17,6 +18,7 @@ export const courses: Course[] = [
     duration: "5 min",
     description: "Aprenda técnicas práticas para se comunicar de forma clara e objetiva em qualquer situação profissional.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: "/src/assets/course-comunicacao.jpg",
     content: `
       **Pontos-chave:**
       - Use linguagem clara e direta
@@ -36,6 +38,7 @@ export const courses: Course[] = [
     duration: "7 min",
     description: "Domine as principais técnicas de fechamento que aumentam sua taxa de conversão.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: "/src/assets/course-vendas.jpg",
     content: `
       **Técnicas principais:**
       - Fechamento alternativo: ofereça duas opções positivas
@@ -55,6 +58,7 @@ export const courses: Course[] = [
     duration: "8 min",
     description: "Entenda os comandos essenciais de Git e como colaborar em projetos usando GitHub.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: "/src/assets/course-ti.jpg",
     content: `
       **Comandos essenciais:**
       \`\`\`
@@ -80,6 +84,7 @@ export const courses: Course[] = [
     duration: "6 min",
     description: "Aprenda os fundamentos de SEO para melhorar o ranqueamento do seu site no Google.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: "/src/assets/course-marketing.jpg",
     content: `
       **Fundamentos de SEO:**
       - Pesquisa de palavras-chave relevantes
@@ -103,6 +108,7 @@ export const courses: Course[] = [
     duration: "5 min",
     description: "Técnicas para transformar problemas em oportunidades de fidelização.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: "/src/assets/course-suporte.jpg",
     content: `
       **Pilares do atendimento:**
       1. Empatia: coloque-se no lugar do cliente
@@ -125,6 +131,7 @@ export const courses: Course[] = [
     duration: "6 min",
     description: "Métodos práticos para organizar seu dia e aumentar sua produtividade.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    image: "/src/assets/course-gestao.jpg",
     content: `
       **Técnica Pomodoro:**
       - 25 min de foco total

@@ -148,8 +148,15 @@ const EmployeeDashboard = () => {
               {courses.map((course) => (
                 <Card
                   key={course.id}
-                  className="group cursor-pointer transition-shadow hover:shadow-lg"
+                  className="group cursor-pointer transition-shadow hover:shadow-lg overflow-hidden"
                 >
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img 
+                      src={course.image} 
+                      alt={course.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  </div>
                   <CardHeader>
                     <div className="mb-2 flex items-start justify-between">
                       <Badge variant="secondary">{course.category}</Badge>
@@ -225,9 +232,16 @@ const EmployeeDashboard = () => {
                 favoriteCourses.map((course) => (
                   <Card
                     key={course.id}
-                    className="group cursor-pointer transition-shadow hover:shadow-lg"
+                    className="group cursor-pointer transition-shadow hover:shadow-lg overflow-hidden"
                     onClick={() => setSelectedCourse(course.id)}
                   >
+                    <div className="aspect-video w-full overflow-hidden">
+                      <img 
+                        src={course.image} 
+                        alt={course.title}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                    </div>
                     <CardHeader>
                       <div className="mb-2 flex items-start justify-between">
                         <Badge variant="secondary">{course.category}</Badge>
@@ -266,7 +280,14 @@ const EmployeeDashboard = () => {
                 courses
                   .filter((c) => progress[c.id]?.completed)
                   .map((course) => (
-                    <Card key={course.id} className="group transition-shadow hover:shadow-lg">
+                    <Card key={course.id} className="group transition-shadow hover:shadow-lg overflow-hidden">
+                      <div className="aspect-video w-full overflow-hidden">
+                        <img 
+                          src={course.image} 
+                          alt={course.title}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        />
+                      </div>
                       <CardHeader>
                         <div className="mb-2 flex items-start justify-between">
                           <Badge variant="secondary">{course.category}</Badge>
