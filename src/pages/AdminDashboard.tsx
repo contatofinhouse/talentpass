@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { LogOut, Upload, Plus } from "lucide-react";
 
@@ -26,11 +27,19 @@ const AVAILABLE_SKILLS = [
   "Criatividade"
 ];
 
+const CATEGORIES = [
+  "Vendas e Marketing",
+  "Automação com IA",
+  "Gestão, Liderança e Comunicação"
+];
+
 interface CourseFormData {
   title: string;
   subtitle: string;
+  category: string;
   description: string;
   videoUrl: string;
+  content: string;
   summary: string;
   duration: string;
   skills: string[];
@@ -43,8 +52,10 @@ const AdminDashboard = () => {
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
     subtitle: "",
+    category: "",
     description: "",
     videoUrl: "",
+    content: "",
     summary: "",
     duration: "",
     skills: []
@@ -120,7 +131,7 @@ const AdminDashboard = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.description || !formData.videoUrl || !formData.duration || !formData.image || formData.skills.length === 0) {
+    if (!formData.title || !formData.category || !formData.description || !formData.videoUrl || !formData.duration || !formData.image || formData.skills.length === 0) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
@@ -139,8 +150,10 @@ const AdminDashboard = () => {
     setFormData({
       title: "",
       subtitle: "",
+      category: "",
       description: "",
       videoUrl: "",
+      content: "",
       summary: "",
       duration: "",
       skills: []
@@ -181,14 +194,33 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="subtitle">Subtítulo</Label>
-                  <Input
-                    id="subtitle"
-                    value={formData.subtitle}
-                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                    placeholder="Ex: Domine as estratégias modernas"
-                  />
+                  <Label htmlFor="category">Categoria *</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subtitle">Subtítulo</Label>
+                <Input
+                  id="subtitle"
+                  value={formData.subtitle}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                  placeholder="Ex: Domine as estratégias modernas"
+                />
               </div>
 
               <div className="space-y-2">
@@ -222,6 +254,17 @@ const AdminDashboard = () => {
                     placeholder="Ex: 5 min"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="content">Conteúdo do Curso</Label>
+                <Textarea
+                  id="content"
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  placeholder="Conteúdo detalhado em Markdown ou texto formatado"
+                  rows={6}
+                />
               </div>
 
               <div className="space-y-2">
