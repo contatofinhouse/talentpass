@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { GraduationCap } from "lucide-react";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   return (
     <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -25,10 +28,10 @@ const Navbar = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden sm:inline-flex">
+          <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => navigate("/login")}>
             Entrar
           </Button>
-          <Button>Começar grátis</Button>
+          <Button onClick={() => navigate("/signup")}>Começar grátis</Button>
         </div>
       </div>
     </nav>

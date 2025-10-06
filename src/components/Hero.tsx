@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import heroImage from "@/assets/hero-learning.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-accent py-20 lg:py-32">
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bTAtOHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
@@ -28,7 +31,7 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Button variant="hero" size="lg" className="group">
+              <Button variant="hero" size="lg" className="group" onClick={() => navigate("/signup")}>
                 Começar agora
                 <ArrowRight className="transition-transform group-hover:translate-x-1" />
               </Button>
@@ -36,6 +39,7 @@ const Hero = () => {
                 variant="outline" 
                 size="lg" 
                 className="border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+                onClick={() => navigate("/signup")}
               >
                 <Play className="h-5 w-5" />
                 Ver demonstração

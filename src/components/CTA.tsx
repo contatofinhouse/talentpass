@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 const CTA = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4">
@@ -16,7 +19,7 @@ const CTA = () => {
               Comece hoje e veja resultados em semanas, não meses. Conteúdo diário que desenvolve competências de verdade.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button variant="hero" size="lg" className="group bg-white text-primary hover:bg-white/90">
+              <Button variant="hero" size="lg" className="group bg-white text-primary hover:bg-white/90" onClick={() => navigate("/signup")}>
                 Experimente gratuitamente
                 <ArrowRight className="transition-transform group-hover:translate-x-1" />
               </Button>
@@ -24,6 +27,7 @@ const CTA = () => {
                 variant="outline" 
                 size="lg"
                 className="border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+                onClick={() => navigate("/signup")}
               >
                 Falar com especialista
               </Button>

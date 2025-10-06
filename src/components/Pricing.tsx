@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -69,6 +70,8 @@ const benefits = [
 ];
 
 const Pricing = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4">
@@ -144,6 +147,7 @@ const Pricing = () => {
                   variant={plan.highlight ? "hero" : "default"}
                   size="lg"
                   className="w-full"
+                  onClick={() => navigate("/signup")}
                 >
                   {plan.cta}
                 </Button>
