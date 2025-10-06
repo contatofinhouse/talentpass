@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { GraduationCap } from "lucide-react";
+import { Zap } from "lucide-react";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const Navbar = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
-            <GraduationCap className="h-6 w-6 text-white" />
+            <Zap className="h-6 w-6 text-white" fill="white" />
           </div>
           <span className="text-xl font-bold">FinHero</span>
         </div>
