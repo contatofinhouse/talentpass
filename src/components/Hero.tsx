@@ -7,7 +7,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-accent py-20 lg:py-32">
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary/90 via-primary to-primary/80 py-20 lg:py-32">
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bTAtOHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
       
       <div className="container relative mx-auto px-4">
@@ -20,7 +20,7 @@ const Hero = () => {
             
             <h1 className="text-5xl font-bold leading-tight text-white lg:text-6xl xl:text-7xl">
               Aprenda em drops diários.{" "}
-              <span className="bg-gradient-to-r from-accent-glow to-white bg-clip-text text-transparent">
+              <span className="text-white drop-shadow-lg">
                 Evolua continuamente.
               </span>
             </h1>
