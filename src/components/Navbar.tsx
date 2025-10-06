@@ -1,0 +1,38 @@
+import { Button } from "@/components/ui/button";
+import { GraduationCap } from "lucide-react";
+
+const Navbar = () => {
+  return (
+    <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-lg">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
+            <GraduationCap className="h-6 w-6 text-white" />
+          </div>
+          <span className="text-xl font-bold">MicroLearn</span>
+        </div>
+        
+        <div className="hidden items-center gap-8 md:flex">
+          <a href="#categorias" className="font-medium transition-colors hover:text-primary">
+            Categorias
+          </a>
+          <a href="#conteudo" className="font-medium transition-colors hover:text-primary">
+            Conteúdo
+          </a>
+          <a href="#beneficios" className="font-medium transition-colors hover:text-primary">
+            Benefícios
+          </a>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" className="hidden sm:inline-flex">
+            Entrar
+          </Button>
+          <Button>Começar grátis</Button>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

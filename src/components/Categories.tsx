@@ -1,0 +1,72 @@
+import { MessageSquare, TrendingUp, Code, Megaphone, Headphones } from "lucide-react";
+import { Card } from "@/components/ui/card";
+
+const categories = [
+  {
+    icon: MessageSquare,
+    title: "Comunicação",
+    description: "Desenvolva habilidades de comunicação clara e efetiva",
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
+    icon: TrendingUp,
+    title: "Vendas",
+    description: "Técnicas modernas de vendas e negociação",
+    color: "from-green-500 to-emerald-500",
+  },
+  {
+    icon: Code,
+    title: "TI",
+    description: "Fundamentos técnicos e melhores práticas em tecnologia",
+    color: "from-purple-500 to-pink-500",
+  },
+  {
+    icon: Megaphone,
+    title: "Marketing",
+    description: "Estratégias de marketing digital e branding",
+    color: "from-orange-500 to-red-500",
+  },
+  {
+    icon: Headphones,
+    title: "Suporte",
+    description: "Excelência no atendimento e suporte ao cliente",
+    color: "from-indigo-500 to-purple-500",
+  },
+];
+
+const Categories = () => {
+  return (
+    <section className="py-20 lg:py-32">
+      <div className="container mx-auto px-4">
+        <div className="mb-16 text-center">
+          <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
+            Áreas de conhecimento
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            Conteúdo especializado para desenvolver as competências mais importantes do mercado
+          </p>
+        </div>
+        
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {categories.map((category, index) => {
+            const Icon = category.icon;
+            return (
+              <Card
+                key={index}
+                className="group cursor-pointer overflow-hidden border-2 bg-gradient-to-br from-card to-secondary p-6 transition-all hover:scale-105 hover:shadow-[0_20px_50px_-10px_hsl(var(--primary)/0.2)]"
+              >
+                <div className={`mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${category.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
+                  <Icon className="h-7 w-7" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold">{category.title}</h3>
+                <p className="text-sm text-muted-foreground">{category.description}</p>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Categories;
