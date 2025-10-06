@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload } from "lucide-react";
-import Papa from "papaparse";
 import { useToast } from "@/hooks/use-toast";
 
 const Signup = () => {
@@ -17,37 +15,6 @@ const Signup = () => {
     email: "",
     employeeCount: "",
   });
-  const [employees, setEmployees] = useState<string[]>([]);
-  const [fileName, setFileName] = useState("");
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setFileName(file.name);
-
-    Papa.parse(file, {
-      complete: (results) => {
-        const emails = results.data
-          .flat()
-          .filter((item) => typeof item === "string" && item.includes("@"))
-          .map((email) => String(email).trim());
-        
-        setEmployees(emails);
-        toast({
-          title: "Arquivo carregado",
-          description: `${emails.length} colaboradores encontrados`,
-        });
-      },
-      error: () => {
-        toast({
-          title: "Erro ao processar arquivo",
-          description: "Verifique o formato do arquivo",
-          variant: "destructive",
-        });
-      },
-    });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +29,7 @@ const Signup = () => {
     }
 
     localStorage.setItem("manager", JSON.stringify(formData));
-    localStorage.setItem("employees", JSON.stringify(employees));
+    localStorage.setItem("employees", JSON.stringify([]));
     localStorage.setItem("userType", "manager");
 
     toast({
@@ -70,7 +37,7 @@ const Signup = () => {
       description: "Bem-vindo ao MicroLearn",
     });
 
-    navigate("/manager/dashboard");
+    navigate("/welcome");
   };
 
   return (
@@ -133,35 +100,6 @@ const Signup = () => {
                   }
                   placeholder="Ex: 50"
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="employeeFile">
-                  Lista de Colaboradores (CSV ou XLSX)
-                </Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="employeeFile"
-                    type="file"
-                    accept=".csv,.xlsx,.xls"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => document.getElementById("employeeFile")?.click()}
-                    className="w-full"
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    {fileName || "Selecionar arquivo"}
-                  </Button>
-                </div>
-                {employees.length > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    {employees.length} colaboradores carregados
-                  </p>
-                )}
               </div>
 
               <Button type="submit" size="lg" className="w-full">
