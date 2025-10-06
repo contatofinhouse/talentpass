@@ -1,3 +1,10 @@
+import comunicacaoImg from "@/assets/course-comunicacao.jpg";
+import vendasImg from "@/assets/course-vendas.jpg";
+import tiImg from "@/assets/course-ti.jpg";
+import marketingImg from "@/assets/course-marketing.jpg";
+import suporteImg from "@/assets/course-suporte.jpg";
+import gestaoImg from "@/assets/course-gestao.jpg";
+
 export interface Course {
   id: string;
   title: string;
@@ -18,7 +25,7 @@ export const courses: Course[] = [
     duration: "5 min",
     description: "Aprenda técnicas práticas para se comunicar de forma clara e objetiva em qualquer situação profissional.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "/src/assets/course-comunicacao.jpg",
+    image: comunicacaoImg,
     content: `
       **Pontos-chave:**
       - Use linguagem clara e direta
@@ -38,7 +45,7 @@ export const courses: Course[] = [
     duration: "7 min",
     description: "Domine as principais técnicas de fechamento que aumentam sua taxa de conversão.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "/src/assets/course-vendas.jpg",
+    image: vendasImg,
     content: `
       **Técnicas principais:**
       - Fechamento alternativo: ofereça duas opções positivas
@@ -58,7 +65,7 @@ export const courses: Course[] = [
     duration: "8 min",
     description: "Entenda os comandos essenciais de Git e como colaborar em projetos usando GitHub.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "/src/assets/course-ti.jpg",
+    image: tiImg,
     content: `
       **Comandos essenciais:**
       \`\`\`
@@ -84,7 +91,7 @@ export const courses: Course[] = [
     duration: "6 min",
     description: "Aprenda os fundamentos de SEO para melhorar o ranqueamento do seu site no Google.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "/src/assets/course-marketing.jpg",
+    image: marketingImg,
     content: `
       **Fundamentos de SEO:**
       - Pesquisa de palavras-chave relevantes
@@ -108,7 +115,7 @@ export const courses: Course[] = [
     duration: "5 min",
     description: "Técnicas para transformar problemas em oportunidades de fidelização.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "/src/assets/course-suporte.jpg",
+    image: suporteImg,
     content: `
       **Pilares do atendimento:**
       1. Empatia: coloque-se no lugar do cliente
@@ -131,7 +138,7 @@ export const courses: Course[] = [
     duration: "6 min",
     description: "Métodos práticos para organizar seu dia e aumentar sua produtividade.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "/src/assets/course-gestao.jpg",
+    image: gestaoImg,
     content: `
       **Técnica Pomodoro:**
       - 25 min de foco total
