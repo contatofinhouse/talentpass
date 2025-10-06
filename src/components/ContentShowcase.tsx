@@ -1,6 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Play, FileText } from "lucide-react";
+import escutaAtivaImg from "@/assets/content-escuta-ativa.jpg";
+import spinSellingImg from "@/assets/content-spin-selling.jpg";
+import gitFlowImg from "@/assets/content-git-flow.jpg";
+import seoImg from "@/assets/content-seo.jpg";
+import conflitosImg from "@/assets/content-conflitos.jpg";
+import feedbackImg from "@/assets/content-feedback.jpg";
 
 const contentItems = [
   {
@@ -8,42 +14,42 @@ const contentItems = [
     title: "Técnicas de Escuta Ativa",
     category: "Comunicação",
     duration: "3 min",
-    thumbnail: "bg-gradient-to-br from-blue-400 to-blue-600",
+    image: escutaAtivaImg,
   },
   {
     type: "text",
     title: "Método SPIN Selling",
     category: "Vendas",
     duration: "5 min",
-    thumbnail: "bg-gradient-to-br from-green-400 to-green-600",
+    image: spinSellingImg,
   },
   {
     type: "video",
     title: "Git Flow Simplificado",
     category: "TI",
     duration: "4 min",
-    thumbnail: "bg-gradient-to-br from-purple-400 to-purple-600",
+    image: gitFlowImg,
   },
   {
     type: "text",
     title: "SEO para Iniciantes",
     category: "Marketing",
     duration: "6 min",
-    thumbnail: "bg-gradient-to-br from-orange-400 to-orange-600",
+    image: seoImg,
   },
   {
     type: "video",
     title: "Gestão de Conflitos",
     category: "Suporte",
     duration: "4 min",
-    thumbnail: "bg-gradient-to-br from-indigo-400 to-indigo-600",
+    image: conflitosImg,
   },
   {
     type: "text",
     title: "Feedback Construtivo",
     category: "Comunicação",
     duration: "3 min",
-    thumbnail: "bg-gradient-to-br from-cyan-400 to-cyan-600",
+    image: feedbackImg,
   },
 ];
 
@@ -66,14 +72,19 @@ const ContentShowcase = () => {
               key={index}
               className="group cursor-pointer overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-[0_20px_50px_-10px_hsl(var(--primary)/0.2)]"
             >
-              <div className={`relative flex h-48 items-center justify-center ${item.thumbnail}`}>
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={item.image} 
+                  alt={item.title}
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                />
                 <div className="absolute inset-0 bg-black/20"></div>
                 {item.type === "video" ? (
-                  <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
+                  <div className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
                     <Play className="h-8 w-8 text-primary" fill="currentColor" />
                   </div>
                 ) : (
-                  <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
+                  <div className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
                     <FileText className="h-8 w-8 text-primary" />
                   </div>
                 )}
