@@ -45,7 +45,7 @@ const plans = [
 ];
 
 const benefits = [
-  "Teste gratuito de 7 dias (sem cartão)",
+  "Teste gratuito de 14 dias (sem cartão)",
   "Novos drops toda semana",
   "Conteúdo curto, direto e aplicável",
   "Cancelamento a qualquer momento",
@@ -58,15 +58,13 @@ const Pricing = () => {
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
-            Planos e Preços
-          </h2>
+          <h2 className="mb-4 text-4xl font-bold lg:text-5xl">Planos e Preços</h2>
           <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
             Planos que se adaptam à sua rotina de aprendizado
           </p>
           <p className="mx-auto mt-2 max-w-3xl text-base text-muted-foreground">
-            Escolha o plano ideal para seu ritmo ou para sua equipe.
-            Acesso imediato, cancelamento fácil e evolução contínua.
+            Escolha o plano ideal para seu ritmo ou para sua equipe. Acesso imediato, cancelamento fácil e evolução
+            contínua.
           </p>
         </div>
 
@@ -75,9 +73,7 @@ const Pricing = () => {
             <Card
               key={index}
               className={`relative flex flex-col ${
-                plan.highlight
-                  ? "border-primary shadow-[0_8px_30px_0_hsl(var(--primary)/0.25)]"
-                  : ""
+                plan.highlight ? "border-primary shadow-[0_8px_30px_0_hsl(var(--primary)/0.25)]" : ""
               }`}
             >
               {plan.highlight && (
@@ -85,26 +81,20 @@ const Pricing = () => {
                   Mais Popular
                 </div>
               )}
-              
+
               <CardHeader className="pb-8 pt-6">
                 <div className="mb-2 flex items-center gap-2">
                   <span className="text-3xl">{plan.icon}</span>
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
                 </div>
-                <CardDescription className="text-base">
-                  {plan.description}
-                </CardDescription>
+                <CardDescription className="text-base">{plan.description}</CardDescription>
                 <div className="mt-4">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
-                  {plan.subtitle && (
-                    <p className="mt-1 text-sm text-muted-foreground">{plan.subtitle}</p>
-                  )}
-                  {plan.additional && (
-                    <p className="mt-1 text-sm text-muted-foreground">{plan.additional}</p>
-                  )}
+                  {plan.subtitle && <p className="mt-1 text-sm text-muted-foreground">{plan.subtitle}</p>}
+                  {plan.additional && <p className="mt-1 text-sm text-muted-foreground">{plan.additional}</p>}
                 </div>
               </CardHeader>
 
@@ -139,9 +129,7 @@ const Pricing = () => {
         </div>
 
         <div className="mx-auto max-w-3xl rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 p-8">
-          <h3 className="mb-6 text-center text-xl font-bold">
-            ✨ Todos os planos incluem:
-          </h3>
+          <h3 className="mb-6 text-center text-xl font-bold">✨ Todos os planos incluem:</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             {benefits.map((benefit, index) => (
               <div key={index} className="flex items-center gap-2">
