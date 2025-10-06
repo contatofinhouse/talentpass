@@ -39,7 +39,16 @@ const Footer = () => {
             <h3 className="mb-4 font-semibold">Suporte</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="#" className="hover:text-foreground">Central de ajuda</a></li>
-              <li><a href="#" className="hover:text-foreground">Contato</a></li>
+              <li>
+                <a 
+                  href="https://wa.me/5511955842951" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground"
+                >
+                  WhatsApp: (11) 95584-2951
+                </a>
+              </li>
               <li><a href="#" className="hover:text-foreground">Status</a></li>
             </ul>
           </div>
