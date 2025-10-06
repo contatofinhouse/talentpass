@@ -10,9 +10,11 @@ const Footer = () => {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">FinHero 1% Better Daily. CNPJ 60.806.192.0001/50</span>
+              <span className="text-xl font-bold">FinHero</span>
             </div>
+            <p className="text-sm text-muted-foreground">1% Better Daily</p>
             <p className="text-sm text-muted-foreground">Educação corporativa que se encaixa na sua rotina.</p>
+            <p className="text-xs text-muted-foreground">CNPJ: 60.806.192/0001-50</p>
           </div>
 
           <div>
@@ -85,7 +87,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 MicroLearn. Todos os direitos reservados.</p>
+          <p>&copy; 2025 FinHero. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
