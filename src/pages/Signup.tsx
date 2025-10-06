@@ -41,19 +41,29 @@ const validateCNPJ = (cnpj: string): boolean => {
   return result === parseInt(digits.charAt(1));
 };
 
+const checkEmailUnique = (email: string): boolean => {
+  const existingManagers = localStorage.getItem("allManagers");
+  if (!existingManagers) return true;
+  
+  const managers = JSON.parse(existingManagers);
+  return !managers.some((m: any) => m.email.toLowerCase() === email.toLowerCase());
+};
+
 const signupSchema = z.object({
   companyName: z.string().trim().min(1, "Nome da empresa é obrigatório").max(100, "Nome muito longo"),
   cnpj: z.string().trim().refine(validateCNPJ, "CNPJ inválido"),
   managerName: z.string().trim().min(1, "Nome do gestor é obrigatório").max(100, "Nome muito longo"),
-  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo"),
+  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo").refine(checkEmailUnique, "E-mail já cadastrado"),
   employeeCount: z.string().optional(),
-  honeypot: z.string().max(0, "Detecção de bot"),
-  confirmHuman: z.boolean().refine((val) => val === true, "Confirmação obrigatória")
+  honeypot: z.string().max(0, "Erro de validação"),
+  confirmHuman: z.boolean().refine((val) => val === true, "Você deve aceitar os termos"),
+  formLoadTime: z.number().refine((val) => Date.now() - val > 3000, "Submissão muito rápida")
 });
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [formLoadTime] = useState(Date.now());
   const [formData, setFormData] = useState({
     companyName: "",
     cnpj: "",
@@ -62,12 +72,13 @@ const Signup = () => {
     employeeCount: "",
     honeypot: "",
     confirmHuman: false,
+    formLoadTime: Date.now(),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validation = signupSchema.safeParse(formData);
+    const validation = signupSchema.safeParse({ ...formData, formLoadTime });
     
     if (!validation.success) {
       const firstError = validation.error.errors[0];
@@ -79,7 +90,16 @@ const Signup = () => {
       return;
     }
 
-    localStorage.setItem("manager", JSON.stringify(formData));
+    // Salvar na lista de todos os gerentes para validação de email único
+    const existingManagers = JSON.parse(localStorage.getItem("allManagers") || "[]");
+    const newManager = {
+      ...formData,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString()
+    };
+    localStorage.setItem("allManagers", JSON.stringify([...existingManagers, newManager]));
+
+    localStorage.setItem("manager", JSON.stringify(newManager));
     localStorage.setItem("employees", JSON.stringify([]));
     localStorage.setItem("userType", "manager");
 
