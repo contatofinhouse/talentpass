@@ -32,7 +32,9 @@ interface CourseFormData {
   description: string;
   videoUrl: string;
   summary: string;
+  duration: string;
   skills: string[];
+  image?: string;
   resourceFile?: { name: string; data: string; type: string };
 }
 
@@ -44,6 +46,7 @@ const AdminDashboard = () => {
     description: "",
     videoUrl: "",
     summary: "",
+    duration: "",
     skills: []
   });
 
@@ -66,6 +69,27 @@ const AdminDashboard = () => {
         ? prev.skills.filter(s => s !== skill)
         : [...prev.skills, skill]
     }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Apenas imagens JPG, PNG ou WEBP são permitidas!");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFormData(prev => ({
+        ...prev,
+        image: event.target?.result as string
+      }));
+      toast.success("Imagem carregada!");
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,7 +120,7 @@ const AdminDashboard = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.description || !formData.videoUrl || formData.skills.length === 0) {
+    if (!formData.title || !formData.description || !formData.videoUrl || !formData.duration || !formData.image || formData.skills.length === 0) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
@@ -118,6 +142,7 @@ const AdminDashboard = () => {
       description: "",
       videoUrl: "",
       summary: "",
+      duration: "",
       skills: []
     });
   };
@@ -177,14 +202,26 @@ const AdminDashboard = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="videoUrl">URL do Vídeo *</Label>
-                <Input
-                  id="videoUrl"
-                  value={formData.videoUrl}
-                  onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                  placeholder="https://www.youtube.com/embed/..."
-                />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="videoUrl">URL do Vídeo *</Label>
+                  <Input
+                    id="videoUrl"
+                    value={formData.videoUrl}
+                    onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                    placeholder="https://www.youtube.com/embed/..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Tempo Estimado *</Label>
+                  <Input
+                    id="duration"
+                    value={formData.duration}
+                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                    placeholder="Ex: 5 min"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -213,6 +250,27 @@ const AdminDashboard = () => {
                       </Label>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="image">Imagem do Curso *</Label>
+                <div className="space-y-3">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/webp"
+                    onChange={handleImageUpload}
+                  />
+                  {formData.image && (
+                    <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-lg border">
+                      <img 
+                        src={formData.image} 
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
