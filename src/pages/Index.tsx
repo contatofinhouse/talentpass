@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Categories from "@/components/Categories";
 import ContentShowcase from "@/components/ContentShowcase";
 import Benefits from "@/components/Benefits";
+import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 
@@ -19,6 +20,9 @@ const Index = () => {
       </div>
       <div id="beneficios">
         <Benefits />
+      </div>
+      <div id="planos">
+        <Pricing />
       </div>
       <CTA />
       <Footer />
