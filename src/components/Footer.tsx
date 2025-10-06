@@ -12,7 +12,10 @@ const Footer = () => {
               </div>
               <span className="text-xl font-bold">FinHero</span>
             </div>
-            <p className="text-sm text-muted-foreground">1% Better Daily</p>
+            <p className="text-sm text-muted-foreground">
+              Dê um basta para treinamentos caros e chatos. Treinamentos feitos por IA e revisados por Humanos com
+              Expertise
+            </p>
             <p className="text-sm text-muted-foreground">Educação corporativa que se encaixa na sua rotina.</p>
             <p className="text-xs text-muted-foreground">CNPJ: 60.806.192/0001-50</p>
           </div>
