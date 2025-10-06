@@ -56,7 +56,6 @@ const signupSchema = z.object({
   email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo").refine(checkEmailUnique, "E-mail já cadastrado"),
   employeeCount: z.string().optional(),
   honeypot: z.string().max(0, "Erro de validação"),
-  confirmHuman: z.boolean().refine((val) => val === true, "Você deve aceitar os termos"),
   formLoadTime: z.number().refine((val) => Date.now() - val > 3000, "Submissão muito rápida")
 });
 
@@ -71,7 +70,6 @@ const Signup = () => {
     email: "",
     employeeCount: "",
     honeypot: "",
-    confirmHuman: false,
     formLoadTime: Date.now(),
   });
 
@@ -208,19 +206,6 @@ const Signup = () => {
                 tabIndex={-1}
                 autoComplete="off"
               />
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="confirmHuman"
-                  checked={formData.confirmHuman}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, confirmHuman: checked as boolean })
-                  }
-                />
-                <Label htmlFor="confirmHuman" className="text-sm font-normal cursor-pointer">
-                  Confirmo que sou humano e li os termos *
-                </Label>
-              </div>
 
               <Button type="submit" size="lg" className="w-full">
                 Começar Agora
