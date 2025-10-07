@@ -10,7 +10,7 @@ export function useAuth() {
   useEffect(() => {
     let isMounted = true;
 
-    // Check current session
+    // Checa sessão atual
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (isMounted) {
         setSession(session);
@@ -19,7 +19,7 @@ export function useAuth() {
       }
     });
 
-    // Listen for auth changes
+    // Listener de auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -48,10 +48,7 @@ export function useAuth() {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     return { data, error };
   };
 
@@ -60,12 +57,5 @@ export function useAuth() {
     return { error };
   };
 
-  return {
-    user,
-    session,
-    loading,
-    signUp,
-    signIn,
-    signOut,
-  };
+  return { user, session, loading, signUp, signIn, signOut };
 }
