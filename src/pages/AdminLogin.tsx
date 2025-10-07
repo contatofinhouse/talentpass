@@ -17,13 +17,9 @@ const AdminLogin = () => {
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
   useEffect(() => {
-    if (!user || roleLoading) return;
-    
-    if (role === 'admin') {
+    // Only redirect if user is logged in AND is an admin
+    if (user && !roleLoading && role === 'admin') {
       navigate("/admin/dashboard", { replace: true });
-    } else if (role) {
-      toast.error("Acesso negado.");
-      navigate("/", { replace: true });
     }
   }, [user, role, roleLoading, navigate]);
 
