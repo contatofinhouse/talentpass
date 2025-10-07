@@ -8,7 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { LogOut, Upload, Plus } from "lucide-react";
+import { LogOut, Upload, Plus, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const AVAILABLE_SKILLS = [
   "Comunicação Eficaz",
@@ -28,10 +31,13 @@ const AVAILABLE_SKILLS = [
 ];
 
 const CATEGORIES = [
-  "Vendas e Marketing",
-  "Automação com IA",
-  "Gestão, Liderança e Comunicação"
-];
+  "Comunicação",
+  "Vendas",
+  "Gestão",
+  "Marketing",
+  "TI",
+  "Suporte"
+] as const;
 
 interface CourseFormData {
   title: string;
@@ -43,12 +49,16 @@ interface CourseFormData {
   summary: string;
   duration: string;
   skills: string[];
-  image?: string;
-  resourceFiles?: { name: string; data: string; type: string }[];
+  imageFile?: File;
+  resourceFiles?: File[];
 }
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { role, loading: roleLoading } = useUserRole(user?.id);
+  const [uploading, setUploading] = useState(false);
+  
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
     subtitle: "",
@@ -62,13 +72,13 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    if (sessionStorage.getItem("adminAuth") !== "true") {
+    if (!roleLoading && (!user || role !== 'admin')) {
       navigate("/admin/login");
     }
-  }, [navigate]);
+  }, [user, role, roleLoading, navigate]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("adminAuth");
+  const handleLogout = async () => {
+    await signOut();
     toast.success("Logout realizado!");
     navigate("/admin/login");
   };
@@ -92,15 +102,11 @@ const AdminDashboard = () => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData(prev => ({
-        ...prev,
-        image: event.target?.result as string
-      }));
-      toast.success("Imagem carregada!");
-    };
-    reader.readAsDataURL(file);
+    setFormData(prev => ({
+      ...prev,
+      imageFile: file
+    }));
+    toast.success("Imagem selecionada!");
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,30 +114,23 @@ const AdminDashboard = () => {
     if (!files || files.length === 0) return;
 
     const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    const validFiles: File[] = [];
     
     Array.from(files).forEach((file) => {
       if (!allowedTypes.includes(file.type)) {
         toast.error(`${file.name}: Apenas arquivos PDF ou XLSX são permitidos!`);
         return;
       }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData(prev => ({
-          ...prev,
-          resourceFiles: [
-            ...(prev.resourceFiles || []),
-            {
-              name: file.name,
-              data: event.target?.result as string,
-              type: file.type
-            }
-          ]
-        }));
-        toast.success(`${file.name} carregado!`);
-      };
-      reader.readAsDataURL(file);
+      validFiles.push(file);
     });
+
+    if (validFiles.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        resourceFiles: [...(prev.resourceFiles || []), ...validFiles]
+      }));
+      toast.success(`${validFiles.length} arquivo(s) selecionado(s)!`);
+    }
   };
 
   const handleRemoveResource = (index: number) => {
@@ -142,36 +141,106 @@ const AdminDashboard = () => {
     toast.success("Recurso removido!");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.category || !formData.description || !formData.videoUrl || !formData.duration || !formData.image || formData.skills.length === 0) {
+    if (!formData.title || !formData.category || !formData.description || !formData.videoUrl || !formData.duration || !formData.imageFile || formData.skills.length === 0) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
 
-    const existingCourses = JSON.parse(localStorage.getItem("adminCourses") || "[]");
-    const newCourse = {
-      id: `course-${Date.now()}`,
-      ...formData,
-      createdAt: new Date().toISOString()
-    };
+    if (!user) {
+      toast.error("Você precisa estar logado!");
+      return;
+    }
 
-    localStorage.setItem("adminCourses", JSON.stringify([...existingCourses, newCourse]));
-    
-    toast.success("Curso adicionado com sucesso!");
-    
-    setFormData({
-      title: "",
-      subtitle: "",
-      category: "",
-      description: "",
-      videoUrl: "",
-      content: "",
-      summary: "",
-      duration: "",
-      skills: []
-    });
+    setUploading(true);
+
+    try {
+      // Upload image
+      const imageExt = formData.imageFile.name.split('.').pop();
+      const imagePath = `${Date.now()}-${Math.random().toString(36).substring(7)}.${imageExt}`;
+      
+      const { error: imageError } = await supabase.storage
+        .from('course-images')
+        .upload(imagePath, formData.imageFile);
+
+      if (imageError) throw imageError;
+
+      const { data: { publicUrl: imageUrl } } = supabase.storage
+        .from('course-images')
+        .getPublicUrl(imagePath);
+
+      // Insert course
+      const { data: courseData, error: courseError } = await supabase
+        .from('courses')
+        .insert({
+          title: formData.title,
+          subtitle: formData.subtitle || null,
+          category: formData.category,
+          description: formData.description,
+          video_url: formData.videoUrl,
+          content: formData.content || "",
+          summary: formData.summary || null,
+          duration: formData.duration,
+          skills: formData.skills,
+          image_url: imageUrl,
+          created_by: user.id
+        })
+        .select()
+        .single();
+
+      if (courseError) throw courseError;
+
+      // Upload resources if any
+      if (formData.resourceFiles && formData.resourceFiles.length > 0) {
+        for (const file of formData.resourceFiles) {
+          const resourceExt = file.name.split('.').pop();
+          const resourcePath = `${courseData.id}/${Date.now()}-${file.name}`;
+          
+          const { error: resourceUploadError } = await supabase.storage
+            .from('course-resources')
+            .upload(resourcePath, file);
+
+          if (resourceUploadError) throw resourceUploadError;
+
+          const { data: { publicUrl: resourceUrl } } = supabase.storage
+            .from('course-resources')
+            .getPublicUrl(resourcePath);
+
+          const { error: resourceError } = await supabase
+            .from('course_resources')
+            .insert({
+              course_id: courseData.id,
+              file_name: file.name,
+              file_url: resourceUrl,
+              file_type: file.type
+            });
+
+          if (resourceError) throw resourceError;
+        }
+      }
+
+      toast.success("Curso adicionado com sucesso!");
+      
+      setFormData({
+        title: "",
+        subtitle: "",
+        category: "",
+        description: "",
+        videoUrl: "",
+        content: "",
+        summary: "",
+        duration: "",
+        skills: []
+      });
+
+    } catch (error: any) {
+      console.error('Error creating course:', error);
+      toast.error(error.message || "Erro ao criar curso!");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -319,10 +388,10 @@ const AdminDashboard = () => {
                     accept="image/jpeg,image/png,image/jpg,image/webp"
                     onChange={handleImageUpload}
                   />
-                  {formData.image && (
+                  {formData.imageFile && (
                     <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-lg border">
                       <img 
-                        src={formData.image} 
+                        src={URL.createObjectURL(formData.imageFile)} 
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
@@ -362,9 +431,18 @@ const AdminDashboard = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full md:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
-                Adicionar Curso
+              <Button type="submit" className="w-full md:w-auto" disabled={uploading}>
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Adicionar Curso
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
