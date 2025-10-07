@@ -1,21 +1,18 @@
-import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { toast } from "sonner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireAdmin?: boolean; // só checa se true
-  requireAuth?: boolean; // só checa se true
+  requireAdmin?: boolean; // se true, só admins podem acessar
 }
 
-export const ProtectedRoute = ({ children, requireAdmin = false, requireAuth = false }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const { user, loading: authLoading } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
-  // 🔹 Enquanto carrega autenticação
-  if (authLoading || (requireAdmin && roleLoading)) {
+  // Espera hooks carregarem antes de qualquer decisão
+  if (authLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-lg">Carregando...</div>
@@ -23,18 +20,11 @@ export const ProtectedRoute = ({ children, requireAdmin = false, requireAuth = f
     );
   }
 
-  // 🔹 Se a rota exige login e não tem usuário, bloqueia
-  if (requireAuth && !user) {
-    toast.error("Você precisa fazer login para acessar esta página.");
-    return <Navigate to="/auth" replace />;
-  }
-
-  // 🔹 Se a rota exige admin e não é admin, bloqueia
+  // Se a rota exige admin, bloqueia se não for admin
   if (requireAdmin && role !== "admin") {
-    toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
     return <Navigate to="/" replace />;
   }
 
-  // 🔹 Caso contrário libera acesso
+  // Qualquer outra rota (mesmo sem user) é liberada
   return <>{children}</>;
 };
