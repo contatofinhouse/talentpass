@@ -36,15 +36,13 @@ const AdminLogin = () => {
         return;
       }
 
-      // Verificar se o usuário tem role admin
-      const { data: roleData, error: roleError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', data.user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      // Verificar se o usuário tem role admin usando RPC
+      const { data: hasAdminRole, error: roleError } = await supabase.rpc('has_role', {
+        _user_id: data.user.id,
+        _role: 'admin'
+      });
 
-      if (roleError || !roleData) {
+      if (roleError || !hasAdminRole) {
         // Usuário não tem role admin - fazer logout
         await supabase.auth.signOut();
         toast.error("Acesso negado: você não tem permissão de administrador");
