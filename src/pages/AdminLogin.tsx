@@ -17,15 +17,10 @@ const AdminLogin = () => {
   const { signIn, user } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
-  // Navegação baseada na role
+  // Redireciona se já estiver logado como admin
   useEffect(() => {
-    if (user && !roleLoading) {
-      if (role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else if (role !== null) {
-        toast.error("Acesso negado. Apenas administradores.");
-        supabase.auth.signOut();
-      }
+    if (user && !roleLoading && role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
     }
   }, [user, role, roleLoading, navigate]);
 
@@ -38,14 +33,32 @@ const AdminLogin = () => {
 
       if (error || !data.user) {
         toast.error("Credenciais inválidas!");
+        setLoading(false);
         return;
       }
 
-      // Aqui apenas atualizamos o user; navegação será feita pelo useEffect
+      // Busca a role imediatamente após o login
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id);
+
+      const roles = roleData?.map((r) => r.role) || [];
+
+      if (roles.includes("admin")) {
+        toast.success("Login realizado com sucesso!");
+        // Aguarda um momento para garantir que o estado foi atualizado
+        setTimeout(() => {
+          navigate("/admin/dashboard", { replace: true });
+        }, 100);
+      } else {
+        toast.error("Acesso negado. Apenas administradores.");
+        await supabase.auth.signOut();
+        setLoading(false);
+      }
     } catch (err) {
       console.error(err);
       toast.error("Erro ao fazer login!");
-    } finally {
       setLoading(false);
     }
   };
