@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { supabase } from "@/integrations/supabase";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -17,41 +16,30 @@ const AdminLogin = () => {
   const { signIn, user } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
-useEffect(() => {
-  if (!roleLoading && user && role === 'admin') {
-    navigate("/admin/dashboard", { replace: true });
-  }
-}, [user, role, roleLoading, navigat
+  // Redireciona para dashboard se admin
+  useEffect(() => {
+    if (!roleLoading && user && role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+    }
+  }, [user, role, roleLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const { data, error } = await signIn(email, password);
-      
+
       if (error) {
         toast.error("Credenciais inválidas!");
-        setLoading(false);
         return;
       }
 
       if (data?.user) {
-        // Buscar role imediatamente após login
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', data.user.id)
-          .maybeSingle();
-
-        if (roleData?.role === 'admin') {
-          navigate("/admin/dashboard", { replace: true });
-        } else {
-          toast.error("Acesso negado. Apenas administradores.");
-          await supabase.auth.signOut();
-        }
+        // Apenas atualizar o estado do user no hook useAuth
+        toast.success("Login efetuado! Redirecionando...");
       }
-    } catch (error) {
+    } catch (err) {
       toast.error("Erro ao fazer login!");
     } finally {
       setLoading(false);
@@ -72,26 +60,22 @@ useEffect(() => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                type="password"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full"
-                required
-              />
-            </div>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full"
+            />
+            <Input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full"
+            />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Entrando..." : "Entrar"}
             </Button>
