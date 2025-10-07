@@ -193,27 +193,32 @@ END $$;
 -- =====================================================
 
 -- Companies: Only admins can manage
+drop policy if exists "Admins can view all companies" on public.companies;
 create policy "Admins can view all companies"
   on public.companies for select
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can insert companies" on public.companies;
 create policy "Admins can insert companies"
   on public.companies for insert
   to authenticated
   with check (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can update companies" on public.companies;
 create policy "Admins can update companies"
   on public.companies for update
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
 -- Profiles: Users can view their own, managers/admins can view their company
+drop policy if exists "Users can view own profile" on public.profiles;
 create policy "Users can view own profile"
   on public.profiles for select
   to authenticated
   using (auth.uid() = id);
 
+drop policy if exists "Managers can view company profiles" on public.profiles;
 create policy "Managers can view company profiles"
   on public.profiles for select
   to authenticated
@@ -222,80 +227,95 @@ create policy "Managers can view company profiles"
     company_id = (select company_id from public.profiles where id = auth.uid())
   );
 
+drop policy if exists "Admins can view all profiles" on public.profiles;
 create policy "Admins can view all profiles"
   on public.profiles for select
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Users can update own profile" on public.profiles;
 create policy "Users can update own profile"
   on public.profiles for update
   to authenticated
   using (auth.uid() = id);
 
 -- User Roles: Admins can manage all, users can view their own
+drop policy if exists "Users can view own roles" on public.user_roles;
 create policy "Users can view own roles"
   on public.user_roles for select
   to authenticated
   using (user_id = auth.uid());
 
+drop policy if exists "Admins can view all roles" on public.user_roles;
 create policy "Admins can view all roles"
   on public.user_roles for select
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can insert roles" on public.user_roles;
 create policy "Admins can insert roles"
   on public.user_roles for insert
   to authenticated
   with check (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can delete roles" on public.user_roles;
 create policy "Admins can delete roles"
   on public.user_roles for delete
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
 -- Courses: All authenticated users can view, admins can manage
+drop policy if exists "Authenticated users can view courses" on public.courses;
 create policy "Authenticated users can view courses"
   on public.courses for select
   to authenticated
   using (true);
 
+drop policy if exists "Admins can insert courses" on public.courses;
 create policy "Admins can insert courses"
   on public.courses for insert
   to authenticated
   with check (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can update courses" on public.courses;
 create policy "Admins can update courses"
   on public.courses for update
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can delete courses" on public.courses;
 create policy "Admins can delete courses"
   on public.courses for delete
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
 -- Course Resources: Follow course permissions
+drop policy if exists "Authenticated users can view resources" on public.course_resources;
 create policy "Authenticated users can view resources"
   on public.course_resources for select
   to authenticated
   using (true);
 
+drop policy if exists "Admins can insert resources" on public.course_resources;
 create policy "Admins can insert resources"
   on public.course_resources for insert
   to authenticated
   with check (public.has_role(auth.uid(), 'admin'));
 
+drop policy if exists "Admins can delete resources" on public.course_resources;
 create policy "Admins can delete resources"
   on public.course_resources for delete
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
 -- Course Enrollments: Users can view their own, managers can view company enrollments
+drop policy if exists "Users can view own enrollments" on public.course_enrollments;
 create policy "Users can view own enrollments"
   on public.course_enrollments for select
   to authenticated
   using (user_id = auth.uid());
 
+drop policy if exists "Managers can view company enrollments" on public.course_enrollments;
 create policy "Managers can view company enrollments"
   on public.course_enrollments for select
   to authenticated
@@ -307,27 +327,32 @@ create policy "Managers can view company enrollments"
     )
   );
 
+drop policy if exists "Admins can manage enrollments" on public.course_enrollments;
 create policy "Admins can manage enrollments"
   on public.course_enrollments for all
   to authenticated
   using (public.has_role(auth.uid(), 'admin'));
 
 -- Course Progress: Users can manage their own, managers can view company progress
+drop policy if exists "Users can view own progress" on public.course_progress;
 create policy "Users can view own progress"
   on public.course_progress for select
   to authenticated
   using (user_id = auth.uid());
 
+drop policy if exists "Users can update own progress" on public.course_progress;
 create policy "Users can update own progress"
   on public.course_progress for update
   to authenticated
   using (user_id = auth.uid());
 
+drop policy if exists "Users can insert own progress" on public.course_progress;
 create policy "Users can insert own progress"
   on public.course_progress for insert
   to authenticated
   with check (user_id = auth.uid());
 
+drop policy if exists "Managers can view company progress" on public.course_progress;
 create policy "Managers can view company progress"
   on public.course_progress for select
   to authenticated
@@ -354,10 +379,12 @@ values ('course-resources', 'course-resources', true)
 on conflict (id) do nothing;
 
 -- Storage policies for course images
+drop policy if exists "Anyone can view course images" on storage.objects;
 create policy "Anyone can view course images"
   on storage.objects for select
   using (bucket_id = 'course-images');
 
+drop policy if exists "Admins can upload course images" on storage.objects;
 create policy "Admins can upload course images"
   on storage.objects for insert
   with check (
@@ -365,6 +392,7 @@ create policy "Admins can upload course images"
     public.has_role(auth.uid(), 'admin')
   );
 
+drop policy if exists "Admins can delete course images" on storage.objects;
 create policy "Admins can delete course images"
   on storage.objects for delete
   using (
@@ -373,11 +401,13 @@ create policy "Admins can delete course images"
   );
 
 -- Storage policies for course resources
+drop policy if exists "Authenticated users can view course resources" on storage.objects;
 create policy "Authenticated users can view course resources"
   on storage.objects for select
   to authenticated
   using (bucket_id = 'course-resources');
 
+drop policy if exists "Admins can upload course resources" on storage.objects;
 create policy "Admins can upload course resources"
   on storage.objects for insert
   with check (
@@ -385,6 +415,7 @@ create policy "Admins can upload course resources"
     public.has_role(auth.uid(), 'admin')
   );
 
+drop policy if exists "Admins can delete course resources" on storage.objects;
 create policy "Admins can delete course resources"
   on storage.objects for delete
   using (
