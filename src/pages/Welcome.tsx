@@ -1,10 +1,45 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2, Sparkles, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase";
 
 const Welcome = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+      } else {
+        setProfile(data);
+      }
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center py-12">
@@ -20,7 +55,7 @@ const Welcome = () => {
               </CardTitle>
               <div className="flex items-center justify-center gap-2 text-primary">
                 <Sparkles className="w-5 h-5" />
-                <span className="text-lg font-semibold">Bem-vindo a FinHero</span>
+                <span className="text-lg font-semibold">Bem-vindo{profile?.name ? `, ${profile.name}` : ''} ao FinHero</span>
                 <Sparkles className="w-5 h-5" />
               </div>
             </div>

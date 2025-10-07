@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
+import { Loader2 } from "lucide-react";
 
 const validateCNPJ = (cnpj: string): boolean => {
   const cleaned = cnpj.replace(/[^\d]/g, '');
@@ -41,39 +42,42 @@ const validateCNPJ = (cnpj: string): boolean => {
   return result === parseInt(digits.charAt(1));
 };
 
-const checkEmailUnique = (email: string): boolean => {
-  const existingManagers = localStorage.getItem("allManagers");
-  if (!existingManagers) return true;
-  
-  const managers = JSON.parse(existingManagers);
-  return !managers.some((m: any) => m.email.toLowerCase() === email.toLowerCase());
-};
-
 const signupSchema = z.object({
   companyName: z.string().trim().min(1, "Nome da empresa é obrigatório").max(100, "Nome muito longo"),
   cnpj: z.string().trim().refine(validateCNPJ, "CNPJ inválido"),
   managerName: z.string().trim().min(1, "Nome do gestor é obrigatório").max(100, "Nome muito longo"),
-  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo").refine(checkEmailUnique, "E-mail já cadastrado"),
+  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo"),
+  phone: z.string().trim().min(14, "Telefone inválido").max(15, "Telefone inválido"),
+  password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres").max(72, "Senha muito longa"),
+  confirmPassword: z.string(),
   employeeCount: z.string().optional(),
   honeypot: z.string().max(0, "Erro de validação"),
   formLoadTime: z.number().refine((val) => Date.now() - val > 3000, "Submissão muito rápida")
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signUp } = useAuth();
   const [formLoadTime] = useState(Date.now());
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     companyName: "",
     cnpj: "",
     managerName: "",
     email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
     employeeCount: "",
     honeypot: "",
     formLoadTime: Date.now(),
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const validation = signupSchema.safeParse({ ...formData, formLoadTime });
@@ -88,22 +92,29 @@ const Signup = () => {
       return;
     }
 
-    // Salvar na lista de todos os gerentes para validação de email único
-    const existingManagers = JSON.parse(localStorage.getItem("allManagers") || "[]");
-    const newManager = {
-      ...formData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString()
-    };
-    localStorage.setItem("allManagers", JSON.stringify([...existingManagers, newManager]));
+    setLoading(true);
 
-    localStorage.setItem("manager", JSON.stringify(newManager));
-    localStorage.setItem("employees", JSON.stringify([]));
-    localStorage.setItem("userType", "manager");
+    const { error } = await signUp(formData.email, formData.password, {
+      name: formData.managerName,
+      company_name: formData.companyName,
+      cnpj: formData.cnpj,
+      phone: formData.phone,
+      employee_count: formData.employeeCount,
+    });
+
+    if (error) {
+      toast({
+        title: "Erro no cadastro",
+        description: error,
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
 
     toast({
       title: "Cadastro realizado!",
-      description: "Bem-vindo ao MicroLearn",
+      description: "Bem-vindo ao FinHero",
     });
 
     navigate("/welcome");
@@ -118,6 +129,19 @@ const Signup = () => {
         .join('.')
         .replace(/\.(\d{3})\./, '.$1/')
         .replace(/(\d{4})\.(\d{2})$/, '$1-$2');
+    }
+    return value;
+  };
+
+  const formatPhone = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,2})(\d{0,5})(\d{0,4})$/);
+    if (match) {
+      return [match[1], match[2], match[3]]
+        .filter(Boolean)
+        .join(' ')
+        .replace(/^(\d{2}) /, '($1) ')
+        .replace(/ (\d{4})$/, '-$1');
     }
     return value;
   };
@@ -185,6 +209,46 @@ const Signup = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="phone">Telefone *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: formatPhone(e.target.value) })
+                  }
+                  placeholder="(XX) XXXXX-XXXX"
+                  maxLength={15}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder="Mínimo 8 caracteres"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar Senha *</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({ ...formData, confirmPassword: e.target.value })
+                  }
+                  placeholder="Digite a senha novamente"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="employeeCount">Número de Colaboradores</Label>
                 <Input
                   id="employeeCount"
@@ -207,8 +271,15 @@ const Signup = () => {
                 autoComplete="off"
               />
 
-              <Button type="submit" size="lg" className="w-full">
-                Começar Agora
+              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Cadastrando...
+                  </>
+                ) : (
+                  "Começar Agora"
+                )}
               </Button>
             </form>
           </CardContent>

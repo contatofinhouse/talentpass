@@ -4,25 +4,55 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Clock, Users, LogOut, Download } from "lucide-react";
+import { Play, Clock, Users, LogOut, Download, Loader2 } from "lucide-react";
 import { courses as defaultCourses } from "@/data/courses";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase";
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
   const [allCourses, setAllCourses] = useState<any[]>([]);
-  const manager = JSON.parse(localStorage.getItem("manager") || "{}");
-  const employees = JSON.parse(localStorage.getItem("employees") || "[]");
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const adminCourses = JSON.parse(localStorage.getItem("adminCourses") || "[]");
-    setAllCourses([...defaultCourses, ...adminCourses]);
-  }, []);
+    const fetchProfile = async () => {
+      if (!user) return;
 
-  const handleLogout = () => {
-    localStorage.removeItem("userType");
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+      } else {
+        setProfile(data);
+      }
+
+      const adminCourses = JSON.parse(localStorage.getItem("adminCourses") || "[]");
+      setAllCourses([...defaultCourses, ...adminCourses]);
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const handleDownloadResource = (file: { name: string; data: string }) => {
     const link = document.createElement('a');
@@ -36,13 +66,13 @@ const ManagerDashboard = () => {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div>
-            <h1 className="text-xl font-bold">MicroLearn</h1>
+            <h1 className="text-xl font-bold">FinHero</h1>
             <p className="text-sm text-muted-foreground">Painel do Gestor</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-sm font-medium">{manager.managerName}</p>
-              <p className="text-xs text-muted-foreground">{manager.companyName}</p>
+              <p className="text-sm font-medium">{profile?.name}</p>
+              <p className="text-xs text-muted-foreground">{profile?.company_name}</p>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
@@ -69,7 +99,7 @@ const ManagerDashboard = () => {
             <CardContent>
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-muted-foreground" />
-                <div className="text-2xl font-bold">{employees.length}</div>
+                <div className="text-2xl font-bold">{profile?.employee_count || "0"}</div>
               </div>
             </CardContent>
           </Card>
@@ -138,28 +168,33 @@ const ManagerDashboard = () => {
           <TabsContent value="employees">
             <Card>
               <CardHeader>
-                <CardTitle>Lista de Colaboradores</CardTitle>
+                <CardTitle>Informações da Empresa</CardTitle>
                 <CardDescription>
-                  {employees.length} colaboradores cadastrados
+                  Dados cadastrais
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {employees.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      Nenhum colaborador cadastrado ainda.
-                    </p>
-                  ) : (
-                    employees.map((email: string, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <span className="text-sm">{email}</span>
-                        <Badge variant="outline">Ativo</Badge>
-                      </div>
-                    ))
-                  )}
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Empresa</p>
+                    <p className="text-sm text-muted-foreground">{profile?.company_name}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">CNPJ</p>
+                    <p className="text-sm text-muted-foreground">{profile?.cnpj}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Telefone</p>
+                    <p className="text-sm text-muted-foreground">{profile?.phone}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">E-mail</p>
+                    <p className="text-sm text-muted-foreground">{profile?.email}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Número de Colaboradores</p>
+                    <p className="text-sm text-muted-foreground">{profile?.employee_count || "Não informado"}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
