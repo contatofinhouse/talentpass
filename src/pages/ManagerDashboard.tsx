@@ -5,7 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Play, Clock, Users, LogOut, Download, Loader2, Heart, CheckCircle2, Search } from "lucide-react";
+import { Play, Clock, Users, LogOut, Download, Loader2, Heart, CheckCircle2, Search, User, Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { courses as defaultCourses } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase";
@@ -27,6 +35,7 @@ const ManagerDashboard = () => {
   const [courseTracking, setCourseTracking] = useState<Record<string, CourseTracking>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [activeView, setActiveView] = useState<"courses" | "profile" | "employees">("courses");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -213,14 +222,36 @@ const ManagerDashboard = () => {
             <p className="text-sm text-muted-foreground">Painel do Gestor</p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium">{profile?.name}</p>
-              <p className="text-xs text-muted-foreground">{profile?.company_name}</p>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Sair
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <User className="mr-2 h-4 w-4" />
+                  Minha Conta
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">{profile?.name}</p>
+                    <p className="text-xs text-muted-foreground">{profile?.company_name}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setActiveView("profile")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Cadastro
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveView("employees")}>
+                  <Users className="mr-2 h-4 w-4" />
+                  Colaboradores
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
@@ -270,12 +301,12 @@ const ManagerDashboard = () => {
           </Card>
         </div>
 
+        {activeView === "courses" && (
         <Tabs defaultValue="courses">
           <TabsList className="mb-6">
             <TabsTrigger value="courses">Todos os Cursos</TabsTrigger>
             <TabsTrigger value="favorites">Favoritos</TabsTrigger>
             <TabsTrigger value="completed">Concluídos</TabsTrigger>
-            <TabsTrigger value="employees">Colaboradores</TabsTrigger>
           </TabsList>
 
           <TabsContent value="courses" className="space-y-4">
@@ -532,42 +563,58 @@ const ManagerDashboard = () => {
               </div>
             )}
           </TabsContent>
-
-          <TabsContent value="employees">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informações da Empresa</CardTitle>
-                <CardDescription>
-                  Dados cadastrais
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium">Empresa</p>
-                    <p className="text-sm text-muted-foreground">{profile?.company_name}</p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium">CNPJ</p>
-                    <p className="text-sm text-muted-foreground">{profile?.cnpj}</p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium">Telefone</p>
-                    <p className="text-sm text-muted-foreground">{profile?.phone}</p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium">E-mail</p>
-                    <p className="text-sm text-muted-foreground">{profile?.email}</p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium">Número de Colaboradores</p>
-                    <p className="text-sm text-muted-foreground">{profile?.employee_count || "Não informado"}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
+        )}
+
+        {activeView === "profile" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Meu Cadastro</CardTitle>
+              <CardDescription>
+                Dados cadastrais da empresa
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <p className="text-sm font-medium">Empresa</p>
+                  <p className="text-sm text-muted-foreground">{profile?.company_name}</p>
+                </div>
+                <div className="grid gap-2">
+                  <p className="text-sm font-medium">CNPJ</p>
+                  <p className="text-sm text-muted-foreground">{profile?.cnpj}</p>
+                </div>
+                <div className="grid gap-2">
+                  <p className="text-sm font-medium">Telefone</p>
+                  <p className="text-sm text-muted-foreground">{profile?.phone}</p>
+                </div>
+                <div className="grid gap-2">
+                  <p className="text-sm font-medium">E-mail</p>
+                  <p className="text-sm text-muted-foreground">{profile?.email}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {activeView === "employees" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Colaboradores</CardTitle>
+              <CardDescription>
+                Informações sobre os colaboradores da empresa
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <p className="text-sm font-medium">Número de Colaboradores</p>
+                  <p className="text-sm text-muted-foreground">{profile?.employee_count || "Não informado"}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {selectedCourse && (
