@@ -17,13 +17,13 @@ const AdminLogin = () => {
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
   useEffect(() => {
-    if (user && !roleLoading) {
-      if (role === 'admin') {
-        navigate("/admin/dashboard");
-      } else if (role) {
-        toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
-        navigate("/");
-      }
+    if (!user || roleLoading) return;
+    
+    if (role === 'admin') {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (role) {
+      toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
+      navigate("/", { replace: true });
     }
   }, [user, role, roleLoading, navigate]);
 

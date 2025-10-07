@@ -14,23 +14,32 @@ export function useUserRole(userId: string | undefined) {
       return;
     }
 
+    let isMounted = true;
+
     const fetchRole = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching user role:', error);
-        setRole(null);
-      } else {
-        setRole(data?.role || null);
+      if (isMounted) {
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setRole(null);
+        } else {
+          setRole(data?.role || null);
+        }
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchRole();
+
+    return () => {
+      isMounted = false;
+    };
   }, [userId]);
 
   return { role, loading };
