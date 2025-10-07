@@ -17,10 +17,7 @@ const AdminLogin = () => {
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
   useEffect(() => {
-    console.log('AdminLogin useEffect:', { user: !!user, role, roleLoading });
-    // Only redirect if user is logged in AND is an admin
     if (user && !roleLoading && role === 'admin') {
-      console.log('Redirecting to /admin/dashboard');
       navigate("/admin/dashboard", { replace: true });
     }
   }, [user, role, roleLoading, navigate]);

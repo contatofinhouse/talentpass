@@ -49,7 +49,7 @@ alter table public.profiles enable row level security;
 -- =====================================================
 create table if not exists public.user_roles (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid references public.profiles(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
   role app_role not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   unique (user_id, role)
