@@ -1,0 +1,372 @@
+-- =====================================================
+-- LOVABLE LEARNING PLATFORM - DATABASE SETUP
+-- Execute este SQL no SQL Editor do Supabase
+-- =====================================================
+
+-- Create enum for user roles
+create type public.app_role as enum ('admin', 'manager', 'employee');
+
+-- Create enum for course categories
+create type public.course_category as enum ('Comunicação', 'Vendas', 'Gestão', 'Marketing', 'TI', 'Suporte');
+
+-- =====================================================
+-- COMPANIES TABLE
+-- =====================================================
+create table public.companies (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.companies enable row level security;
+
+-- =====================================================
+-- PROFILES TABLE
+-- =====================================================
+create table public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  company_id uuid references public.companies(id) on delete cascade,
+  name text not null,
+  email text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.profiles enable row level security;
+
+-- =====================================================
+-- USER ROLES TABLE (CRITICAL: Separate table for security)
+-- =====================================================
+create table public.user_roles (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  role app_role not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique (user_id, role)
+);
+
+alter table public.user_roles enable row level security;
+
+-- =====================================================
+-- COURSES TABLE
+-- =====================================================
+create table public.courses (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  subtitle text,
+  category course_category not null,
+  duration text not null,
+  description text not null,
+  video_url text not null,
+  content text not null,
+  summary text,
+  skills text[] not null default '{}',
+  image_url text,
+  created_by uuid references public.profiles(id) on delete set null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.courses enable row level security;
+
+-- =====================================================
+-- COURSE RESOURCES TABLE
+-- =====================================================
+create table public.course_resources (
+  id uuid primary key default gen_random_uuid(),
+  course_id uuid references public.courses(id) on delete cascade not null,
+  file_name text not null,
+  file_url text not null,
+  file_type text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.course_resources enable row level security;
+
+-- =====================================================
+-- COURSE ENROLLMENTS TABLE
+-- =====================================================
+create table public.course_enrollments (
+  id uuid primary key default gen_random_uuid(),
+  course_id uuid references public.courses(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  enrolled_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique (course_id, user_id)
+);
+
+alter table public.course_enrollments enable row level security;
+
+-- =====================================================
+-- COURSE PROGRESS TABLE
+-- =====================================================
+create table public.course_progress (
+  id uuid primary key default gen_random_uuid(),
+  course_id uuid references public.courses(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  completed boolean default false,
+  progress_percentage integer default 0 check (progress_percentage >= 0 and progress_percentage <= 100),
+  completed_at timestamp with time zone,
+  last_accessed timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique (course_id, user_id)
+);
+
+alter table public.course_progress enable row level security;
+
+-- =====================================================
+-- SECURITY DEFINER FUNCTION (prevents RLS recursion)
+-- =====================================================
+create or replace function public.has_role(_user_id uuid, _role app_role)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.user_roles
+    where user_id = _user_id
+      and role = _role
+  )
+$$;
+
+-- =====================================================
+-- FUNCTION TO CREATE PROFILE ON SIGNUP
+-- =====================================================
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, name, email)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
+    new.email
+  );
+  return new;
+end;
+$$;
+
+-- Trigger to create profile on user signup
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- =====================================================
+-- ROW LEVEL SECURITY POLICIES
+-- =====================================================
+
+-- Companies: Only admins can manage
+create policy "Admins can view all companies"
+  on public.companies for select
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can insert companies"
+  on public.companies for insert
+  to authenticated
+  with check (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can update companies"
+  on public.companies for update
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+-- Profiles: Users can view their own, managers/admins can view their company
+create policy "Users can view own profile"
+  on public.profiles for select
+  to authenticated
+  using (auth.uid() = id);
+
+create policy "Managers can view company profiles"
+  on public.profiles for select
+  to authenticated
+  using (
+    public.has_role(auth.uid(), 'manager') and
+    company_id = (select company_id from public.profiles where id = auth.uid())
+  );
+
+create policy "Admins can view all profiles"
+  on public.profiles for select
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+create policy "Users can update own profile"
+  on public.profiles for update
+  to authenticated
+  using (auth.uid() = id);
+
+-- User Roles: Admins can manage all, users can view their own
+create policy "Users can view own roles"
+  on public.user_roles for select
+  to authenticated
+  using (user_id = auth.uid());
+
+create policy "Admins can view all roles"
+  on public.user_roles for select
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can insert roles"
+  on public.user_roles for insert
+  to authenticated
+  with check (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can delete roles"
+  on public.user_roles for delete
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+-- Courses: All authenticated users can view, admins can manage
+create policy "Authenticated users can view courses"
+  on public.courses for select
+  to authenticated
+  using (true);
+
+create policy "Admins can insert courses"
+  on public.courses for insert
+  to authenticated
+  with check (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can update courses"
+  on public.courses for update
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can delete courses"
+  on public.courses for delete
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+-- Course Resources: Follow course permissions
+create policy "Authenticated users can view resources"
+  on public.course_resources for select
+  to authenticated
+  using (true);
+
+create policy "Admins can insert resources"
+  on public.course_resources for insert
+  to authenticated
+  with check (public.has_role(auth.uid(), 'admin'));
+
+create policy "Admins can delete resources"
+  on public.course_resources for delete
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+-- Course Enrollments: Users can view their own, managers can view company enrollments
+create policy "Users can view own enrollments"
+  on public.course_enrollments for select
+  to authenticated
+  using (user_id = auth.uid());
+
+create policy "Managers can view company enrollments"
+  on public.course_enrollments for select
+  to authenticated
+  using (
+    public.has_role(auth.uid(), 'manager') and
+    user_id in (
+      select id from public.profiles 
+      where company_id = (select company_id from public.profiles where id = auth.uid())
+    )
+  );
+
+create policy "Admins can manage enrollments"
+  on public.course_enrollments for all
+  to authenticated
+  using (public.has_role(auth.uid(), 'admin'));
+
+-- Course Progress: Users can manage their own, managers can view company progress
+create policy "Users can view own progress"
+  on public.course_progress for select
+  to authenticated
+  using (user_id = auth.uid());
+
+create policy "Users can update own progress"
+  on public.course_progress for update
+  to authenticated
+  using (user_id = auth.uid());
+
+create policy "Users can insert own progress"
+  on public.course_progress for insert
+  to authenticated
+  with check (user_id = auth.uid());
+
+create policy "Managers can view company progress"
+  on public.course_progress for select
+  to authenticated
+  using (
+    public.has_role(auth.uid(), 'manager') and
+    user_id in (
+      select id from public.profiles 
+      where company_id = (select company_id from public.profiles where id = auth.uid())
+    )
+  );
+
+-- =====================================================
+-- STORAGE BUCKETS
+-- =====================================================
+
+-- Course images bucket
+insert into storage.buckets (id, name, public)
+values ('course-images', 'course-images', true);
+
+-- Course resources bucket
+insert into storage.buckets (id, name, public)
+values ('course-resources', 'course-resources', true);
+
+-- Storage policies for course images
+create policy "Anyone can view course images"
+  on storage.objects for select
+  using (bucket_id = 'course-images');
+
+create policy "Admins can upload course images"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'course-images' and
+    public.has_role(auth.uid(), 'admin')
+  );
+
+create policy "Admins can delete course images"
+  on storage.objects for delete
+  using (
+    bucket_id = 'course-images' and
+    public.has_role(auth.uid(), 'admin')
+  );
+
+-- Storage policies for course resources
+create policy "Authenticated users can view course resources"
+  on storage.objects for select
+  to authenticated
+  using (bucket_id = 'course-resources');
+
+create policy "Admins can upload course resources"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'course-resources' and
+    public.has_role(auth.uid(), 'admin')
+  );
+
+create policy "Admins can delete course resources"
+  on storage.objects for delete
+  using (
+    bucket_id = 'course-resources' and
+    public.has_role(auth.uid(), 'admin')
+  );
+
+-- =====================================================
+-- INDEXES FOR PERFORMANCE
+-- =====================================================
+create index profiles_company_id_idx on public.profiles(company_id);
+create index user_roles_user_id_idx on public.user_roles(user_id);
+create index user_roles_role_idx on public.user_roles(role);
+create index courses_category_idx on public.courses(category);
+create index course_resources_course_id_idx on public.course_resources(course_id);
+create index course_enrollments_user_id_idx on public.course_enrollments(user_id);
+create index course_enrollments_course_id_idx on public.course_enrollments(course_id);
+create index course_progress_user_id_idx on public.course_progress(user_id);
+create index course_progress_course_id_idx on public.course_progress(course_id);
