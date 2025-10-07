@@ -17,48 +17,43 @@ const AdminLogin = () => {
   const { signIn, user } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
 
-  // Redireciona se já estiver logado como admin
-  useEffect(() => {
-    if (user && !roleLoading && role === "admin") {
-      navigate("/admin/dashboard", { replace: true });
-    }
-  }, [user, role, roleLoading, navigate]);
+useEffect(() => {
+  if (!roleLoading && user && role === 'admin') {
+    navigate("/admin/dashboard", { replace: true });
+  }
+}, [user, role, roleLoading, navigat
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
       const { data, error } = await signIn(email, password);
-
-      if (error || !data.user) {
+      
+      if (error) {
         toast.error("Credenciais inválidas!");
         setLoading(false);
         return;
       }
 
-      // Busca a role imediatamente após o login
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id);
+      if (data?.user) {
+        // Buscar role imediatamente após login
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
 
-      const roles = roleData?.map((r) => r.role) || [];
-
-      if (roles.includes("admin")) {
-        toast.success("Login realizado com sucesso!");
-        // Aguarda um momento para garantir que o estado foi atualizado
-        setTimeout(() => {
+        if (roleData?.role === 'admin') {
           navigate("/admin/dashboard", { replace: true });
-        }, 100);
-      } else {
-        toast.error("Acesso negado. Apenas administradores.");
-        await supabase.auth.signOut();
-        setLoading(false);
+        } else {
+          toast.error("Acesso negado. Apenas administradores.");
+          await supabase.auth.signOut();
+        }
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
       toast.error("Erro ao fazer login!");
+    } finally {
       setLoading(false);
     }
   };
