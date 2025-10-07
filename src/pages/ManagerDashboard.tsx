@@ -94,9 +94,12 @@ const ManagerDashboard = () => {
         course_id: courseId,
         is_favorite: newStatus,
         is_completed: courseTracking[courseId]?.is_completed || false,
+      }, {
+        onConflict: 'user_id,course_id'
       });
 
     if (error) {
+      console.error("Error toggling favorite:", error);
       toast({
         title: "Erro",
         description: "Não foi possível atualizar favorito",
@@ -135,9 +138,12 @@ const ManagerDashboard = () => {
         is_favorite: courseTracking[courseId]?.is_favorite || false,
         is_completed: newStatus,
         completed_at: newStatus ? new Date().toISOString() : null,
+      }, {
+        onConflict: 'user_id,course_id'
       });
 
     if (error) {
+      console.error("Error toggling completed:", error);
       toast({
         title: "Erro",
         description: "Não foi possível atualizar status",
