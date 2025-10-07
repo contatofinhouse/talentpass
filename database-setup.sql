@@ -1,18 +1,27 @@
 -- =====================================================
 -- LOVABLE LEARNING PLATFORM - DATABASE SETUP
 -- Execute este SQL no SQL Editor do Supabase
+-- Este script é idempotente (pode ser executado múltiplas vezes)
 -- =====================================================
 
--- Create enum for user roles
-create type public.app_role as enum ('admin', 'manager', 'employee');
+-- Create enum for user roles (only if not exists)
+DO $$ BEGIN
+    CREATE TYPE public.app_role AS ENUM ('admin', 'manager', 'employee');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
--- Create enum for course categories
-create type public.course_category as enum ('Comunicação', 'Vendas', 'Gestão', 'Marketing', 'TI', 'Suporte');
+-- Create enum for course categories (only if not exists)
+DO $$ BEGIN
+    CREATE TYPE public.course_category AS ENUM ('Comunicação', 'Vendas', 'Gestão', 'Marketing', 'TI', 'Suporte');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- =====================================================
 -- COMPANIES TABLE
 -- =====================================================
-create table public.companies (
+create table if not exists public.companies (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
@@ -24,7 +33,7 @@ alter table public.companies enable row level security;
 -- =====================================================
 -- PROFILES TABLE
 -- =====================================================
-create table public.profiles (
+create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   company_id uuid references public.companies(id) on delete cascade,
   name text not null,
@@ -38,7 +47,7 @@ alter table public.profiles enable row level security;
 -- =====================================================
 -- USER ROLES TABLE (CRITICAL: Separate table for security)
 -- =====================================================
-create table public.user_roles (
+create table if not exists public.user_roles (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.profiles(id) on delete cascade not null,
   role app_role not null,
@@ -51,7 +60,7 @@ alter table public.user_roles enable row level security;
 -- =====================================================
 -- COURSES TABLE
 -- =====================================================
-create table public.courses (
+create table if not exists public.courses (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   subtitle text,
@@ -73,7 +82,7 @@ alter table public.courses enable row level security;
 -- =====================================================
 -- COURSE RESOURCES TABLE
 -- =====================================================
-create table public.course_resources (
+create table if not exists public.course_resources (
   id uuid primary key default gen_random_uuid(),
   course_id uuid references public.courses(id) on delete cascade not null,
   file_name text not null,
@@ -87,7 +96,7 @@ alter table public.course_resources enable row level security;
 -- =====================================================
 -- COURSE ENROLLMENTS TABLE
 -- =====================================================
-create table public.course_enrollments (
+create table if not exists public.course_enrollments (
   id uuid primary key default gen_random_uuid(),
   course_id uuid references public.courses(id) on delete cascade not null,
   user_id uuid references public.profiles(id) on delete cascade not null,
@@ -100,7 +109,7 @@ alter table public.course_enrollments enable row level security;
 -- =====================================================
 -- COURSE PROGRESS TABLE
 -- =====================================================
-create table public.course_progress (
+create table if not exists public.course_progress (
   id uuid primary key default gen_random_uuid(),
   course_id uuid references public.courses(id) on delete cascade not null,
   user_id uuid references public.profiles(id) on delete cascade not null,
@@ -151,10 +160,14 @@ begin
 end;
 $$;
 
--- Trigger to create profile on user signup
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+-- Trigger to create profile on user signup (only if not exists)
+DO $$ BEGIN
+    CREATE TRIGGER on_auth_user_created
+      AFTER INSERT ON auth.users
+      FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- =====================================================
 -- ROW LEVEL SECURITY POLICIES
@@ -311,13 +324,15 @@ create policy "Managers can view company progress"
 -- STORAGE BUCKETS
 -- =====================================================
 
--- Course images bucket
+-- Course images bucket (only if not exists)
 insert into storage.buckets (id, name, public)
-values ('course-images', 'course-images', true);
+values ('course-images', 'course-images', true)
+on conflict (id) do nothing;
 
--- Course resources bucket
+-- Course resources bucket (only if not exists)
 insert into storage.buckets (id, name, public)
-values ('course-resources', 'course-resources', true);
+values ('course-resources', 'course-resources', true)
+on conflict (id) do nothing;
 
 -- Storage policies for course images
 create policy "Anyone can view course images"
@@ -361,12 +376,12 @@ create policy "Admins can delete course resources"
 -- =====================================================
 -- INDEXES FOR PERFORMANCE
 -- =====================================================
-create index profiles_company_id_idx on public.profiles(company_id);
-create index user_roles_user_id_idx on public.user_roles(user_id);
-create index user_roles_role_idx on public.user_roles(role);
-create index courses_category_idx on public.courses(category);
-create index course_resources_course_id_idx on public.course_resources(course_id);
-create index course_enrollments_user_id_idx on public.course_enrollments(user_id);
-create index course_enrollments_course_id_idx on public.course_enrollments(course_id);
-create index course_progress_user_id_idx on public.course_progress(user_id);
-create index course_progress_course_id_idx on public.course_progress(course_id);
+create index if not exists profiles_company_id_idx on public.profiles(company_id);
+create index if not exists user_roles_user_id_idx on public.user_roles(user_id);
+create index if not exists user_roles_role_idx on public.user_roles(role);
+create index if not exists courses_category_idx on public.courses(category);
+create index if not exists course_resources_course_id_idx on public.course_resources(course_id);
+create index if not exists course_enrollments_user_id_idx on public.course_enrollments(user_id);
+create index if not exists course_enrollments_course_id_idx on public.course_enrollments(course_id);
+create index if not exists course_progress_user_id_idx on public.course_progress(user_id);
+create index if not exists course_progress_course_id_idx on public.course_progress(course_id);
