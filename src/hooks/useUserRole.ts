@@ -17,22 +17,25 @@ export function useUserRole(userId: string | undefined) {
     }
 
     const fetchRole = async () => {
-      // Consulta todas as roles do usuário
-      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+      try {
+        const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
 
-      if (isMounted) {
-        if (error) {
-          console.error("Error fetching user role:", error);
-          setRole(null);
-        } else {
-          const roles = data?.map((r) => r.role) || [];
-          // Prioridade: admin > manager > employee
-          if (roles.includes("admin")) setRole("admin");
-          else if (roles.includes("manager")) setRole("manager");
-          else if (roles.includes("employee")) setRole("employee");
-          else setRole(null);
+        if (isMounted) {
+          if (error) {
+            console.error("Erro ao buscar role:", error);
+            setRole(null);
+          } else {
+            const roles = data?.map((r) => r.role) || [];
+            if (roles.includes("admin")) setRole("admin");
+            else if (roles.includes("manager")) setRole("manager");
+            else if (roles.includes("employee")) setRole("employee");
+            else setRole(null);
+          }
+          setLoading(false);
         }
-        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        if (isMounted) setLoading(false);
       }
     };
 
