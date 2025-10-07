@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Play, Clock, Users, LogOut, Download, Loader2, Star, CheckCircle2, Search } from "lucide-react";
+import { Play, Clock, Users, LogOut, Download, Loader2, Heart, CheckCircle2, Search } from "lucide-react";
 import { courses as defaultCourses } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase";
@@ -235,7 +235,7 @@ const ManagerDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                <Heart className="h-5 w-5 text-red-500 fill-red-500" />
                 <div className="text-2xl font-bold">{favoriteCount}</div>
               </div>
             </CardContent>
@@ -283,12 +283,12 @@ const ManagerDashboard = () => {
                   className="pl-10"
                 />
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-w-full overflow-x-auto pb-2">
                 {categories.map((category) => (
                   <Badge
                     key={category}
                     variant={selectedCategory === category ? "default" : "outline"}
-                    className="cursor-pointer"
+                    className="cursor-pointer whitespace-nowrap flex-shrink-0"
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category === "all" ? "Todas" : category}
@@ -317,10 +317,10 @@ const ManagerDashboard = () => {
                           className="h-8 w-8"
                           onClick={(e) => toggleFavorite(course.id, e)}
                         >
-                          <Star 
+                          <Heart 
                             className={`h-4 w-4 ${
                               courseTracking[course.id]?.is_favorite 
-                                ? "fill-yellow-500 text-yellow-500" 
+                                ? "fill-red-500 text-red-500" 
                                 : ""
                             }`} 
                           />
@@ -334,7 +334,7 @@ const ManagerDashboard = () => {
                           <CheckCircle2 
                             className={`h-4 w-4 ${
                               courseTracking[course.id]?.is_completed 
-                                ? "text-green-500" 
+                                ? "fill-green-500 text-green-500" 
                                 : ""
                             }`} 
                           />
@@ -393,7 +393,7 @@ const ManagerDashboard = () => {
                           className="h-8 w-8"
                           onClick={(e) => toggleFavorite(course.id, e)}
                         >
-                          <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                          <Heart className="h-4 w-4 fill-red-500 text-red-500" />
                         </Button>
                         <Button
                           size="icon"
@@ -404,7 +404,7 @@ const ManagerDashboard = () => {
                           <CheckCircle2 
                             className={`h-4 w-4 ${
                               courseTracking[course.id]?.is_completed 
-                                ? "text-green-500" 
+                                ? "fill-green-500 text-green-500" 
                                 : ""
                             }`} 
                           />
@@ -439,7 +439,7 @@ const ManagerDashboard = () => {
             </div>
             {filteredCourses.filter((course) => courseTracking[course.id]?.is_favorite).length === 0 && (
               <div className="text-center py-12">
-                <Star className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <Heart className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">Nenhum curso favoritado ainda</p>
               </div>
             )}
@@ -469,10 +469,10 @@ const ManagerDashboard = () => {
                           className="h-8 w-8"
                           onClick={(e) => toggleFavorite(course.id, e)}
                         >
-                          <Star 
+                          <Heart 
                             className={`h-4 w-4 ${
                               courseTracking[course.id]?.is_favorite 
-                                ? "fill-yellow-500 text-yellow-500" 
+                                ? "fill-red-500 text-red-500" 
                                 : ""
                             }`} 
                           />
@@ -483,7 +483,13 @@ const ManagerDashboard = () => {
                           className="h-8 w-8"
                           onClick={(e) => toggleCompleted(course.id, e)}
                         >
-                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          <CheckCircle2 
+                            className={`h-4 w-4 ${
+                              courseTracking[course.id]?.is_completed 
+                                ? "fill-green-500 text-green-500" 
+                                : ""
+                            }`} 
+                          />
                         </Button>
                       </div>
                     </div>
