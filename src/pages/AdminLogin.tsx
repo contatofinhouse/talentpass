@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -27,10 +28,28 @@ const AdminLogin = () => {
     setLoading(true);
     
     try {
-      const { error } = await signIn(email, password);
+      const { data, error } = await signIn(email, password);
       
       if (error) {
         toast.error("Credenciais inválidas!");
+        setLoading(false);
+        return;
+      }
+
+      if (data?.user) {
+        // Buscar role imediatamente após login
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+
+        if (roleData?.role === 'admin') {
+          navigate("/admin/dashboard", { replace: true });
+        } else {
+          toast.error("Acesso negado. Apenas administradores.");
+          await supabase.auth.signOut();
+        }
       }
     } catch (error) {
       toast.error("Erro ao fazer login!");
