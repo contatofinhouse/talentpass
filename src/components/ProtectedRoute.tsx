@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
@@ -12,24 +12,6 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const { user, loading: authLoading } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (authLoading || (requireAdmin && roleLoading)) return;
-
-    // 🔹 Bloqueia apenas se o usuário não estiver logado
-    if (!user) {
-      toast.error("Você precisa fazer login para acessar esta página.");
-      navigate("/auth", { replace: true });
-      return;
-    }
-
-    // 🔹 Se for página admin e o usuário não for admin
-    if (requireAdmin && role !== "admin") {
-      toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
-      navigate("/", { replace: true });
-    }
-  }, [user, role, authLoading, roleLoading, requireAdmin, navigate]);
 
   // 🔹 Enquanto carrega autenticação
   if (authLoading || (requireAdmin && roleLoading)) {
@@ -40,16 +22,18 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     );
   }
 
-  // 🔹 Se não está logado, redireciona
+  // 🔹 Se não está logado, bloqueia
   if (!user) {
+    toast.error("Você precisa fazer login para acessar esta página.");
     return <Navigate to="/auth" replace />;
   }
 
-  // 🔹 Se for rota admin e não for admin, bloqueia
+  // 🔹 Se é rota admin e não é admin, bloqueia
   if (requireAdmin && role !== "admin") {
+    toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
     return <Navigate to="/" replace />;
   }
 
-  // 🔹 Qualquer outro caso: libera o acesso
+  // 🔹 Caso contrário, libera acesso
   return <>{children}</>;
 };
