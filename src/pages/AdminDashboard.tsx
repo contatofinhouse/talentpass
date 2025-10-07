@@ -78,14 +78,13 @@ const AdminDashboard = () => {
       }
 
       try {
-        const { data: roleData, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
+        // Verificar se o usuário tem role admin usando RPC
+        const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
+          _user_id: user.id,
+          _role: 'admin'
+        });
 
-        if (error || !roleData) {
+        if (error || !hasAdminRole) {
           toast.error("Acesso negado: você não tem permissão de administrador");
           navigate("/");
           return;
