@@ -17,8 +17,8 @@ export function useUserRole(userId: string | undefined) {
     }
 
     const fetchRole = async () => {
-      // ✅ Consulta todas as roles do usuário
-      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId); // removido maybeSingle()
+      // Consulta todas as roles do usuário
+      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
 
       if (isMounted) {
         if (error) {
