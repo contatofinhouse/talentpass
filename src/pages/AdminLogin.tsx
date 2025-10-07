@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,13 +15,17 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const { signIn, user } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (!user || roleLoading) return;
+    // Só redireciona se ainda não redirecionou e não está carregando
+    if (hasRedirected.current || !user || roleLoading) return;
     
     if (role === 'admin') {
+      hasRedirected.current = true;
       navigate("/admin/dashboard", { replace: true });
     } else if (role) {
+      hasRedirected.current = true;
       toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
       navigate("/", { replace: true });
     }
@@ -30,6 +34,7 @@ const AdminLogin = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    hasRedirected.current = false; // Reset flag ao fazer novo login
     
     try {
       const { error } = await signIn(email, password);
