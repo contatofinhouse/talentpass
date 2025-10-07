@@ -1,24 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const AdminLogin = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn, user } = useAuth();
+  const { role, loading: roleLoading } = useUserRole(user?.id);
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user && !roleLoading) {
+      if (role === 'admin') {
+        navigate("/admin/dashboard");
+      } else if (role) {
+        toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
+        navigate("/");
+      }
+    }
+  }, [user, role, roleLoading, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (password === "moco") {
-      sessionStorage.setItem("adminAuth", "true");
-      toast.success("Login realizado com sucesso!");
-      navigate("/admin/dashboard");
-    } else {
-      toast.error("Senha incorreta!");
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast.error("Credenciais inválidas!");
+      } else {
+        toast.success("Login realizado com sucesso!");
+      }
+    } catch (error) {
+      toast.error("Erro ao fazer login!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,16 +62,26 @@ const AdminLogin = () => {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Input
                 type="password"
-                placeholder="Digite a senha"
+                placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full"
-                autoFocus
+                required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Entrar
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>
