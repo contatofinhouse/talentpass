@@ -239,6 +239,11 @@ create policy "Users can update own profile"
   to authenticated
   using (auth.uid() = id);
 
+drop policy if exists "Allow profile creation on signup" on public.profiles;
+create policy "Allow profile creation on signup"
+  on public.profiles for insert
+  with check (auth.uid() = id);
+
 -- User Roles: Admins can manage all, users can view their own
 drop policy if exists "Users can view own roles" on public.user_roles;
 create policy "Users can view own roles"
