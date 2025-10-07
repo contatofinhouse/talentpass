@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Play, Clock, Users, LogOut, Download, Loader2, Heart, CheckCircle2, Search, User, Settings } from "lucide-react";
+import { Play, Clock, Users, LogOut, Download, Loader2, Heart, CheckCircle2, Search, User, Settings, BookOpen } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -237,6 +237,10 @@ const ManagerDashboard = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setActiveView("courses")}>
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Cursos
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setActiveView("profile")}>
                   <Settings className="mr-2 h-4 w-4" />
                   Cadastro
