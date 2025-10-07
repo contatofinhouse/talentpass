@@ -24,13 +24,11 @@ const ManagerDashboard = () => {
     navigate("/");
   };
 
-  const handleDownloadResource = () => {
-    if (selectedCourse?.resourceFile) {
-      const link = document.createElement('a');
-      link.href = selectedCourse.resourceFile.data;
-      link.download = selectedCourse.resourceFile.name;
-      link.click();
-    }
+  const handleDownloadResource = (file: { name: string; data: string }) => {
+    const link = document.createElement('a');
+    link.href = file.data;
+    link.download = file.name;
+    link.click();
   };
 
   return (
@@ -230,16 +228,22 @@ const ManagerDashboard = () => {
                 </div>
               </div>
 
-              {selectedCourse.resourceFile && (
-                <div className="border-t pt-4">
-                  <Button 
-                    onClick={handleDownloadResource} 
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Baixar {selectedCourse.resourceFile.name}
-                  </Button>
+              {selectedCourse.resourceFiles && selectedCourse.resourceFiles.length > 0 && (
+                <div className="border-t pt-4 space-y-3">
+                  <h4 className="font-semibold">Recursos adicionais</h4>
+                  <div className="space-y-2">
+                    {selectedCourse.resourceFiles.map((file: { name: string; data: string; type: string }, index: number) => (
+                      <Button 
+                        key={index}
+                        onClick={() => handleDownloadResource(file)} 
+                        variant="outline" 
+                        className="w-full justify-start"
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        {file.name}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               )}
 

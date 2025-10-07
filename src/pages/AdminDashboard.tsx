@@ -44,7 +44,7 @@ interface CourseFormData {
   duration: string;
   skills: string[];
   image?: string;
-  resourceFile?: { name: string; data: string; type: string };
+  resourceFiles?: { name: string; data: string; type: string }[];
 }
 
 const AdminDashboard = () => {
@@ -104,28 +104,42 @@ const AdminDashboard = () => {
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Apenas arquivos PDF ou XLSX são permitidos!");
-      return;
-    }
+    
+    Array.from(files).forEach((file) => {
+      if (!allowedTypes.includes(file.type)) {
+        toast.error(`${file.name}: Apenas arquivos PDF ou XLSX são permitidos!`);
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData(prev => ({
-        ...prev,
-        resourceFile: {
-          name: file.name,
-          data: event.target?.result as string,
-          type: file.type
-        }
-      }));
-      toast.success("Arquivo carregado!");
-    };
-    reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFormData(prev => ({
+          ...prev,
+          resourceFiles: [
+            ...(prev.resourceFiles || []),
+            {
+              name: file.name,
+              data: event.target?.result as string,
+              type: file.type
+            }
+          ]
+        }));
+        toast.success(`${file.name} carregado!`);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveResource = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      resourceFiles: prev.resourceFiles?.filter((_, i) => i !== index)
+    }));
+    toast.success("Recurso removido!");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -319,21 +333,33 @@ const AdminDashboard = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="resource">Recursos Adicionais (PDF/XLSX)</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="resource"
-                    type="file"
-                    accept=".pdf,.xlsx,.xls"
-                    onChange={handleFileUpload}
-                    className="flex-1"
-                  />
-                  {formData.resourceFile && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Upload className="w-4 h-4" />
-                      {formData.resourceFile.name}
-                    </div>
-                  )}
-                </div>
+                <Input
+                  id="resource"
+                  type="file"
+                  accept=".pdf,.xlsx,.xls"
+                  multiple
+                  onChange={handleFileUpload}
+                />
+                {formData.resourceFiles && formData.resourceFiles.length > 0 && (
+                  <div className="space-y-2 mt-3">
+                    {formData.resourceFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between gap-2 p-2 border rounded-md">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Upload className="w-4 h-4" />
+                          {file.name}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveResource(index)}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Button type="submit" className="w-full md:w-auto">

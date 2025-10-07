@@ -14,6 +14,7 @@ export interface Course {
   content: string;
   skills: string[];
   image: string;
+  resourceFiles?: { name: string; data: string; type: string }[];
 }
 
 export const courses: Course[] = [
