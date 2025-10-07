@@ -3,22 +3,61 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase";
 
 const AdminLogin = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (password === "moco") {
-      sessionStorage.setItem("adminAuth", "true");
+    try {
+      // Login via Supabase
+      const { data, error } = await signIn(email, password);
+      
+      if (error) {
+        toast.error(error);
+        setLoading(false);
+        return;
+      }
+
+      if (!data?.user) {
+        toast.error("Erro ao fazer login");
+        setLoading(false);
+        return;
+      }
+
+      // Verificar se o usuário tem role admin
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (roleError || !roleData) {
+        // Usuário não tem role admin - fazer logout
+        await supabase.auth.signOut();
+        toast.error("Acesso negado: você não tem permissão de administrador");
+        setLoading(false);
+        return;
+      }
+
       toast.success("Login realizado com sucesso!");
       navigate("/admin/dashboard");
-    } else {
-      toast.error("Senha incorreta!");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao fazer login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,17 +76,32 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <Input
-                type="password"
-                placeholder="Digite a senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="admin@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full"
+                required
                 autoFocus
               />
             </div>
-            <Button type="submit" className="w-full">
-              Entrar
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Digite sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>

@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { LogOut, Upload, Plus } from "lucide-react";
+import { LogOut, Upload, Plus, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase";
 
 const AVAILABLE_SKILLS = [
   "Comunicação Eficaz",
@@ -43,12 +45,17 @@ interface CourseFormData {
   summary: string;
   duration: string;
   skills: string[];
-  image?: string;
-  resourceFiles?: { name: string; data: string; type: string }[];
+  imageFile?: File;
+  resourceFiles?: File[];
 }
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [hasAdminRole, setHasAdminRole] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
     subtitle: "",
@@ -58,18 +65,46 @@ const AdminDashboard = () => {
     content: "",
     summary: "",
     duration: "",
-    skills: []
+    skills: [],
+    resourceFiles: []
   });
 
   useEffect(() => {
-    if (sessionStorage.getItem("adminAuth") !== "true") {
-      navigate("/admin/login");
-    }
-  }, [navigate]);
+    const checkAdminRole = async () => {
+      if (!user) {
+        navigate("/admin/login");
+        setLoading(false);
+        return;
+      }
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("adminAuth");
-    toast.success("Logout realizado!");
+      try {
+        const { data: roleData, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        if (error || !roleData) {
+          toast.error("Acesso negado: você não tem permissão de administrador");
+          navigate("/");
+          return;
+        }
+
+        setHasAdminRole(true);
+      } catch (error) {
+        console.error("Erro ao verificar role:", error);
+        navigate("/admin/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAdminRole();
+  }, [user, navigate]);
+
+  const handleLogout = async () => {
+    await signOut();
     navigate("/admin/login");
   };
 
@@ -92,15 +127,15 @@ const AdminDashboard = () => {
       return;
     }
 
+    setFormData(prev => ({ ...prev, imageFile: file }));
+    
+    // Preview
     const reader = new FileReader();
     reader.onload = (event) => {
-      setFormData(prev => ({
-        ...prev,
-        image: event.target?.result as string
-      }));
-      toast.success("Imagem carregada!");
+      setImagePreview(event.target?.result as string);
     };
     reader.readAsDataURL(file);
+    toast.success("Imagem carregada!");
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,29 +144,22 @@ const AdminDashboard = () => {
 
     const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
     
+    const validFiles: File[] = [];
     Array.from(files).forEach((file) => {
       if (!allowedTypes.includes(file.type)) {
         toast.error(`${file.name}: Apenas arquivos PDF ou XLSX são permitidos!`);
         return;
       }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData(prev => ({
-          ...prev,
-          resourceFiles: [
-            ...(prev.resourceFiles || []),
-            {
-              name: file.name,
-              data: event.target?.result as string,
-              type: file.type
-            }
-          ]
-        }));
-        toast.success(`${file.name} carregado!`);
-      };
-      reader.readAsDataURL(file);
+      validFiles.push(file);
     });
+
+    if (validFiles.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        resourceFiles: [...(prev.resourceFiles || []), ...validFiles]
+      }));
+      toast.success(`${validFiles.length} arquivo(s) carregado(s)!`);
+    }
   };
 
   const handleRemoveResource = (index: number) => {
@@ -142,37 +170,124 @@ const AdminDashboard = () => {
     toast.success("Recurso removido!");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.category || !formData.description || !formData.videoUrl || !formData.duration || !formData.image || formData.skills.length === 0) {
+    if (!formData.title || !formData.category || !formData.description || !formData.videoUrl || !formData.duration || !formData.imageFile || formData.skills.length === 0) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
 
-    const existingCourses = JSON.parse(localStorage.getItem("adminCourses") || "[]");
-    const newCourse = {
-      id: `course-${Date.now()}`,
-      ...formData,
-      createdAt: new Date().toISOString()
-    };
+    setSubmitting(true);
 
-    localStorage.setItem("adminCourses", JSON.stringify([...existingCourses, newCourse]));
-    
-    toast.success("Curso adicionado com sucesso!");
-    
-    setFormData({
-      title: "",
-      subtitle: "",
-      category: "",
-      description: "",
-      videoUrl: "",
-      content: "",
-      summary: "",
-      duration: "",
-      skills: []
-    });
+    try {
+      // 1. Upload da imagem
+      const imageExt = formData.imageFile.name.split('.').pop();
+      const imageName = `${Date.now()}-${Math.random()}.${imageExt}`;
+      
+      const { error: imageError, data: imageData } = await supabase.storage
+        .from('course-images')
+        .upload(imageName, formData.imageFile);
+
+      if (imageError) throw new Error(`Erro ao fazer upload da imagem: ${imageError.message}`);
+
+      const { data: { publicUrl: imageUrl } } = supabase.storage
+        .from('course-images')
+        .getPublicUrl(imageName);
+
+      // 2. Criar curso no banco
+      const { data: courseData, error: courseError } = await supabase
+        .from('courses')
+        .insert({
+          title: formData.title,
+          subtitle: formData.subtitle || null,
+          category: formData.category,
+          description: formData.description,
+          video_url: formData.videoUrl,
+          content: formData.content || null,
+          summary: formData.summary || null,
+          duration: formData.duration,
+          skills: formData.skills,
+          image_url: imageUrl
+        })
+        .select()
+        .single();
+
+      if (courseError) throw new Error(`Erro ao criar curso: ${courseError.message}`);
+
+      // 3. Upload de recursos adicionais (se houver)
+      if (formData.resourceFiles && formData.resourceFiles.length > 0) {
+        for (const file of formData.resourceFiles) {
+          const resourceExt = file.name.split('.').pop();
+          const resourceName = `${courseData.id}/${Date.now()}-${Math.random()}.${resourceExt}`;
+          
+          const { error: resourceUploadError } = await supabase.storage
+            .from('course-resources')
+            .upload(resourceName, file);
+
+          if (resourceUploadError) {
+            console.error(`Erro ao fazer upload do recurso ${file.name}:`, resourceUploadError);
+            continue;
+          }
+
+          const { data: { publicUrl: resourceUrl } } = supabase.storage
+            .from('course-resources')
+            .getPublicUrl(resourceName);
+
+          // Salvar referência no banco
+          await supabase
+            .from('course_resources')
+            .insert({
+              course_id: courseData.id,
+              file_name: file.name,
+              file_url: resourceUrl,
+              file_type: file.type
+            });
+        }
+      }
+
+      toast.success("Curso adicionado com sucesso!");
+      
+      // Resetar formulário
+      setFormData({
+        title: "",
+        subtitle: "",
+        category: "",
+        description: "",
+        videoUrl: "",
+        content: "",
+        summary: "",
+        duration: "",
+        skills: [],
+        resourceFiles: []
+      });
+      setImagePreview("");
+      
+      // Limpar inputs de arquivo
+      const imageInput = document.getElementById('image') as HTMLInputElement;
+      const resourceInput = document.getElementById('resource') as HTMLInputElement;
+      if (imageInput) imageInput.value = '';
+      if (resourceInput) resourceInput.value = '';
+
+    } catch (error: any) {
+      console.error("Erro ao adicionar curso:", error);
+      toast.error(error.message || "Erro ao adicionar curso");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!hasAdminRole) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
@@ -317,12 +432,12 @@ const AdminDashboard = () => {
                     id="image"
                     type="file"
                     accept="image/jpeg,image/png,image/jpg,image/webp"
-                    onChange={handleImageUpload}
+                  onChange={handleImageUpload}
                   />
-                  {formData.image && (
+                  {imagePreview && (
                     <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-lg border">
                       <img 
-                        src={formData.image} 
+                        src={imagePreview} 
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
@@ -362,9 +477,18 @@ const AdminDashboard = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full md:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
-                Adicionar Curso
+              <Button type="submit" className="w-full md:w-auto" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Adicionar Curso
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
