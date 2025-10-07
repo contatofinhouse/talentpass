@@ -34,12 +34,19 @@ alter table public.companies enable row level security;
 -- PROFILES TABLE
 -- =====================================================
 create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  company_id uuid references public.companies(id) on delete cascade,
+  id uuid not null,
+  company_id uuid null,
   name text not null,
   email text not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  phone text null,
+  company_name text null,
+  cnpj text null,
+  employee_count text null,
+  created_at timestamp with time zone not null default timezone('utc'::text, now()),
+  updated_at timestamp with time zone not null default timezone('utc'::text, now()),
+  constraint profiles_pkey primary key (id),
+  constraint profiles_company_id_fkey foreign key (company_id) references companies(id) on delete cascade,
+  constraint profiles_id_fkey foreign key (id) references auth.users(id) on delete cascade
 );
 
 alter table public.profiles enable row level security;
@@ -150,11 +157,23 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, name, email)
+  insert into public.profiles (
+    id, 
+    name, 
+    email,
+    phone,
+    company_name,
+    cnpj,
+    employee_count
+  )
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
-    new.email
+    new.email,
+    new.raw_user_meta_data->>'phone',
+    new.raw_user_meta_data->>'companyName',
+    new.raw_user_meta_data->>'cnpj',
+    new.raw_user_meta_data->>'employeeCount'
   );
   return new;
 end;
