@@ -18,18 +18,27 @@ const AdminLogin = () => {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    // Só redireciona se ainda não redirecionou e não está carregando
-    if (hasRedirected.current || !user || roleLoading) return;
+    // Aguarda o carregamento completo
+    if (roleLoading) return;
+    
+    // Se não tem usuário, não faz nada
+    if (!user) {
+      hasRedirected.current = false;
+      return;
+    }
+    
+    // Evita múltiplos redirecionamentos
+    if (hasRedirected.current) return;
     
     if (role === 'admin') {
       hasRedirected.current = true;
-      navigate("/admin/dashboard", { replace: true });
-    } else if (role) {
+      setTimeout(() => navigate("/admin/dashboard", { replace: true }), 0);
+    } else if (role !== null) {
       hasRedirected.current = true;
       toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
-      navigate("/", { replace: true });
+      setTimeout(() => navigate("/", { replace: true }), 0);
     }
-  }, [user, role, roleLoading, navigate]);
+  }, [user, role, roleLoading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
