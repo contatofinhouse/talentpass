@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase';
-import type { User, Session } from '@supabase/supabase-js';
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase";
+import type { User, Session } from "@supabase/supabase-js";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -20,14 +20,14 @@ export function useAuth() {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (isMounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isMounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
       }
-    );
+    });
 
     return () => {
       isMounted = false;
@@ -41,8 +41,8 @@ export function useAuth() {
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/`
-      }
+        emailRedirectTo: `${window.location.origin}/`,
+      },
     });
     return { data, error };
   };
@@ -50,7 +50,7 @@ export function useAuth() {
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
     return { data, error };
   };
@@ -66,6 +66,6 @@ export function useAuth() {
     loading,
     signUp,
     signIn,
-    signOut
+    signOut,
   };
 }
