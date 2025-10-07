@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,43 +15,27 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const { signIn, user } = useAuth();
   const { role, loading: roleLoading } = useUserRole(user?.id);
-  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    // Aguarda o carregamento completo
-    if (roleLoading) return;
-    
-    // Se não tem usuário, não faz nada
-    if (!user) {
-      hasRedirected.current = false;
-      return;
-    }
-    
-    // Evita múltiplos redirecionamentos
-    if (hasRedirected.current) return;
+    if (!user || roleLoading) return;
     
     if (role === 'admin') {
-      hasRedirected.current = true;
-      setTimeout(() => navigate("/admin/dashboard", { replace: true }), 0);
-    } else if (role !== null) {
-      hasRedirected.current = true;
-      toast.error("Acesso negado. Apenas administradores podem acessar esta área.");
-      setTimeout(() => navigate("/", { replace: true }), 0);
+      navigate("/admin/dashboard", { replace: true });
+    } else if (role) {
+      toast.error("Acesso negado.");
+      navigate("/", { replace: true });
     }
-  }, [user, role, roleLoading]);
+  }, [user, role, roleLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    hasRedirected.current = false; // Reset flag ao fazer novo login
     
     try {
       const { error } = await signIn(email, password);
       
       if (error) {
         toast.error("Credenciais inválidas!");
-      } else {
-        toast.success("Login realizado com sucesso!");
       }
     } catch (error) {
       toast.error("Erro ao fazer login!");
@@ -69,7 +53,7 @@ const AdminLogin = () => {
           </div>
           <CardTitle className="text-2xl font-bold text-center">Admin</CardTitle>
           <CardDescription className="text-center">
-            Insira a senha para acessar o painel administrativo
+            Insira suas credenciais para acessar o painel administrativo
           </CardDescription>
         </CardHeader>
         <CardContent>

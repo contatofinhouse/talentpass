@@ -8,16 +8,15 @@ export function useUserRole(userId: string | undefined) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!userId) {
       setRole(null);
       setLoading(false);
       return;
     }
 
-    let isMounted = true;
-
     const fetchRole = async () => {
-      setLoading(true);
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
