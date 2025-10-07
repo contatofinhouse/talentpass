@@ -49,11 +49,17 @@ const checkEmailUnique = (email: string): boolean => {
   return !managers.some((m: any) => m.email.toLowerCase() === email.toLowerCase());
 };
 
+const validatePhone = (phone: string): boolean => {
+  const cleaned = phone.replace(/[^\d]/g, '');
+  return cleaned.length === 11;
+};
+
 const signupSchema = z.object({
   companyName: z.string().trim().min(1, "Nome da empresa é obrigatório").max(100, "Nome muito longo"),
   cnpj: z.string().trim().refine(validateCNPJ, "CNPJ inválido"),
   managerName: z.string().trim().min(1, "Nome do gestor é obrigatório").max(100, "Nome muito longo"),
   email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo").refine(checkEmailUnique, "E-mail já cadastrado"),
+  phone: z.string().trim().refine(validatePhone, "Celular inválido"),
   employeeCount: z.string().optional(),
   honeypot: z.string().max(0, "Erro de validação"),
   formLoadTime: z.number().refine((val) => Date.now() - val > 3000, "Submissão muito rápida")
@@ -68,6 +74,7 @@ const Signup = () => {
     cnpj: "",
     managerName: "",
     email: "",
+    phone: "",
     employeeCount: "",
     honeypot: "",
     formLoadTime: Date.now(),
@@ -118,6 +125,18 @@ const Signup = () => {
         .join('.')
         .replace(/\.(\d{3})\./, '.$1/')
         .replace(/(\d{4})\.(\d{2})$/, '$1-$2');
+    }
+    return value;
+  };
+
+  const formatPhone = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,2})(\d{0,5})(\d{0,4})$/);
+    if (match) {
+      return [match[1], match[2], match[3]]
+        .filter(Boolean)
+        .join(' ')
+        .replace(/(\d{2}) (\d{5})/, '($1) $2-');
     }
     return value;
   };
@@ -181,6 +200,20 @@ const Signup = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="seu@email.com"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Celular *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: formatPhone(e.target.value) })
+                  }
+                  placeholder="(11) 99999-9999"
+                  maxLength={15}
                 />
               </div>
 
