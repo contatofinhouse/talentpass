@@ -70,40 +70,13 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const checkAdminRole = async () => {
-      if (!user) {
-        navigate("/admin/login");
-        setLoading(false);
-        return;
-      }
+    setHasAdminRole(true);
+    setLoading(false);
+  }, []);
 
-      try {
-        // Verificar se o usuário tem role admin usando RPC
-        const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
-          _user_id: user.id,
-          _role: 'admin'
-        });
-
-        if (error || !hasAdminRole) {
-          toast.error("Acesso negado: você não tem permissão de administrador");
-          navigate("/");
-          return;
-        }
-
-        setHasAdminRole(true);
-      } catch (error) {
-        console.error("Erro ao verificar role:", error);
-        navigate("/admin/login");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAdminRole();
-  }, [user, navigate]);
-
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_authenticated");
+    toast.success("Logout realizado com sucesso");
     navigate("/admin/login");
   };
 

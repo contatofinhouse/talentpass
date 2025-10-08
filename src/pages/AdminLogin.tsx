@@ -6,52 +6,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase";
+
+// Senha do admin - pode ser alterada aqui
+const ADMIN_PASSWORD = "admin123";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // Login via Supabase
-      const { data, error } = await signIn(email, password);
-      
-      if (error) {
-        toast.error(error);
-        setLoading(false);
-        return;
+      if (password === ADMIN_PASSWORD) {
+        sessionStorage.setItem("admin_authenticated", "true");
+        toast.success("Login realizado com sucesso!");
+        navigate("/admin/dashboard");
+      } else {
+        toast.error("Senha incorreta");
       }
-
-      if (!data?.user) {
-        toast.error("Erro ao fazer login");
-        setLoading(false);
-        return;
-      }
-
-      // Verificar se o usuário tem role admin usando RPC
-      const { data: hasAdminRole, error: roleError } = await supabase.rpc('has_role', {
-        _user_id: data.user.id,
-        _role: 'admin'
-      });
-
-      if (roleError || !hasAdminRole) {
-        // Usuário não tem role admin - fazer logout
-        await supabase.auth.signOut();
-        toast.error("Acesso negado: você não tem permissão de administrador");
-        setLoading(false);
-        return;
-      }
-
-      toast.success("Login realizado com sucesso!");
-      navigate("/admin/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Erro ao fazer login");
     } finally {
@@ -74,28 +49,16 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full"
-                required
-                autoFocus
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Digite sua senha"
+                placeholder="Digite a senha de admin"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full"
                 required
+                autoFocus
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
