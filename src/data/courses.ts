@@ -3,6 +3,7 @@ import vendasImg from "@/assets/course-vendas.jpg";
 //import marketingImg from "@/assets/course-marketing.jpg";
 import gestaoImg from "@/assets/course-gestao.jpg";
 import tiImg from "@/assets/course-ti.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Course {
   id: string;
@@ -15,6 +16,30 @@ export interface Course {
   skills: string[];
   image: string;
   resourceFiles?: { name: string; data: string; type: string }[];
+}
+
+// ✅ NOVA FUNÇÃO: busca cursos da tabela "courses" no Supabase
+export async function fetchCoursesFromSupabase(): Promise<Course[]> {
+  const { data, error } = await supabase.from("courses").select("*");
+
+  if (error) {
+    console.error("Erro ao buscar cursos do Supabase:", error.message);
+    return [];
+  }
+
+  return (
+    data?.map((c) => ({
+      id: c.id,
+      title: c.title,
+      category: c.category,
+      duration: c.duration,
+      description: c.description,
+      videoUrl: c.video_url,
+      image: c.image_url,
+      content: c.content,
+      skills: c.skills || [],
+    })) || []
+  );
 }
 
 export const courses: Course[] = [
