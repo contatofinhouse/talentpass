@@ -19,8 +19,8 @@ const Hero = () => {
             </div>
 
             <h1 className="text-5xl font-bold leading-tight text-white lg:text-6xl xl:text-7xl">
-              Treinamento corporativo que realmente funciona.{" "}
-              <span className="text-white drop-shadow-lg">Conteúdo que se encaixa na rotina da sua equipe</span>
+              Treinamento corporativo que funciona.{" "}
+              <span className="text-white drop-shadow-lg">Conteúdo prático, direto e aplicável ao mercado</span>
             </h1>
 
             <p className="text-lg text-white/90 lg:text-xl">
