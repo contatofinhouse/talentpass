@@ -13,10 +13,13 @@ const Footer = () => {
               <span className="text-xl font-bold">FinHero</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Dê um basta para treinamentos caros e chatos. Treinamentos feitos por IA e revisados por Humanos com
-              Expertise
+              Transforme sua equipe com microlearning Comece hoje e veja resultados em semanas, não meses. Conteúdo que
+              de fato transforma e nivela conhecimento. Desenvolve competências de verdade.
             </p>
-            <p className="text-sm text-muted-foreground">Educação corporativa que se encaixa na sua rotina.</p>
+            <p className="text-sm text-muted-foreground">
+              FinHero. Educação corporativa que se encaixa na sua rotina. IA que cria. Humanos que garantem qualidade. O
+              fim dos treinamentos caros e chatos.
+            </p>
             <p className="text-xs text-muted-foreground">CNPJ: 60.806.192/0001-50</p>
           </div>
 
