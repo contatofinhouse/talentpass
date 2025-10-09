@@ -70,9 +70,21 @@ const Welcome = () => {
               </p>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 space-y-3">
               <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
                 Continuar para o Painel
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full max-w-md"
+                onClick={() => {
+                  const phoneNumber = "5511955842951";
+                  const message = "Olá! Quero ativar o plano Starter na plataforma de educação com IA. Vi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. Gostaria de incluir minha equipe e garantir acesso imediato.";
+                  window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                }}
+              >
+                Ativar Plano
               </Button>
             </div>
           </CardContent>
