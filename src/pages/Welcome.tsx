@@ -77,8 +77,8 @@ const Welcome = () => {
                 para testar a ferramenta e explorar todo o conteúdo disponível.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Ao final do período de teste, caso tenha interesse, liberaremos o acesso para sua equipe, que poderá
-                utilizar toda a plataforma de microlearning
+                Gostou do teste? Clique em Ativar Plano para cadastrarmos a sua equipe, que poderá também utilizar toda
+                a plataforma de educação corporativa.
               </p>
             </div>
 
@@ -95,7 +95,7 @@ const Welcome = () => {
                 onClick={() => {
                   const phoneNumber = "5511955842951";
                   const message = `
-Olá! Quero ativar o plano Teams na plataforma de educação com IA.
+Olá! Quero ativar o plano Starter na plataforma de educação com IA.
 Vi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional.
 Gostaria de incluir minha equipe e garantir acesso imediato.
     `.trim();
