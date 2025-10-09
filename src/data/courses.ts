@@ -92,8 +92,63 @@ export const courses: Course[] = [
     category: "Automação com IA",
     duration: "7 min",
     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
-    videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
-",
+    videoUrl: "[plugin:vite:react-swc] x Unterminated string constant
+    ,-[/dev-server/src/data/courses.ts:95:1]
+ 92 |     category: "Automação com IA",
+ 93 |     duration: "7 min",
+ 94 |     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
+ 95 |     videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
+    :               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 96 | ",
+ 97 |     image: marketingImg,
+ 98 |     content: `
+    `----
+  x Unterminated string constant
+    ,-[/dev-server/src/data/courses.ts:96:1]
+ 93 |     duration: "7 min",
+ 94 |     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
+ 95 |     videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
+ 96 | ",
+    : ^^
+ 97 |     image: marketingImg,
+ 98 |     content: `
+ 99 |       **Ferramentas de IA para marketing:**
+    `----
+  x Expected ',', got 'string literal (,, ",)'
+    ,-[/dev-server/src/data/courses.ts:96:1]
+ 93 |     duration: "7 min",
+ 94 |     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
+ 95 |     videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
+ 96 | ",
+    : ^^
+ 97 |     image: marketingImg,
+ 98 |     content: `
+ 99 |       **Ferramentas de IA para marketing:**
+    `----
+
+
+Caused by:
+    Syntax Error
+
+Stack backtrace:
+   0: <unknown>
+   1: <unknown>
+   2: <unknown>
+   3: <unknown>
+   4: <unknown>
+   5: <unknown>
+   6: <unknown>
+   7: <unknown>
+   8: <unknown>
+   9: _ZZN4node14ThreadPoolWork12ScheduleWorkEvENUlP9uv_work_sE_4_FUNES2_
+  10: worker
+             at /home/iojs/build/ws/out/../deps/uv/src/threadpool.c:123:5
+  11: <unknown>
+  12: <unknown>
+/dev-server/src/data/courses.ts
+             at /home/iojs/build/ws/out/../deps/uv/src/threadpool.c:123:5
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.ts.",
     image: marketingImg,
     content: `
       **Ferramentas de IA para marketing:**
