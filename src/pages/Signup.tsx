@@ -9,56 +9,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 
-const validateCNPJ = (cnpj: string): boolean => {
-  const cleaned = cnpj.replace(/[^\d]/g, "");
-  if (cleaned.length !== 14) return false;
-  if (/^(\d)\1+$/.test(cleaned)) return false;
-
-  let size = cleaned.length - 2;
-  let numbers = cleaned.substring(0, size);
-  const digits = cleaned.substring(size);
-  let sum = 0;
-  let pos = size - 7;
-
-  for (let i = size; i >= 1; i--) {
-    sum += parseInt(numbers.charAt(size - i)) * pos--;
-    if (pos < 2) pos = 9;
-  }
-
-  let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-  if (result !== parseInt(digits.charAt(0))) return false;
-
-  size = size + 1;
-  numbers = cleaned.substring(0, size);
-  sum = 0;
-  pos = size - 7;
-
-  for (let i = size; i >= 1; i--) {
-    sum += parseInt(numbers.charAt(size - i)) * pos--;
-    if (pos < 2) pos = 9;
-  }
-
-  result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-  return result === parseInt(digits.charAt(1));
-};
-
-const signupSchema = z
-  .object({
-    companyName: z.string().trim().min(1, "Nome da empresa é obrigatório").max(100, "Nome muito longo"),
-    cnpj: z.string().trim().refine(validateCNPJ, "CNPJ inválido"),
-    managerName: z.string().trim().min(1, "Nome do gestor é obrigatório").max(100, "Nome muito longo"),
-    email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo"),
-    phone: z.string().trim().min(14, "Telefone inválido").max(15, "Telefone inválido"),
-    password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres").max(72, "Senha muito longa"),
-    confirmPassword: z.string(),
-    employeeCount: z.string().optional(),
-    honeypot: z.string().max(0, "Erro de validação"),
-    formLoadTime: z.number().refine((val) => Date.now() - val > 3000, "Submissão muito rápida"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+const signupSchema = z.object({
+  companyName: z.string().trim().min(1, "Nome da empresa é obrigatório").max(100, "Nome muito longo"),
+  managerName: z.string().trim().min(1, "Nome do gestor é obrigatório").max(100, "Nome muito longo"),
+  email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo"),
+  phone: z.string().trim().min(14, "Telefone inválido").max(15, "Telefone inválido"),
+  password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres").max(72, "Senha muito longa"),
+  honeypot: z.string().max(0, "Erro de validação"),
+  formLoadTime: z.number().refine((val) => Date.now() - val > 3000, "Submissão muito rápida"),
+});
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -68,13 +27,10 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     companyName: "",
-    cnpj: "",
     managerName: "",
     email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
-    employeeCount: "",
     honeypot: "",
     formLoadTime: Date.now(),
   });
@@ -103,9 +59,7 @@ const Signup = () => {
     const { error } = await signUp(formData.email, formData.password, {
       name: formData.managerName,
       company_name: formData.companyName,
-      cnpj: formData.cnpj,
       phone: formData.phone,
-      employee_count: formData.employeeCount,
     });
 
     if (error) {
@@ -124,19 +78,6 @@ const Signup = () => {
     });
 
     navigate("/welcome");
-  };
-
-  const formatCNPJ = (value: string) => {
-    const cleaned = value.replace(/\D/g, "");
-    const match = cleaned.match(/^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})$/);
-    if (match) {
-      return [match[1], match[2], match[3], match[4], match[5]]
-        .filter(Boolean)
-        .join(".")
-        .replace(/\.(\d{3})\./, ".$1/")
-        .replace(/(\d{4})\.(\d{2})$/, "$1-$2");
-    }
-    return value;
   };
 
   const formatPhone = (value: string) => {
@@ -163,8 +104,8 @@ const Signup = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
                 <Label htmlFor="companyName">Nome da Empresa *</Label>
                 <Input
                   id="companyName"
@@ -174,18 +115,7 @@ const Signup = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="cnpj">CNPJ *</Label>
-                <Input
-                  id="cnpj"
-                  value={formData.cnpj}
-                  onChange={(e) => setFormData({ ...formData, cnpj: formatCNPJ(e.target.value) })}
-                  placeholder="XX.XXX.XXX/XXXX-XX"
-                  maxLength={18}
-                />
-              </div>
-
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="managerName">Nome *</Label>
                 <Input
                   id="managerName"
@@ -195,7 +125,7 @@ const Signup = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="email">Email de trabalho *</Label>
                 <Input
                   id="email"
@@ -206,7 +136,7 @@ const Signup = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="phone">Telefone *</Label>
                 <Input
                   id="phone"
@@ -218,7 +148,7 @@ const Signup = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="password">Senha *</Label>
                 <Input
                   id="password"
@@ -226,28 +156,6 @@ const Signup = () => {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Mínimo 8 caracteres"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Senha *</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  placeholder="Digite a senha novamente"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="employeeCount">Número de Colaboradores</Label>
-                <Input
-                  id="employeeCount"
-                  type="number"
-                  value={formData.employeeCount}
-                  onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
-                  placeholder="Ex: 50"
                 />
               </div>
 

@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 interface SignUpData {
   name: string;
   company_name: string;
-  cnpj: string;
+  cnpj?: string;
   phone: string;
   employee_count?: string;
 }
