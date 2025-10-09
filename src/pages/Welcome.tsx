@@ -23,7 +23,7 @@ const Welcome = () => {
         console.error("Error fetching profile:", error);
       } else if (data) {
         setProfile(data);
-        
+
         // Calculate days remaining
         const createdAt = new Date(data.created_at);
         const now = new Date();
@@ -70,12 +70,16 @@ const Welcome = () => {
           <CardContent className="space-y-6 text-center">
             <div className="bg-accent/10 rounded-lg p-6 space-y-4">
               <p className="text-lg leading-relaxed">
-                Você agora tem <span className="font-bold text-primary text-xl">{daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</span> para testar a ferramenta
-                e explorar todo o conteúdo disponível.
+                Você agora tem{" "}
+                <span className="font-bold text-primary text-xl">
+                  {daysRemaining} {daysRemaining === 1 ? "dia" : "dias"}
+                </span>{" "}
+                para testar a ferramenta e explorar todo o conteúdo disponível.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Ao final do período de teste, caso tenha interesse, liberaremos o acesso para sua equipe, que poderá
-                utilizar toda a plataforma de microlearning
+                A qualquer momento, você pode ativar o plano Teams (R$49/mês para até 40 colaboradores) e continuar com
+                acesso ilimitado aos cursos criados com IA. Para cada colaborador adicional, o valor é de apenas
+                R$0,99/mês. Inclua sua equipe agora e garanta acesso imediato para todo o seu time à plataforma.
               </p>
             </div>
 
