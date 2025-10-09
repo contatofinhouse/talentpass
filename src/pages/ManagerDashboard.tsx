@@ -27,7 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { courses as defaultCourses } from "@/data/courses";
+import { fetchCoursesFromSupabase } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase";
 import { toast } from "@/hooks/use-toast";
@@ -55,7 +55,7 @@ const ManagerDashboard = () => {
     const fetchProfile = async () => {
       if (!user) return;
 
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -63,8 +63,9 @@ const ManagerDashboard = () => {
         setProfile(data);
       }
 
-      const adminCourses = JSON.parse(localStorage.getItem("adminCourses") || "[]");
-      setAllCourses([...defaultCourses, ...adminCourses]);
+      // Buscar cursos da tabela Supabase
+      const supabaseCourses = await fetchCoursesFromSupabase();
+      setAllCourses(supabaseCourses);
 
       // Carregar tracking de cursos
       await fetchCourseTracking();
