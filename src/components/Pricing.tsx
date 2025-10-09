@@ -13,13 +13,13 @@ const plans = [
     additional: "+ R$ 0,99 por colaborador adicional",
     description: "Microlearning corporativo para equipes que querem crescer juntas.",
     features: [
-      "Tudo do plano Starter",
+      "Mais de 100 aulas com vídeos, testes, mapas mentais e resumos",
       "Painel de acompanhamento da equipe",
-      "Trilhas personalizadas por cargo ou área",
+      "Trilhas personalizadas por competência",
       "Relatórios de progresso mensais",
       "Suporte prioritário",
     ],
-    idealFor: "pequenas e médias empresas, agências e startups",
+    idealFor: "pequenas e médias empresas, times de vendas, agências e startups",
     cta: "Começar agora",
     highlight: true,
   },
@@ -46,9 +46,10 @@ const plans = [
 
 const benefits = [
   "Teste gratuito de 14 dias (sem cartão)",
-  "Novos drops toda semana",
-  "Conteúdo curto, direto e aplicável",
+  "Novos conteúdos toda semana",
+  "Aulas curtas. Abordagem direta e aplicável ao mercado",
   "Cancelamento a qualquer momento",
+  "Treinamentos modernos, criados com IA generativa do Google sob orientação e revisão de especialistas de mercado",
 ];
 
 const Pricing = () => {
@@ -63,8 +64,8 @@ const Pricing = () => {
             Planos que se adaptam à sua rotina de aprendizado
           </p>
           <p className="mx-auto mt-2 max-w-3xl text-base text-muted-foreground">
-            Escolha o plano ideal para seu ritmo ou para sua equipe. Acesso imediato, cancelamento fácil e evolução
-            contínua.
+            Escolha o plano ideal para a sua empresa. Acesso imediato, 14 dias para teste gratuito, sem fidelidade e
+            evolução contínua.
           </p>
         </div>
 
