@@ -15,12 +15,11 @@ const Hero = () => {
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm">
               <div className="h-2 w-2 animate-pulse rounded-full bg-accent"></div>
-              Microlearning para sua equipe
+              Microlearning IA para sua equipe
             </div>
 
             <h1 className="text-5xl font-bold leading-tight text-white lg:text-6xl xl:text-7xl">
-              Treinamento corporativo que funciona.{" "}
-              <span className="text-white drop-shadow-lg">Conteúdo prático, direto e aplicável ao mercado</span>
+              Treinamento corporativo <span className="text-white drop-shadow-lg">que funciona.</span>
             </h1>
 
             <p className="text-lg text-white/90 lg:text-xl">
