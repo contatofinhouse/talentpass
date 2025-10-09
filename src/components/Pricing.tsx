@@ -32,7 +32,7 @@ const plans = [
     features: [
       "Tudo do plano Teams",
       "Licenciamento para 300+ colaboradores",
-      "Integração com base de conhecimento interna",
+      "Integração com base de conhecimento interna do cliente",
       "Exportação avançada de vídeos e trilhas em SCORM/xAPI",
       "Personalização de identidade visual e trilhas",
       "API para integração com LMS corporativo",
