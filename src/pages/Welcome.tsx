@@ -16,11 +16,7 @@ const Welcome = () => {
     const fetchProfile = async () => {
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -55,7 +51,9 @@ const Welcome = () => {
               </CardTitle>
               <div className="flex items-center justify-center gap-2 text-primary">
                 <Sparkles className="w-5 h-5" />
-                <span className="text-lg font-semibold">Bem-vindo{profile?.name ? `, ${profile.name}` : ''} ao FinHero</span>
+                <span className="text-lg font-semibold">
+                  Bem-vindo{profile?.name ? `, ${profile.name}` : ""} ao FinHero
+                </span>
                 <Sparkles className="w-5 h-5" />
               </div>
             </div>
@@ -67,8 +65,8 @@ const Welcome = () => {
                 e explorar todo o conteúdo disponível.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Ao final desse período, se tiver interesse, daremos acesso ao seu time de colaboradores que terão acesso
-                a toda a plataforma de microlearning.
+                Ao final do período de teste, caso tenha interesse, liberaremos o acesso para sua equipe, que poderá
+                utilizar toda a plataforma de microlearning
               </p>
             </div>
 
