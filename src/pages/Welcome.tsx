@@ -77,9 +77,8 @@ const Welcome = () => {
                 para testar a ferramenta e explorar todo o conteúdo disponível.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                A qualquer momento, você pode ativar o plano Teams (R$49/mês para até 40 colaboradores) e continuar com
-                acesso ilimitado aos cursos criados com IA. Para cada colaborador adicional, o valor é de apenas
-                R$0,99/mês. Inclua sua equipe agora e garanta acesso imediato para todo o seu time à plataforma.
+                Ao final do período de teste, caso tenha interesse, liberaremos o acesso para sua equipe, que poderá
+                utilizar toda a plataforma de microlearning
               </p>
             </div>
 
@@ -96,7 +95,7 @@ const Welcome = () => {
                 onClick={() => {
                   const phoneNumber = "5511955842951";
                   const message = `
-Olá! Quero ativar o plano Starter na plataforma de educação com IA.
+Olá! Quero ativar o plano Teams na plataforma de educação com IA.
 Vi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional.
 Gostaria de incluir minha equipe e garantir acesso imediato.
     `.trim();
