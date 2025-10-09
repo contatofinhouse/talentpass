@@ -11,17 +11,26 @@ const Welcome = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [daysRemaining, setDaysRemaining] = useState(14);
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
 
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
-      } else {
+      } else if (data) {
         setProfile(data);
+        
+        // Calculate days remaining
+        const createdAt = new Date(data.created_at);
+        const now = new Date();
+        const diffTime = now.getTime() - createdAt.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const remaining = Math.max(0, 14 - diffDays);
+        setDaysRemaining(remaining);
       }
       setLoading(false);
     };
@@ -61,7 +70,7 @@ const Welcome = () => {
           <CardContent className="space-y-6 text-center">
             <div className="bg-accent/10 rounded-lg p-6 space-y-4">
               <p className="text-lg leading-relaxed">
-                Você agora tem <span className="font-bold text-primary text-xl">14 dias</span> para testar a ferramenta
+                Você agora tem <span className="font-bold text-primary text-xl">{daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</span> para testar a ferramenta
                 e explorar todo o conteúdo disponível.
               </p>
               <p className="text-muted-foreground leading-relaxed">
@@ -71,9 +80,11 @@ const Welcome = () => {
             </div>
 
             <div className="pt-4 space-y-3">
-              <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
-                Continuar para o Painel
-              </Button>
+              {daysRemaining > 0 && (
+                <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
+                  Continuar para o Painel
+                </Button>
+              )}
               <Button
                 size="lg"
                 variant="outline"
