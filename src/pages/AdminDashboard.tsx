@@ -23,17 +23,30 @@ const AVAILABLE_SKILLS = [
   "Adaptabilidade",
   "Inteligência Emocional",
   "Produtividade",
+  "Criatividade",
+  "Gestão de Conflitos",
+  "Tomada de Decisão",
+  "Relacionamento com o Cliente",
   "Marketing Digital",
   "Análise de Dados",
   "Automação",
-  "Criatividade"
+  "Vendas Consultivas",
+  "Gestão de Mídias Sociais",
+  "Copywriting",
+  "Gestão de Relacionamento (CRM)",
+  "Automação de Processos",
+  "Criação de Conteúdo com IA",
+  "Prompt Engineering",
+  "Ferramentas No-Code (Make, Zapier, n8n)",
+  "Gestão de Projetos",
+  "Planejamento Estratégico",
+  "Gestão de Indicadores (KPIs)",
+  "Ferramentas de Colaboração e Produtividade",
+  "Uso de Inteligência Artificial no Trabalho",
+  "Transformação Digital",
 ];
 
-const CATEGORIES = [
-  "Vendas e Marketing",
-  "Automação com IA",
-  "Gestão, Liderança e Comunicação"
-];
+const CATEGORIES = ["Vendas e Marketing", "Automação com IA", "Gestão, Liderança e Comunicação"];
 
 interface CourseFormData {
   title: string;
@@ -66,7 +79,7 @@ const AdminDashboard = () => {
     summary: "",
     duration: "",
     skills: [],
-    resourceFiles: []
+    resourceFiles: [],
   });
 
   useEffect(() => {
@@ -81,11 +94,9 @@ const AdminDashboard = () => {
   };
 
   const handleSkillToggle = (skill: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      skills: prev.skills.includes(skill)
-        ? prev.skills.filter(s => s !== skill)
-        : [...prev.skills, skill]
+      skills: prev.skills.includes(skill) ? prev.skills.filter((s) => s !== skill) : [...prev.skills, skill],
     }));
   };
 
@@ -93,14 +104,14 @@ const AdminDashboard = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Apenas imagens JPG, PNG ou WEBP são permitidas!");
       return;
     }
 
-    setFormData(prev => ({ ...prev, imageFile: file }));
-    
+    setFormData((prev) => ({ ...prev, imageFile: file }));
+
     // Preview
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -114,8 +125,12 @@ const AdminDashboard = () => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-    
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ];
+
     const validFiles: File[] = [];
     Array.from(files).forEach((file) => {
       if (!allowedTypes.includes(file.type)) {
@@ -126,18 +141,18 @@ const AdminDashboard = () => {
     });
 
     if (validFiles.length > 0) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        resourceFiles: [...(prev.resourceFiles || []), ...validFiles]
+        resourceFiles: [...(prev.resourceFiles || []), ...validFiles],
       }));
       toast.success(`${validFiles.length} arquivo(s) carregado(s)!`);
     }
   };
 
   const handleRemoveResource = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      resourceFiles: prev.resourceFiles?.filter((_, i) => i !== index)
+      resourceFiles: prev.resourceFiles?.filter((_, i) => i !== index),
     }));
     toast.success("Recurso removido!");
   };
@@ -145,7 +160,15 @@ const AdminDashboard = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.category || !formData.description || !formData.videoUrl || !formData.duration || !formData.imageFile || formData.skills.length === 0) {
+    if (
+      !formData.title ||
+      !formData.category ||
+      !formData.description ||
+      !formData.videoUrl ||
+      !formData.duration ||
+      !formData.imageFile ||
+      formData.skills.length === 0
+    ) {
       toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
@@ -154,22 +177,22 @@ const AdminDashboard = () => {
 
     try {
       // 1. Upload da imagem
-      const imageExt = formData.imageFile.name.split('.').pop();
+      const imageExt = formData.imageFile.name.split(".").pop();
       const imageName = `${Date.now()}-${Math.random()}.${imageExt}`;
-      
+
       const { error: imageError, data: imageData } = await supabase.storage
-        .from('course-images')
+        .from("course-images")
         .upload(imageName, formData.imageFile);
 
       if (imageError) throw new Error(`Erro ao fazer upload da imagem: ${imageError.message}`);
 
-      const { data: { publicUrl: imageUrl } } = supabase.storage
-        .from('course-images')
-        .getPublicUrl(imageName);
+      const {
+        data: { publicUrl: imageUrl },
+      } = supabase.storage.from("course-images").getPublicUrl(imageName);
 
       // 2. Criar curso no banco
       const { data: courseData, error: courseError } = await supabase
-        .from('courses')
+        .from("courses")
         .insert({
           title: formData.title,
           subtitle: formData.subtitle || null,
@@ -180,7 +203,7 @@ const AdminDashboard = () => {
           summary: formData.summary || null,
           duration: formData.duration,
           skills: formData.skills,
-          image_url: imageUrl
+          image_url: imageUrl,
         })
         .select()
         .single();
@@ -190,11 +213,11 @@ const AdminDashboard = () => {
       // 3. Upload de recursos adicionais (se houver)
       if (formData.resourceFiles && formData.resourceFiles.length > 0) {
         for (const file of formData.resourceFiles) {
-          const resourceExt = file.name.split('.').pop();
+          const resourceExt = file.name.split(".").pop();
           const resourceName = `${courseData.id}/${Date.now()}-${Math.random()}.${resourceExt}`;
-          
+
           const { error: resourceUploadError } = await supabase.storage
-            .from('course-resources')
+            .from("course-resources")
             .upload(resourceName, file);
 
           if (resourceUploadError) {
@@ -202,24 +225,22 @@ const AdminDashboard = () => {
             continue;
           }
 
-          const { data: { publicUrl: resourceUrl } } = supabase.storage
-            .from('course-resources')
-            .getPublicUrl(resourceName);
+          const {
+            data: { publicUrl: resourceUrl },
+          } = supabase.storage.from("course-resources").getPublicUrl(resourceName);
 
           // Salvar referência no banco
-          await supabase
-            .from('course_resources')
-            .insert({
-              course_id: courseData.id,
-              file_name: file.name,
-              file_url: resourceUrl,
-              file_type: file.type
-            });
+          await supabase.from("course_resources").insert({
+            course_id: courseData.id,
+            file_name: file.name,
+            file_url: resourceUrl,
+            file_type: file.type,
+          });
         }
       }
 
       toast.success("Curso adicionado com sucesso!");
-      
+
       // Resetar formulário
       setFormData({
         title: "",
@@ -231,16 +252,15 @@ const AdminDashboard = () => {
         summary: "",
         duration: "",
         skills: [],
-        resourceFiles: []
+        resourceFiles: [],
       });
       setImagePreview("");
-      
-      // Limpar inputs de arquivo
-      const imageInput = document.getElementById('image') as HTMLInputElement;
-      const resourceInput = document.getElementById('resource') as HTMLInputElement;
-      if (imageInput) imageInput.value = '';
-      if (resourceInput) resourceInput.value = '';
 
+      // Limpar inputs de arquivo
+      const imageInput = document.getElementById("image") as HTMLInputElement;
+      const resourceInput = document.getElementById("resource") as HTMLInputElement;
+      if (imageInput) imageInput.value = "";
+      if (resourceInput) resourceInput.value = "";
     } catch (error: any) {
       console.error("Erro ao adicionar curso:", error);
       toast.error(error.message || "Erro ao adicionar curso");
@@ -404,15 +424,11 @@ const AdminDashboard = () => {
                     id="image"
                     type="file"
                     accept="image/jpeg,image/png,image/jpg,image/webp"
-                  onChange={handleImageUpload}
+                    onChange={handleImageUpload}
                   />
                   {imagePreview && (
                     <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-lg border">
-                      <img 
-                        src={imagePreview} 
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
@@ -420,13 +436,7 @@ const AdminDashboard = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="resource">Recursos Adicionais (PDF/XLSX)</Label>
-                <Input
-                  id="resource"
-                  type="file"
-                  accept=".pdf,.xlsx,.xls"
-                  multiple
-                  onChange={handleFileUpload}
-                />
+                <Input id="resource" type="file" accept=".pdf,.xlsx,.xls" multiple onChange={handleFileUpload} />
                 {formData.resourceFiles && formData.resourceFiles.length > 0 && (
                   <div className="space-y-2 mt-3">
                     {formData.resourceFiles.map((file, index) => (
@@ -435,12 +445,7 @@ const AdminDashboard = () => {
                           <Upload className="w-4 h-4" />
                           {file.name}
                         </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveResource(index)}
-                        >
+                        <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveResource(index)}>
                           Remover
                         </Button>
                       </div>
