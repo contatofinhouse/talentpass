@@ -68,7 +68,8 @@ export const courses: Course[] = [
     category: "Automação com IA",
     duration: "6 min",
     description: "Aprenda a usar ChatGPT para automatizar tarefas do dia a dia e aumentar sua produtividade.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl:
+      "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia",
     image: tiImg,
     content: `
       **Casos de uso práticos:**
@@ -91,64 +92,9 @@ export const courses: Course[] = [
     title: "Automação de Marketing com IA",
     category: "Automação com IA",
     duration: "7 min",
-    description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
-    videoUrl: "[plugin:vite:react-swc] x Unterminated string constant
-    ,-[/dev-server/src/data/courses.ts:95:1]
- 92 |     category: "Automação com IA",
- 93 |     duration: "7 min",
- 94 |     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
- 95 |     videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
-    :               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 96 | ",
- 97 |     image: marketingImg,
- 98 |     content: `
-    `----
-  x Unterminated string constant
-    ,-[/dev-server/src/data/courses.ts:96:1]
- 93 |     duration: "7 min",
- 94 |     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
- 95 |     videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
- 96 | ",
-    : ^^
- 97 |     image: marketingImg,
- 98 |     content: `
- 99 |       **Ferramentas de IA para marketing:**
-    `----
-  x Expected ',', got 'string literal (,, ",)'
-    ,-[/dev-server/src/data/courses.ts:96:1]
- 93 |     duration: "7 min",
- 94 |     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
- 95 |     videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
- 96 | ",
-    : ^^
- 97 |     image: marketingImg,
- 98 |     content: `
- 99 |       **Ferramentas de IA para marketing:**
-    `----
-
-
-Caused by:
-    Syntax Error
-
-Stack backtrace:
-   0: <unknown>
-   1: <unknown>
-   2: <unknown>
-   3: <unknown>
-   4: <unknown>
-   5: <unknown>
-   6: <unknown>
-   7: <unknown>
-   8: <unknown>
-   9: _ZZN4node14ThreadPoolWork12ScheduleWorkEvENUlP9uv_work_sE_4_FUNES2_
-  10: worker
-             at /home/iojs/build/ws/out/../deps/uv/src/threadpool.c:123:5
-  11: <unknown>
-  12: <unknown>
-/dev-server/src/data/courses.ts
-             at /home/iojs/build/ws/out/../deps/uv/src/threadpool.c:123:5
-Click outside, press Esc key, or fix the code to dismiss.
-You can also disable this overlay by setting server.hmr.overlay to false in vite.config.ts.",
+    description:
+      "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     image: marketingImg,
     content: `
       **Ferramentas de IA para marketing:**
@@ -175,7 +121,8 @@ You can also disable this overlay by setting server.hmr.overlay to false in vite
     title: "Comunicação Assertiva em 5 Minutos",
     category: "Gestão, Liderança e Comunicação",
     duration: "5 min",
-    description: "Aprenda técnicas práticas para se comunicar de forma clara e objetiva em qualquer situação profissional.",
+    description:
+      "Aprenda técnicas práticas para se comunicar de forma clara e objetiva em qualquer situação profissional.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     image: comunicacaoImg,
     content: `
