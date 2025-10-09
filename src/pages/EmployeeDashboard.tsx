@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Play, Clock, Heart, CheckCircle2, Download, LogOut } from "lucide-react";
 import { courses } from "@/data/courses";
 import { useToast } from "@/hooks/use-toast";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface CourseProgress {
   [key: string]: {
@@ -354,7 +355,7 @@ const EmployeeDashboard = () => {
               </div>
 
               <div className="prose prose-sm max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: selectedCourseData.content }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedCourseData.content) }} />
               </div>
 
               <div>

@@ -18,6 +18,7 @@ import { courses as defaultCourses } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase";
 import { toast } from "@/hooks/use-toast";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface CourseTracking {
   course_id: string;
@@ -674,7 +675,7 @@ const ManagerDashboard = () => {
 
               {selectedCourse.content && (
                 <div className="prose prose-sm max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: selectedCourse.content }} />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedCourse.content) }} />
                 </div>
               )}
 
