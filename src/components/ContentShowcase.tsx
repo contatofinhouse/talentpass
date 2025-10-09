@@ -59,13 +59,13 @@ const ContentShowcase = () => {
       <div className="container mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
-            Conteúdo que se encaixa na sua rotina
+            Treinamento corporativo que cabe na rotina e transforma a performance da sua equipe
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Vídeos curtos e textos práticos criados para absorção rápida e aplicação imediata
           </p>
         </div>
-        
+
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {contentItems.map((item, index) => (
             <Card
@@ -73,8 +73,8 @@ const ContentShowcase = () => {
               className="group cursor-pointer overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-[0_20px_50px_-10px_hsl(var(--primary)/0.2)]"
             >
               <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={item.image} 
+                <img
+                  src={item.image}
                   alt={item.title}
                   className="h-full w-full object-cover transition-transform group-hover:scale-105"
                 />
@@ -89,7 +89,7 @@ const ContentShowcase = () => {
                   </div>
                 )}
               </div>
-              
+
               <div className="p-6">
                 <div className="mb-3 flex items-center justify-between">
                   <Badge variant="secondary" className="font-semibold">
