@@ -23,8 +23,8 @@ const Hero = () => {
             </h1>
 
             <p className="text-lg text-white/90 lg:text-xl">
-              Educação continuada em soft e hard skills em áreas como comunicação, vendas, TI, marketing e suporte.
-              Vídeos curtos, textos práticos e aprendizado que cabe na sua rotina.
+              Plataforma de educação continuada em soft e hard skills em áreas como comunicação, vendas, TI, marketing e
+              suporte. Vídeos curtos, textos práticos e aprendizado que aprimoram sua equipe para o mercado.
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row">
