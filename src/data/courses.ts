@@ -45,7 +45,7 @@ export const courses: Course[] = [
     duration: "6 min",
     description: "Aprenda os fundamentos de SEO para melhorar o ranqueamento do seu site no Google.",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    image: "https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/course-images/course-marketing.webp"
+    image: "https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/course-images/course-marketing.webp",
     content: `
       **Fundamentos de SEO:**
       - Pesquisa de palavras-chave relevantes
@@ -95,7 +95,7 @@ export const courses: Course[] = [
       "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
     videoUrl:
       "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4",
-    image: "https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/course-images/course-marketing.webp"
+    image: "https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/course-images/course-marketing.webp",
     content: `
       **Ferramentas de IA para marketing:**
       - Criação de conteúdo: copy, imagens, vídeos
