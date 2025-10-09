@@ -92,7 +92,8 @@ export const courses: Course[] = [
     category: "Automação com IA",
     duration: "7 min",
     description: "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4
+",
     image: marketingImg,
     content: `
       **Ferramentas de IA para marketing:**
