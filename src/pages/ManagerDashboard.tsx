@@ -249,6 +249,13 @@ const ManagerDashboard = () => {
                   <Users className="mr-2 h-4 w-4" />
                   Colaboradores
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  const message = encodeURIComponent("Olá! Quero ativar o plano Starter na plataforma de educação com IA. \nVi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. \nGostaria de incluir minha equipe e garantir acesso imediato.");
+                  window.open(`https://wa.me/5511955842951?text=${message}`, '_blank');
+                }}>
+                  <Users className="mr-2 h-4 w-4" />
+                  Ativar Plano
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
