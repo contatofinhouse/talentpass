@@ -15,6 +15,7 @@ import { CourseDetailModal } from "@/components/manager/CourseDetailModal";
 import { EmptyState } from "@/components/manager/EmptyState";
 import { useCourseFilters } from "@/hooks/useCourseFilters";
 import { useCourseTracking } from "@/hooks/useCourseTracking";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
@@ -82,6 +83,10 @@ const ManagerDashboard = () => {
   const favoriteCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_favorite);
   const completedCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_completed);
 
+  const { displayedItems: displayedAllCourses, hasMore: hasMoreAll, loadMoreRef: loadMoreAllRef } = useInfiniteScroll(filteredCourses);
+  const { displayedItems: displayedFavorites, hasMore: hasMoreFav, loadMoreRef: loadMoreFavRef } = useInfiniteScroll(favoriteCourses);
+  const { displayedItems: displayedCompleted, hasMore: hasMoreComp, loadMoreRef: loadMoreCompRef } = useInfiniteScroll(completedCourses);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} />
@@ -136,7 +141,7 @@ const ManagerDashboard = () => {
                 </div>
               </div>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {filteredCourses.map((course) => (
+                {displayedAllCourses.map((course) => (
                   <CourseCard
                     key={course.id}
                     course={course}
@@ -147,41 +152,56 @@ const ManagerDashboard = () => {
                   />
                 ))}
               </div>
+              {hasMoreAll && <div ref={loadMoreAllRef} className="h-20 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>}
             </TabsContent>
 
             <TabsContent value="favorites" className="space-y-4">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {favoriteCourses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    courseTracking={courseTracking[course.id]}
-                    onToggleFavorite={toggleFavorite}
-                    onToggleCompleted={toggleCompleted}
-                    onClick={() => setSelectedCourse(course)}
-                  />
-                ))}
-              </div>
-              {favoriteCourses.length === 0 && (
+              {favoriteCourses.length === 0 ? (
                 <EmptyState icon={Heart} message="Nenhum curso favoritado ainda" />
+              ) : (
+                <>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {displayedFavorites.map((course) => (
+                      <CourseCard
+                        key={course.id}
+                        course={course}
+                        courseTracking={courseTracking[course.id]}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleCompleted={toggleCompleted}
+                        onClick={() => setSelectedCourse(course)}
+                      />
+                    ))}
+                  </div>
+                  {hasMoreFav && <div ref={loadMoreFavRef} className="h-20 flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>}
+                </>
               )}
             </TabsContent>
 
             <TabsContent value="completed" className="space-y-4">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {completedCourses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    courseTracking={courseTracking[course.id]}
-                    onToggleFavorite={toggleFavorite}
-                    onToggleCompleted={toggleCompleted}
-                    onClick={() => setSelectedCourse(course)}
-                  />
-                ))}
-              </div>
-              {completedCourses.length === 0 && (
+              {completedCourses.length === 0 ? (
                 <EmptyState icon={CheckCircle2} message="Nenhum curso concluído ainda" />
+              ) : (
+                <>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {displayedCompleted.map((course) => (
+                      <CourseCard
+                        key={course.id}
+                        course={course}
+                        courseTracking={courseTracking[course.id]}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleCompleted={toggleCompleted}
+                        onClick={() => setSelectedCourse(course)}
+                      />
+                    ))}
+                  </div>
+                  {hasMoreComp && <div ref={loadMoreCompRef} className="h-20 flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>}
+                </>
               )}
             </TabsContent>
           </Tabs>
