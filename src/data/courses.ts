@@ -15,6 +15,7 @@ export interface Course {
   content: string;
   skills: string[];
   image: string;
+  level?: string;
   resourceFiles?: { name: string; data: string; type: string }[];
 }
 
@@ -38,6 +39,7 @@ export async function fetchCoursesFromSupabase(): Promise<Course[]> {
       image: c.image_url,
       content: c.content,
       skills: c.skills || [],
+      level: c.level,
     })) || []
   );
 }

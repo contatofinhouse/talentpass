@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Heart, CheckCircle2, Search, Users, Loader2 } from "lucide-react";
+import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen } from "lucide-react";
 import { fetchCoursesFromSupabase } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase";
@@ -41,15 +40,15 @@ const ManagerDashboard = () => {
     setSearchQuery,
     selectedCategory,
     setSelectedCategory,
+    selectedLevel,
+    setSelectedLevel,
+    viewType,
+    setViewType,
     categories,
-  } = useCourseFilters(allCourses);
+    levels,
+  } = useCourseFilters(allCourses, courseTracking);
 
-  const favoriteCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_favorite);
-  const completedCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_completed);
-
-  const { displayedItems: displayedAllCourses, hasMore: hasMoreAll, loadMoreRef: loadMoreAllRef } = useInfiniteScroll(filteredCourses);
-  const { displayedItems: displayedFavorites, hasMore: hasMoreFav, loadMoreRef: loadMoreFavRef } = useInfiniteScroll(favoriteCourses);
-  const { displayedItems: displayedCompleted, hasMore: hasMoreComp, loadMoreRef: loadMoreCompRef } = useInfiniteScroll(completedCourses);
+  const { displayedItems: displayedCourses, hasMore, loadMoreRef } = useInfiniteScroll(filteredCourses);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -93,14 +92,30 @@ const ManagerDashboard = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 grid gap-4 md:grid-cols-4">
-          <MetricCard title="Total de Cursos" value={allCourses.length} />
+          <MetricCard 
+            title="Total de Cursos" 
+            value={allCourses.length}
+            icon={BookOpen}
+            iconColor="text-primary"
+            onClick={() => setViewType("all")}
+            isActive={viewType === "all"}
+          />
           <MetricCard
             title="Favoritos"
             value={favoriteCount}
             icon={Heart}
             iconColor="text-red-500 fill-red-500"
+            onClick={() => setViewType("favorites")}
+            isActive={viewType === "favorites"}
           />
-          <MetricCard title="Concluídos" value={completedCount} icon={CheckCircle2} iconColor="text-green-500" />
+          <MetricCard 
+            title="Concluídos" 
+            value={completedCount} 
+            icon={CheckCircle2} 
+            iconColor="text-green-500"
+            onClick={() => setViewType("completed")}
+            isActive={viewType === "completed"}
+          />
           <MetricCard
             title="Colaboradores"
             value={profile?.employee_count || "0"}
@@ -109,30 +124,26 @@ const ManagerDashboard = () => {
         </div>
 
         {activeView === "courses" && (
-          <Tabs defaultValue="courses">
-            <TabsList className="mb-6">
-              <TabsTrigger value="courses">Todos os Cursos</TabsTrigger>
-              <TabsTrigger value="favorites">Favoritos</TabsTrigger>
-              <TabsTrigger value="completed">Concluídos</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="courses" className="space-y-4">
-              <div className="mb-6 space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar por título, descrição ou skill..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <div className="flex flex-wrap gap-2 max-w-full overflow-x-auto pb-2">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por título, descrição ou skill..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Categoria</p>
+                <div className="flex flex-wrap gap-2">
                   {categories.map((category) => (
                     <Badge
                       key={category}
                       variant={selectedCategory === category ? "default" : "outline"}
-                      className="cursor-pointer whitespace-nowrap flex-shrink-0"
+                      className="cursor-pointer whitespace-nowrap"
                       onClick={() => setSelectedCategory(category)}
                     >
                       {category === "all" ? "Todas" : category}
@@ -140,71 +151,55 @@ const ManagerDashboard = () => {
                   ))}
                 </div>
               </div>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {displayedAllCourses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    courseTracking={courseTracking[course.id]}
-                    onToggleFavorite={toggleFavorite}
-                    onToggleCompleted={toggleCompleted}
-                    onClick={() => setSelectedCourse(course)}
-                  />
-                ))}
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Nível</p>
+                <div className="flex flex-wrap gap-2">
+                  {levels.map((level) => (
+                    <Badge
+                      key={level}
+                      variant={selectedLevel === level ? "default" : "outline"}
+                      className="cursor-pointer whitespace-nowrap"
+                      onClick={() => setSelectedLevel(level)}
+                    >
+                      {level === "all" ? "Todos" : level.charAt(0).toUpperCase() + level.slice(1)}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              {hasMoreAll && <div ref={loadMoreAllRef} className="h-20 flex items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              </div>}
-            </TabsContent>
+            </div>
 
-            <TabsContent value="favorites" className="space-y-4">
-              {favoriteCourses.length === 0 ? (
-                <EmptyState icon={Heart} message="Nenhum curso favoritado ainda" />
-              ) : (
-                <>
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {displayedFavorites.map((course) => (
-                      <CourseCard
-                        key={course.id}
-                        course={course}
-                        courseTracking={courseTracking[course.id]}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleCompleted={toggleCompleted}
-                        onClick={() => setSelectedCourse(course)}
-                      />
-                    ))}
-                  </div>
-                  {hasMoreFav && <div ref={loadMoreFavRef} className="h-20 flex items-center justify-center">
+            {displayedCourses.length === 0 ? (
+              <EmptyState 
+                icon={viewType === "favorites" ? Heart : viewType === "completed" ? CheckCircle2 : Search} 
+                message={
+                  viewType === "favorites" ? "Nenhum curso favoritado ainda" :
+                  viewType === "completed" ? "Nenhum curso concluído ainda" :
+                  "Nenhum curso encontrado"
+                } 
+              />
+            ) : (
+              <>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {displayedCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      courseTracking={courseTracking[course.id]}
+                      onToggleFavorite={toggleFavorite}
+                      onToggleCompleted={toggleCompleted}
+                      onClick={() => setSelectedCourse(course)}
+                    />
+                  ))}
+                </div>
+                {hasMore && (
+                  <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>}
-                </>
-              )}
-            </TabsContent>
-
-            <TabsContent value="completed" className="space-y-4">
-              {completedCourses.length === 0 ? (
-                <EmptyState icon={CheckCircle2} message="Nenhum curso concluído ainda" />
-              ) : (
-                <>
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {displayedCompleted.map((course) => (
-                      <CourseCard
-                        key={course.id}
-                        course={course}
-                        courseTracking={courseTracking[course.id]}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleCompleted={toggleCompleted}
-                        onClick={() => setSelectedCourse(course)}
-                      />
-                    ))}
                   </div>
-                  {hasMoreComp && <div ref={loadMoreCompRef} className="h-20 flex items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>}
-                </>
-              )}
-            </TabsContent>
-          </Tabs>
+                )}
+              </>
+            )}
+          </div>
         )}
 
         {activeView === "profile" && (
