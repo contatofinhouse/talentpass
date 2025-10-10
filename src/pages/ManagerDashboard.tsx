@@ -44,6 +44,13 @@ const ManagerDashboard = () => {
     categories,
   } = useCourseFilters(allCourses);
 
+  const favoriteCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_favorite);
+  const completedCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_completed);
+
+  const { displayedItems: displayedAllCourses, hasMore: hasMoreAll, loadMoreRef: loadMoreAllRef } = useInfiniteScroll(filteredCourses);
+  const { displayedItems: displayedFavorites, hasMore: hasMoreFav, loadMoreRef: loadMoreFavRef } = useInfiniteScroll(favoriteCourses);
+  const { displayedItems: displayedCompleted, hasMore: hasMoreComp, loadMoreRef: loadMoreCompRef } = useInfiniteScroll(completedCourses);
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
@@ -71,21 +78,6 @@ const ManagerDashboard = () => {
     await signOut();
     navigate("/");
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const favoriteCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_favorite);
-  const completedCourses = filteredCourses.filter((course) => courseTracking[course.id]?.is_completed);
-
-  const { displayedItems: displayedAllCourses, hasMore: hasMoreAll, loadMoreRef: loadMoreAllRef } = useInfiniteScroll(filteredCourses);
-  const { displayedItems: displayedFavorites, hasMore: hasMoreFav, loadMoreRef: loadMoreFavRef } = useInfiniteScroll(favoriteCourses);
-  const { displayedItems: displayedCompleted, hasMore: hasMoreComp, loadMoreRef: loadMoreCompRef } = useInfiniteScroll(completedCourses);
 
   if (loading) {
     return (
