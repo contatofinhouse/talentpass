@@ -87,6 +87,14 @@ const ManagerDashboard = () => {
   const { displayedItems: displayedFavorites, hasMore: hasMoreFav, loadMoreRef: loadMoreFavRef } = useInfiniteScroll(favoriteCourses);
   const { displayedItems: displayedCompleted, hasMore: hasMoreComp, loadMoreRef: loadMoreCompRef } = useInfiniteScroll(completedCourses);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} />
