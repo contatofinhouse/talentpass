@@ -15,12 +15,16 @@ const Welcome = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
+        setLoading(false);
       } else if (data) {
         setProfile(data);
 
@@ -31,8 +35,8 @@ const Welcome = () => {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const remaining = Math.max(0, 14 - diffDays);
         setDaysRemaining(remaining);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchProfile();
