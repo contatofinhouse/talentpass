@@ -20,36 +20,29 @@ const Welcome = () => {
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, name, created_at")
+          .select("id, name")
           .eq("id", user.id)
           .maybeSingle();
 
         if (error) {
           console.error("Erro ao buscar perfil:", error);
-          setDaysRemaining(0);
-          setLoading(false);
-          return;
         }
 
-        if (data?.created_at) {
-          setProfile(data);
+        setProfile(data);
 
-          const createdAt = new Date(data.created_at);
-          const now = new Date();
+        // Usa created_at do auth.users via user.created_at
+        const createdAt = new Date(user.created_at);
+        const now = new Date();
 
-          // Normaliza datas para considerar apenas dias inteiros
-          const createdAtMidnight = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate());
-          const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        // Normaliza datas para considerar apenas dias inteiros
+        const createdAtMidnight = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate());
+        const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-          const diffTime = nowMidnight.getTime() - createdAtMidnight.getTime();
-          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const diffTime = nowMidnight.getTime() - createdAtMidnight.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-          const remaining = Math.max(0, 14 - diffDays);
-          setDaysRemaining(remaining);
-        } else {
-          // fallback caso created_at seja inválido
-          setDaysRemaining(14);
-        }
+        const remaining = Math.max(0, 14 - diffDays);
+        setDaysRemaining(remaining);
       } catch (err) {
         console.error("Erro inesperado ao buscar perfil:", err);
         setDaysRemaining(0);
@@ -59,7 +52,7 @@ const Welcome = () => {
     };
 
     fetchProfile();
-  }, [user?.id]);
+  }, [user?.id, user?.created_at]);
 
   if (loading || daysRemaining === null) {
     return (
