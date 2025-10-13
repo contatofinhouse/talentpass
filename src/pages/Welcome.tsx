@@ -15,32 +15,42 @@ const Welcome = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user) {
+      if (!user?.id) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, name, created_at")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Erro ao buscar perfil:", error);
         setLoading(false);
         return;
       }
 
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
-        setLoading(false);
-      } else if (data) {
+      if (data?.created_at) {
         setProfile(data);
 
-        // Calculate days remaining
         const createdAt = new Date(data.created_at);
         const now = new Date();
-        const diffTime = now.getTime() - createdAt.getTime();
+
+        // normaliza para comparar dias inteiros
+        const createdAtMidnight = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate());
+        const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const diffTime = nowMidnight.getTime() - createdAtMidnight.getTime();
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const remaining = Math.max(0, 14 - diffDays);
+
         setDaysRemaining(remaining);
-        setLoading(false);
       }
+
+      setLoading(false);
     };
 
     fetchProfile();
-  }, [user]);
+  }, [user?.id]);
 
   if (loading) {
     return (
