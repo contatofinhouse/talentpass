@@ -19,6 +19,14 @@ export interface Course {
   resourceFiles?: { name: string; data: string; type: string }[];
 }
 
+function getResourceType(url: string, title?: string) {
+  const name = title || url;
+  if (name.endsWith(".pdf")) return "PDF";
+  if (name.endsWith(".ppt") || name.endsWith(".pptx")) return "Slide";
+  if (name.endsWith(".mp3") || name.endsWith(".mov")) return "Audio";
+  return "Outro";
+}
+
 // ✅ NOVA FUNÇÃO: busca cursos da tabela "courses" no Supabase
 export async function fetchCoursesFromSupabase(): Promise<Course[]> {
   const { data, error } = await supabase.from("courses").select("*");
@@ -40,6 +48,12 @@ export async function fetchCoursesFromSupabase(): Promise<Course[]> {
       content: c.content,
       skills: c.skills || [],
       level: c.level,
+      resourceFiles:
+        c.resources?.map((r: any) => ({
+          name: r.title || "Recurso",
+          data: r.url,
+          type: getResourceType(r.url, r.title),
+        })) || [],
     })) || []
   );
 }
