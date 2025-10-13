@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Sparkles, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase";
@@ -11,48 +11,57 @@ const Welcome = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [daysRemaining, setDaysRemaining] = useState(14);
+  const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!user?.id) return;
+
     const fetchProfile = async () => {
-      if (!user?.id) return;
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, name, created_at")
+          .eq("id", user.id)
+          .maybeSingle();
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, name, created_at")
-        .eq("id", user.id)
-        .maybeSingle();
+        if (error) {
+          console.error("Erro ao buscar perfil:", error);
+          setDaysRemaining(0);
+          setLoading(false);
+          return;
+        }
 
-      if (error) {
-        console.error("Erro ao buscar perfil:", error);
+        if (data?.created_at) {
+          setProfile(data);
+
+          const createdAt = new Date(data.created_at);
+          const now = new Date();
+
+          // Normaliza datas para considerar apenas dias inteiros
+          const createdAtMidnight = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate());
+          const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+          const diffTime = nowMidnight.getTime() - createdAtMidnight.getTime();
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+          const remaining = Math.max(0, 14 - diffDays);
+          setDaysRemaining(remaining);
+        } else {
+          // fallback caso created_at seja inválido
+          setDaysRemaining(14);
+        }
+      } catch (err) {
+        console.error("Erro inesperado ao buscar perfil:", err);
+        setDaysRemaining(0);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      if (data?.created_at) {
-        setProfile(data);
-
-        const createdAt = new Date(data.created_at);
-        const now = new Date();
-
-        // normaliza para comparar dias inteiros
-        const createdAtMidnight = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate());
-        const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-        const diffTime = nowMidnight.getTime() - createdAtMidnight.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        const remaining = Math.max(0, 14 - diffDays);
-
-        setDaysRemaining(remaining);
-      }
-
-      setLoading(false);
     };
 
     fetchProfile();
   }, [user?.id]);
 
-  if (loading) {
+  if (loading || daysRemaining === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -81,6 +90,7 @@ const Welcome = () => {
               </div>
             </div>
           </CardHeader>
+
           <CardContent className="space-y-6 text-center">
             <div className="bg-accent/10 rounded-lg p-6 space-y-4">
               <p className="text-lg leading-relaxed">
@@ -102,6 +112,7 @@ const Welcome = () => {
                   Continuar para o Painel
                 </Button>
               )}
+
               <Button
                 size="lg"
                 variant="outline"
@@ -112,7 +123,7 @@ const Welcome = () => {
 Olá! Quero ativar o plano Starter na plataforma de educação com IA.
 Vi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional.
 Gostaria de incluir minha equipe e garantir acesso imediato.
-    `.trim();
+                  `.trim();
                   const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
                   window.open(url, "_blank");
                 }}
