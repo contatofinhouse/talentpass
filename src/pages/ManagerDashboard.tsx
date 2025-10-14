@@ -16,6 +16,7 @@ import { MetricCard } from "@/components/manager/MetricCard";
 import { CourseCard } from "@/components/manager/CourseCard";
 import { CourseDetailModal } from "@/components/manager/CourseDetailModal";
 import { EmptyState } from "@/components/manager/EmptyState";
+import { EmployeeManagement } from "@/components/manager/EmployeeManagement";
 import { useCourseFilters } from "@/hooks/useCourseFilters";
 import { useCourseTracking } from "@/hooks/useCourseTracking";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
@@ -34,6 +35,7 @@ const ManagerDashboard = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [employees, setEmployees] = useState<any[]>([]);
 
   const {
     courseTracking,
@@ -60,11 +62,26 @@ const ManagerDashboard = () => {
 
   const { displayedItems: displayedCourses, hasMore, loadMoreRef } = useInfiniteScroll(filteredCourses);
 
+  const fetchEmployees = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("manager_id", user.id);
+
+    if (error) {
+      console.error("Error fetching employees:", error);
+    } else {
+      setEmployees(data || []);
+    }
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
 
-      // Busca dados do profile (name, email)
+      // Busca dados do profile (name, email, status)
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
@@ -84,6 +101,7 @@ const ManagerDashboard = () => {
         cnpj: user.user_metadata?.cnpj || "",
         phone: user.user_metadata?.phone || "",
         employee_count: user.user_metadata?.employee_count || "",
+        status: profileData?.status || "trial",
       };
 
       setProfile(combinedProfile);
@@ -92,6 +110,7 @@ const ManagerDashboard = () => {
       setAllCourses(supabaseCourses);
 
       await fetchTracking();
+      await fetchEmployees();
 
       setLoading(false);
     };
@@ -418,20 +437,38 @@ const ManagerDashboard = () => {
         )}
 
         {activeView === "employees" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Colaboradores</CardTitle>
-              <CardDescription>Informações sobre os colaboradores da empresa</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <p className="text-sm font-medium">Número de Colaboradores</p>
-                  <p className="text-sm text-muted-foreground">{profile?.employee_count || "Não informado"}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <>
+            {profile?.status === "trial" ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Colaboradores</CardTitle>
+                  <CardDescription>
+                    Ative seu plano para gerenciar colaboradores
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center justify-center py-8">
+                  <p className="text-center text-muted-foreground mb-4">
+                    Você está no plano trial. Para adicionar e gerenciar colaboradores, ative seu plano.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      const phoneNumber = "5511955842951";
+                      const message = "Olá! Gostaria de ativar o plano para gerenciar colaboradores.";
+                      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                      window.open(whatsappUrl, "_blank");
+                    }}
+                  >
+                    Ativar Plano
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <EmployeeManagement 
+                employees={employees} 
+                onRefresh={fetchEmployees}
+              />
+            )}
+          </>
         )}
       </div>
 
