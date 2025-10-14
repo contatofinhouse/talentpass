@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen, Key } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { fetchCoursesFromSupabase } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase";
 import { ManagerHeader } from "@/components/manager/ManagerHeader";
 import { MetricCard } from "@/components/manager/MetricCard";
@@ -19,11 +23,17 @@ import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 const ManagerDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
   const [allCourses, setAllCourses] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<"courses" | "profile" | "employees">("courses");
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   const {
     courseTracking,
@@ -92,6 +102,86 @@ const ManagerDashboard = () => {
   const handleLogout = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const handleChangePassword = async () => {
+    // Validações
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A nova senha deve ter no mínimo 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    try {
+      // Primeiro verifica a senha atual fazendo login
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || "",
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        toast({
+          title: "Erro",
+          description: "Senha atual incorreta",
+          variant: "destructive",
+        });
+        setPasswordLoading(false);
+        return;
+      }
+
+      // Atualiza a senha
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        toast({
+          title: "Erro",
+          description: updateError.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Sucesso",
+          description: "Senha alterada com sucesso",
+        });
+        setIsChangePasswordOpen(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Erro ao alterar senha",
+        variant: "destructive",
+      });
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   if (loading) {
@@ -219,36 +309,112 @@ const ManagerDashboard = () => {
         )}
 
         {activeView === "profile" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Meu Cadastro</CardTitle>
-              <CardDescription>Dados cadastrais da empresa</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <p className="text-sm font-medium">Nome</p>
-                  <p className="text-sm text-muted-foreground">{profile?.name || ""}</p>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Meu Cadastro</CardTitle>
+                <CardDescription>Dados cadastrais da empresa</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Nome</p>
+                    <p className="text-sm text-muted-foreground">{profile?.name || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Empresa</p>
+                    <p className="text-sm text-muted-foreground">{profile?.company_name || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">CNPJ</p>
+                    <p className="text-sm text-muted-foreground">{profile?.cnpj || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Telefone</p>
+                    <p className="text-sm text-muted-foreground">{profile?.phone || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">E-mail</p>
+                    <p className="text-sm text-muted-foreground">{profile?.email || ""}</p>
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <p className="text-sm font-medium">Empresa</p>
-                  <p className="text-sm text-muted-foreground">{profile?.company_name || ""}</p>
-                </div>
-                <div className="grid gap-2">
-                  <p className="text-sm font-medium">CNPJ</p>
-                  <p className="text-sm text-muted-foreground">{profile?.cnpj || ""}</p>
-                </div>
-                <div className="grid gap-2">
-                  <p className="text-sm font-medium">Telefone</p>
-                  <p className="text-sm text-muted-foreground">{profile?.phone || ""}</p>
-                </div>
-                <div className="grid gap-2">
-                  <p className="text-sm font-medium">E-mail</p>
-                  <p className="text-sm text-muted-foreground">{profile?.email || ""}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Segurança</CardTitle>
+                <CardDescription>Configurações de segurança da conta</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      <Key className="mr-2 h-4 w-4" />
+                      Alterar Senha
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Alterar Senha</DialogTitle>
+                      <DialogDescription>
+                        Insira sua senha atual e escolha uma nova senha
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password">Senha Atual</Label>
+                        <Input
+                          id="current-password"
+                          type="password"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          placeholder="Digite sua senha atual"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">Nova Senha</Label>
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Digite a nova senha (mínimo 6 caracteres)"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirme a nova senha"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsChangePasswordOpen(false);
+                          setCurrentPassword("");
+                          setNewPassword("");
+                          setConfirmPassword("");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleChangePassword} disabled={passwordLoading}>
+                        {passwordLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Alterar Senha
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {activeView === "employees" && (
