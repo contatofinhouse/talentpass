@@ -87,15 +87,7 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // 3. Atualizar o profile do employee com manager_id
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ manager_id: user.id })
-        .eq("id", authData.user.id);
-
-      if (profileError) throw profileError;
-
-      // 4. Adicionar role de employee
+      // 3. Adicionar role de employee
       const { error: roleError } = await supabase
         .from("user_roles")
         .insert({
@@ -104,6 +96,16 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
         });
 
       if (roleError) throw roleError;
+
+      // 4. Criar vínculo na tabela employees
+      const { error: employeeError } = await supabase
+        .from("employees")
+        .insert({
+          manager_id: user.id,
+          employee_id: authData.user.id,
+        });
+
+      if (employeeError) throw employeeError;
 
       toast({
         title: "Sucesso",
@@ -135,25 +137,39 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
     setLoading(true);
 
     try {
-      // Deletar o profile (isso também deleta o usuário em auth devido ao cascade)
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", employeeId);
+      // 1. Obter o ID do manager atual
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
 
-      if (error) throw error;
+      // 2. Deletar o vínculo na tabela employees (isso não deleta o usuário)
+      const { error: employeeError } = await supabase
+        .from("employees")
+        .delete()
+        .eq("manager_id", user.id)
+        .eq("employee_id", employeeId);
+
+      if (employeeError) throw employeeError;
+
+      // 3. Deletar a role de employee
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", employeeId)
+        .eq("role", "employee");
+
+      if (roleError) throw roleError;
 
       toast({
         title: "Sucesso",
-        description: "Colaborador excluído com sucesso",
+        description: "Colaborador removido com sucesso",
       });
 
       await onRefresh();
     } catch (error: any) {
-      console.error("Erro ao excluir colaborador:", error);
+      console.error("Erro ao remover colaborador:", error);
       toast({
         title: "Erro",
-        description: error.message || "Erro ao excluir colaborador",
+        description: error.message || "Erro ao remover colaborador",
         variant: "destructive",
       });
     } finally {

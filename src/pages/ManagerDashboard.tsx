@@ -65,15 +65,34 @@ const ManagerDashboard = () => {
   const fetchEmployees = async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("manager_id", user.id);
+    try {
+      // Buscar os employees através da tabela de vínculo
+      const { data, error } = await supabase
+        .from("employees")
+        .select(`
+          employee_id,
+          created_at,
+          profiles!employees_employee_id_fkey (
+            id,
+            name,
+            email
+          )
+        `)
+        .eq("manager_id", user.id);
 
-    if (error) {
-      console.error("Error fetching employees:", error);
-    } else {
-      setEmployees(data || []);
+      if (error) throw error;
+
+      // Transformar os dados para o formato esperado
+      const employeesData = data?.map((item: any) => ({
+        id: item.profiles.id,
+        name: item.profiles.name,
+        email: item.profiles.email,
+        created_at: item.created_at,
+      })) || [];
+
+      setEmployees(employeesData);
+    } catch (error) {
+      console.error("Erro ao buscar colaboradores:", error);
     }
   };
 
