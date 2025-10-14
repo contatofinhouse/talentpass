@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen, Key, Trash2 } from "lucide-react";
+import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen, Key } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,12 +28,13 @@ import { EmployeeManagement } from "@/components/manager/EmployeeManagement";
 import { useCourseFilters } from "@/hooks/useCourseFilters";
 import { useCourseTracking } from "@/hooks/useCourseTracking";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+// IMPORTS NOVOS PARA FUNCIONALIDADE DE EMPLOYEES INLINE
+import { Trash2 } from "lucide-react"; // ícone de lixeira
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-
   const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
   const [allCourses, setAllCourses] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -46,10 +47,10 @@ const ManagerDashboard = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [employees, setEmployees] = useState<any[]>([]);
 
-  // Campos temporários para adicionar employee
+  // NOVO: campos temporários para adicionar employee
   const [newEmployeeName, setNewEmployeeName] = useState("");
   const [newEmployeeEmail, setNewEmployeeEmail] = useState("");
-  const [addingEmployee, setAddingEmployee] = useState(false);
+  const [addingEmployee, setAddingEmployee] = useState(false); // loading
 
   const { courseTracking, toggleFavorite, toggleCompleted, fetchTracking, favoriteCount, completedCount } =
     useCourseTracking(user?.id);
@@ -74,6 +75,7 @@ const ManagerDashboard = () => {
     if (!user) return;
 
     try {
+      // Buscar os employees através da tabela de vínculo
       const { data, error } = await supabase
         .from("employees")
         .select(
@@ -91,6 +93,7 @@ const ManagerDashboard = () => {
 
       if (error) throw error;
 
+      // Transformar os dados para o formato esperado
       const employeesData =
         data?.map((item: any) => ({
           id: item.profiles.id,
@@ -105,6 +108,7 @@ const ManagerDashboard = () => {
     }
   };
 
+  // NOVO: função para adicionar employee
   const handleAddEmployee = async () => {
     if (!newEmployeeName || !newEmployeeEmail) {
       toast({
@@ -117,12 +121,14 @@ const ManagerDashboard = () => {
 
     setAddingEmployee(true);
     try {
+      // Cria usuário no Supabase Auth e envia convite
       const { data: userData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(newEmployeeEmail, {
         data: { name: newEmployeeName, user_role: "employee" },
       });
 
       if (inviteError) throw inviteError;
 
+      // Cria profile vinculado ao manager
       await supabase.from("profiles").insert({
         id: userData.user.id,
         name: newEmployeeName,
@@ -138,7 +144,7 @@ const ManagerDashboard = () => {
 
       setNewEmployeeName("");
       setNewEmployeeEmail("");
-      fetchEmployees();
+      fetchEmployees(); // atualiza lista
     } catch (error: any) {
       console.error(error);
       toast({
@@ -151,9 +157,12 @@ const ManagerDashboard = () => {
     }
   };
 
+  // NOVO: função para excluir employee
   const handleDeleteEmployee = async (id: string) => {
     try {
       await supabase.from("profiles").delete().eq("id", id).eq("manager_id", user.id);
+      // Opcional: deletar do Auth também
+      // await supabase.auth.admin.deleteUser(id);
 
       toast({
         title: "Sucesso",
@@ -171,15 +180,21 @@ const ManagerDashboard = () => {
   };
 
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchProfile = async () => {
       if (!user) return;
 
-      const { data: profileData, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      // Busca dados do profile (name, email, status)
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error("Erro ao buscar profile:", error);
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
       }
 
+      // Combina dados do profile com metadata do user
       const combinedProfile = {
         ...profileData,
         name: profileData?.name || user.user_metadata?.name || "",
@@ -188,7 +203,7 @@ const ManagerDashboard = () => {
         cnpj: user.user_metadata?.cnpj || "",
         phone: user.user_metadata?.phone || "",
         employee_count: user.user_metadata?.employee_count || "",
-        status: profileData?.status ? profileData.status.toLowerCase().trim() : "trial",
+        status: profileData?.status || "trial",
       };
 
       setProfile(combinedProfile);
@@ -202,7 +217,7 @@ const ManagerDashboard = () => {
       setLoading(false);
     };
 
-    fetchProfileData();
+    fetchProfile();
   }, [user, fetchTracking]);
 
   const handleLogout = async () => {
@@ -211,6 +226,7 @@ const ManagerDashboard = () => {
   };
 
   const handleChangePassword = async () => {
+    // Validações
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast({
         title: "Erro",
@@ -241,6 +257,7 @@ const ManagerDashboard = () => {
     setPasswordLoading(true);
 
     try {
+      // Primeiro verifica a senha atual fazendo login
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: user?.email || "",
         password: currentPassword,
@@ -256,6 +273,7 @@ const ManagerDashboard = () => {
         return;
       }
 
+      // Atualiza a senha
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -328,13 +346,197 @@ const ManagerDashboard = () => {
           <MetricCard title="Colaboradores" value={profile?.employee_count || "0"} icon={Users} />
         </div>
 
-        {activeView === "courses" && <>{/* Conteúdo de cursos (igual seu código) */}</>}
+        {activeView === "courses" && (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por título, descrição ou skill..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
 
-        {activeView === "profile" && <>{/* Conteúdo de profile (igual seu código) */}</>}
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Categoria</p>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => (
+                    <Badge
+                      key={category}
+                      variant={selectedCategory === category ? "default" : "outline"}
+                      className="cursor-pointer whitespace-nowrap"
+                      onClick={() => setSelectedCategory(category)}
+                    >
+                      {category === "all" ? "Todas" : category}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Nível</p>
+                <div className="flex flex-wrap gap-2">
+                  {levels.map((level) => (
+                    <Badge
+                      key={level}
+                      variant={selectedLevel === level ? "default" : "outline"}
+                      className="cursor-pointer whitespace-nowrap"
+                      onClick={() => setSelectedLevel(level)}
+                    >
+                      {level === "all" ? "Todos" : level.charAt(0).toUpperCase() + level.slice(1)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {displayedCourses.length === 0 ? (
+              <EmptyState
+                icon={viewType === "favorites" ? Heart : viewType === "completed" ? CheckCircle2 : Search}
+                message={
+                  viewType === "favorites"
+                    ? "Nenhum curso favoritado ainda"
+                    : viewType === "completed"
+                      ? "Nenhum curso concluído ainda"
+                      : "Nenhum curso encontrado"
+                }
+              />
+            ) : (
+              <>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {displayedCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      courseTracking={courseTracking[course.id]}
+                      onToggleFavorite={toggleFavorite}
+                      onToggleCompleted={toggleCompleted}
+                      onClick={() => setSelectedCourse(course)}
+                    />
+                  ))}
+                </div>
+                {hasMore && (
+                  <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {activeView === "profile" && (
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Meu Cadastro</CardTitle>
+                <CardDescription>Dados cadastrais da empresa</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Nome</p>
+                    <p className="text-sm text-muted-foreground">{profile?.name || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Empresa</p>
+                    <p className="text-sm text-muted-foreground">{profile?.company_name || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">CNPJ</p>
+                    <p className="text-sm text-muted-foreground">{profile?.cnpj || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">Telefone</p>
+                    <p className="text-sm text-muted-foreground">{profile?.phone || ""}</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium">E-mail</p>
+                    <p className="text-sm text-muted-foreground">{profile?.email || ""}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Segurança</CardTitle>
+                <CardDescription>Configurações de segurança da conta</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      <Key className="mr-2 h-4 w-4" />
+                      Alterar Senha
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Alterar Senha</DialogTitle>
+                      <DialogDescription>Insira sua senha atual e escolha uma nova senha</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password">Senha Atual</Label>
+                        <Input
+                          id="current-password"
+                          type="password"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          placeholder="Digite sua senha atual"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">Nova Senha</Label>
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Digite a nova senha (mínimo 6 caracteres)"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirme a nova senha"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsChangePasswordOpen(false);
+                          setCurrentPassword("");
+                          setNewPassword("");
+                          setConfirmPassword("");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleChangePassword} disabled={passwordLoading}>
+                        {passwordLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Alterar Senha
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {activeView === "employees" && (
           <>
-            {profile?.status === "trial" ? (
+            {profile?.status.toLowerCase().trim() === "trial" ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Colaboradores</CardTitle>
@@ -363,6 +565,7 @@ const ManagerDashboard = () => {
                   <CardDescription>Gerencie seus colaboradores</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* FORM INLINE */}
                   <div className="flex gap-2 flex-wrap items-center">
                     <Input
                       placeholder="Nome"
@@ -381,6 +584,7 @@ const ManagerDashboard = () => {
                     </Button>
                   </div>
 
+                  {/* LISTA DE EMPLOYEES */}
                   <div className="space-y-2 mt-4">
                     {employees.length === 0 ? (
                       <p className="text-muted-foreground text-sm">Nenhum colaborador adicionado ainda</p>
