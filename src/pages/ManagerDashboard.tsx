@@ -203,7 +203,7 @@ const ManagerDashboard = () => {
         cnpj: user.user_metadata?.cnpj || "",
         phone: user.user_metadata?.phone || "",
         employee_count: user.user_metadata?.employee_count || "",
-        status: profileData?.status || "trial",
+        status: profileData?.status ?? user.user_metadata?.status ?? "trial",
       };
 
       setProfile(combinedProfile);
