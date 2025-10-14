@@ -54,19 +54,29 @@ const ManagerDashboard = () => {
     const fetchProfile = async () => {
       if (!user) return;
 
-      console.log("🔍 Buscando profile para user.id:", user.id);
-      
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      // Busca dados do profile (name, email)
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      console.log("📊 Resposta do Supabase - data:", data);
-      console.log("❌ Resposta do Supabase - error:", error);
-
-      if (error) {
-        console.error("Error fetching profile:", error);
-      } else {
-        console.log("✅ Dados do profile que serão salvos no state:", data);
-        setProfile(data);
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
       }
+
+      // Combina dados do profile com metadata do user
+      const combinedProfile = {
+        ...profileData,
+        name: profileData?.name || user.user_metadata?.name || "",
+        email: user.email || profileData?.email || "",
+        company_name: user.user_metadata?.company_name || "",
+        cnpj: user.user_metadata?.cnpj || "",
+        phone: user.user_metadata?.phone || "",
+        employee_count: user.user_metadata?.employee_count || "",
+      };
+
+      setProfile(combinedProfile);
 
       const supabaseCourses = await fetchCoursesFromSupabase();
       setAllCourses(supabaseCourses);
