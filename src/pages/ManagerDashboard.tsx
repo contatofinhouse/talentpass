@@ -536,7 +536,7 @@ const ManagerDashboard = () => {
 
         {activeView === "employees" && (
           <>
-            {profile?.status === "trial" ? (
+            {profile?.status.toLowerCase().trim() === "trial" ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Colaboradores</CardTitle>
