@@ -211,20 +211,24 @@ const ManagerDashboard = () => {
             <CardContent>
               <div className="space-y-4">
                 <div className="grid gap-2">
+                  <p className="text-sm font-medium">Nome</p>
+                  <p className="text-sm text-muted-foreground">{profile?.name || ""}</p>
+                </div>
+                <div className="grid gap-2">
                   <p className="text-sm font-medium">Empresa</p>
-                  <p className="text-sm text-muted-foreground">{profile?.company_name}</p>
+                  <p className="text-sm text-muted-foreground">{profile?.company_name || ""}</p>
                 </div>
                 <div className="grid gap-2">
                   <p className="text-sm font-medium">CNPJ</p>
-                  <p className="text-sm text-muted-foreground">{profile?.cnpj}</p>
+                  <p className="text-sm text-muted-foreground">{profile?.cnpj || ""}</p>
                 </div>
                 <div className="grid gap-2">
                   <p className="text-sm font-medium">Telefone</p>
-                  <p className="text-sm text-muted-foreground">{profile?.phone}</p>
+                  <p className="text-sm text-muted-foreground">{profile?.phone || ""}</p>
                 </div>
                 <div className="grid gap-2">
                   <p className="text-sm font-medium">E-mail</p>
-                  <p className="text-sm text-muted-foreground">{profile?.email}</p>
+                  <p className="text-sm text-muted-foreground">{profile?.email || ""}</p>
                 </div>
               </div>
             </CardContent>
