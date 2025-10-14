@@ -52,6 +52,21 @@ const ManagerDashboard = () => {
   const [newEmployeeEmail, setNewEmployeeEmail] = useState("");
   const [addingEmployee, setAddingEmployee] = useState(false); // loading
 
+  const fetchProfile = async () => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id) // user.id é o id do usuário logado
+      .single();
+
+    if (error) {
+      console.error("Erro ao buscar profile:", error);
+      return;
+    }
+
+    setProfile(data);
+  };
+
   const { courseTracking, toggleFavorite, toggleCompleted, fetchTracking, favoriteCount, completedCount } =
     useCourseTracking(user?.id);
 
@@ -536,7 +551,6 @@ const ManagerDashboard = () => {
 
         {activeView === "employees" && (
           <>
-            {console.log("profile no employees view:", profile)}
             {profile?.status.toLowerCase().trim() === "trial" ? (
               <Card>
                 <CardHeader>
