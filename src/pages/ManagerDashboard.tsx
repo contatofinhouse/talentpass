@@ -24,7 +24,6 @@ import { MetricCard } from "@/components/manager/MetricCard";
 import { CourseCard } from "@/components/manager/CourseCard";
 import { CourseDetailModal } from "@/components/manager/CourseDetailModal";
 import { EmptyState } from "@/components/manager/EmptyState";
-import { EmployeeManagement } from "@/components/manager/EmployeeManagement";
 import { useCourseFilters } from "@/hooks/useCourseFilters";
 import { useCourseTracking } from "@/hooks/useCourseTracking";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
@@ -38,15 +37,17 @@ const ManagerDashboard = () => {
   const [allCourses, setAllCourses] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Controla qual aba está ativa: courses / profile / employees
   const [activeView, setActiveView] = useState<"courses" | "profile" | "employees">("courses");
+
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [employees, setEmployees] = useState<any[]>([]);
 
-  // Campos temporários para adicionar employee
+  const [employees, setEmployees] = useState<any[]>([]);
   const [newEmployeeName, setNewEmployeeName] = useState("");
   const [newEmployeeEmail, setNewEmployeeEmail] = useState("");
   const [addingEmployee, setAddingEmployee] = useState(false);
@@ -70,9 +71,9 @@ const ManagerDashboard = () => {
 
   const { displayedItems: displayedCourses, hasMore, loadMoreRef } = useInfiniteScroll(filteredCourses);
 
+  // Buscar colaboradores
   const fetchEmployees = async () => {
     if (!user) return;
-
     try {
       const { data, error } = await supabase
         .from("employees")
@@ -105,6 +106,7 @@ const ManagerDashboard = () => {
     }
   };
 
+  // Adicionar employee
   const handleAddEmployee = async () => {
     if (!newEmployeeName || !newEmployeeEmail) {
       toast({
@@ -151,6 +153,7 @@ const ManagerDashboard = () => {
     }
   };
 
+  // Excluir employee
   const handleDeleteEmployee = async (id: string) => {
     try {
       await supabase.from("profiles").delete().eq("id", id).eq("manager_id", user.id);
@@ -170,15 +173,18 @@ const ManagerDashboard = () => {
     }
   };
 
+  // Buscar profile e cursos
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchProfileAndCourses = async () => {
       if (!user) return;
 
-      const { data: profileData, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error("Erro ao buscar profile:", error);
-      }
+      if (profileError) console.error("Error fetching profile:", profileError);
 
       const combinedProfile = {
         ...profileData,
@@ -188,7 +194,7 @@ const ManagerDashboard = () => {
         cnpj: user.user_metadata?.cnpj || "",
         phone: user.user_metadata?.phone || "",
         employee_count: user.user_metadata?.employee_count || "",
-        status: profileData?.status ? profileData.status.toLowerCase().trim() : "trial",
+        status: profileData?.status || "trial",
       };
 
       setProfile(combinedProfile);
@@ -202,7 +208,7 @@ const ManagerDashboard = () => {
       setLoading(false);
     };
 
-    fetchProfileData();
+    fetchProfileAndCourses();
   }, [user, fetchTracking]);
 
   const handleLogout = async () => {
@@ -212,29 +218,15 @@ const ManagerDashboard = () => {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast({
-        title: "Erro",
-        description: "Preencha todos os campos",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "Preencha todos os campos", variant: "destructive" });
       return;
     }
-
     if (newPassword.length < 6) {
-      toast({
-        title: "Erro",
-        description: "A nova senha deve ter no mínimo 6 caracteres",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "A nova senha deve ter no mínimo 6 caracteres", variant: "destructive" });
       return;
     }
-
     if (newPassword !== confirmPassword) {
-      toast({
-        title: "Erro",
-        description: "As senhas não coincidem",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "As senhas não coincidem", variant: "destructive" });
       return;
     }
 
@@ -247,41 +239,24 @@ const ManagerDashboard = () => {
       });
 
       if (signInError) {
-        toast({
-          title: "Erro",
-          description: "Senha atual incorreta",
-          variant: "destructive",
-        });
+        toast({ title: "Erro", description: "Senha atual incorreta", variant: "destructive" });
         setPasswordLoading(false);
         return;
       }
 
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
+      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
 
       if (updateError) {
-        toast({
-          title: "Erro",
-          description: updateError.message,
-          variant: "destructive",
-        });
+        toast({ title: "Erro", description: updateError.message, variant: "destructive" });
       } else {
-        toast({
-          title: "Sucesso",
-          description: "Senha alterada com sucesso",
-        });
+        toast({ title: "Sucesso", description: "Senha alterada com sucesso" });
         setIsChangePasswordOpen(false);
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       }
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: "Erro ao alterar senha",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "Erro ao alterar senha", variant: "destructive" });
     } finally {
       setPasswordLoading(false);
     }
@@ -300,41 +275,32 @@ const ManagerDashboard = () => {
       <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Métricas */}
         <div className="mb-8 grid gap-4 md:grid-cols-4">
-          <MetricCard
-            title="Total de Cursos"
-            value={allCourses.length}
-            icon={BookOpen}
-            iconColor="text-primary"
-            onClick={() => setViewType("all")}
-            isActive={viewType === "all"}
-          />
-          <MetricCard
-            title="Favoritos"
-            value={favoriteCount}
-            icon={Heart}
-            iconColor="text-red-500 fill-red-500"
-            onClick={() => setViewType("favorites")}
-            isActive={viewType === "favorites"}
-          />
-          <MetricCard
-            title="Concluídos"
-            value={completedCount}
-            icon={CheckCircle2}
-            iconColor="text-green-500"
-            onClick={() => setViewType("completed")}
-            isActive={viewType === "completed"}
-          />
+          <MetricCard title="Total de Cursos" value={allCourses.length} icon={BookOpen} iconColor="text-primary" />
+          <MetricCard title="Favoritos" value={favoriteCount} icon={Heart} iconColor="text-red-500 fill-red-500" />
+          <MetricCard title="Concluídos" value={completedCount} icon={CheckCircle2} iconColor="text-green-500" />
           <MetricCard title="Colaboradores" value={profile?.employee_count || "0"} icon={Users} />
         </div>
 
-        {activeView === "courses" && <>{/* Conteúdo de cursos (igual seu código) */}</>}
+        {/* Abas */}
+        {activeView === "courses" && (
+          <div className="space-y-6">
+            {/* Cursos */}
+            {/* ... Mantém seu código de cursos aqui ... */}
+          </div>
+        )}
 
-        {activeView === "profile" && <>{/* Conteúdo de profile (igual seu código) */}</>}
+        {activeView === "profile" && (
+          <div className="space-y-4">
+            {/* Perfil */}
+            {/* ... Mantém seu código de perfil aqui ... */}
+          </div>
+        )}
 
         {activeView === "employees" && (
           <>
-            {profile?.status === "trial" ? (
+            {profile?.status.toLowerCase().trim() === "trial" ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Colaboradores</CardTitle>
@@ -363,6 +329,7 @@ const ManagerDashboard = () => {
                   <CardDescription>Gerencie seus colaboradores</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Formulário inline */}
                   <div className="flex gap-2 flex-wrap items-center">
                     <Input
                       placeholder="Nome"
@@ -381,6 +348,7 @@ const ManagerDashboard = () => {
                     </Button>
                   </div>
 
+                  {/* Lista de employees */}
                   <div className="space-y-2 mt-4">
                     {employees.length === 0 ? (
                       <p className="text-muted-foreground text-sm">Nenhum colaborador adicionado ainda</p>
