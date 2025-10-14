@@ -5,7 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen, Key } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { fetchCoursesFromSupabase } from "@/data/courses";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +28,8 @@ import { EmployeeManagement } from "@/components/manager/EmployeeManagement";
 import { useCourseFilters } from "@/hooks/useCourseFilters";
 import { useCourseTracking } from "@/hooks/useCourseTracking";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+// IMPORTS NOVOS PARA FUNCIONALIDADE DE EMPLOYEES INLINE
+import { Trash2 } from "lucide-react"; // ícone de lixeira
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
@@ -37,14 +47,13 @@ const ManagerDashboard = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [employees, setEmployees] = useState<any[]>([]);
 
-  const {
-    courseTracking,
-    toggleFavorite,
-    toggleCompleted,
-    fetchTracking,
-    favoriteCount,
-    completedCount,
-  } = useCourseTracking(user?.id);
+  // NOVO: campos temporários para adicionar employee
+  const [newEmployeeName, setNewEmployeeName] = useState("");
+  const [newEmployeeEmail, setNewEmployeeEmail] = useState("");
+  const [addingEmployee, setAddingEmployee] = useState(false); // loading
+
+  const { courseTracking, toggleFavorite, toggleCompleted, fetchTracking, favoriteCount, completedCount } =
+    useCourseTracking(user?.id);
 
   const {
     filteredCourses,
@@ -69,7 +78,8 @@ const ManagerDashboard = () => {
       // Buscar os employees através da tabela de vínculo
       const { data, error } = await supabase
         .from("employees")
-        .select(`
+        .select(
+          `
           employee_id,
           created_at,
           profiles!employees_employee_id_fkey (
@@ -77,22 +87,95 @@ const ManagerDashboard = () => {
             name,
             email
           )
-        `)
+        `,
+        )
         .eq("manager_id", user.id);
 
       if (error) throw error;
 
       // Transformar os dados para o formato esperado
-      const employeesData = data?.map((item: any) => ({
-        id: item.profiles.id,
-        name: item.profiles.name,
-        email: item.profiles.email,
-        created_at: item.created_at,
-      })) || [];
+      const employeesData =
+        data?.map((item: any) => ({
+          id: item.profiles.id,
+          name: item.profiles.name,
+          email: item.profiles.email,
+          created_at: item.created_at,
+        })) || [];
 
       setEmployees(employeesData);
     } catch (error) {
       console.error("Erro ao buscar colaboradores:", error);
+    }
+  };
+
+  // NOVO: função para adicionar employee
+  const handleAddEmployee = async () => {
+    if (!newEmployeeName || !newEmployeeEmail) {
+      toast({
+        title: "Erro",
+        description: "Preencha nome e e-mail",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAddingEmployee(true);
+    try {
+      // Cria usuário no Supabase Auth e envia convite
+      const { data: userData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(newEmployeeEmail, {
+        data: { name: newEmployeeName, user_role: "employee" },
+      });
+
+      if (inviteError) throw inviteError;
+
+      // Cria profile vinculado ao manager
+      await supabase.from("profiles").insert({
+        id: userData.user.id,
+        name: newEmployeeName,
+        email: newEmployeeEmail,
+        user_role: "employee",
+        manager_id: user.id,
+      });
+
+      toast({
+        title: "Sucesso",
+        description: "Colaborador adicionado e convite enviado",
+      });
+
+      setNewEmployeeName("");
+      setNewEmployeeEmail("");
+      fetchEmployees(); // atualiza lista
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível adicionar colaborador",
+        variant: "destructive",
+      });
+    } finally {
+      setAddingEmployee(false);
+    }
+  };
+
+  // NOVO: função para excluir employee
+  const handleDeleteEmployee = async (id: string) => {
+    try {
+      await supabase.from("profiles").delete().eq("id", id).eq("manager_id", user.id);
+      // Opcional: deletar do Auth também
+      // await supabase.auth.admin.deleteUser(id);
+
+      toast({
+        title: "Sucesso",
+        description: "Colaborador removido",
+      });
+      fetchEmployees();
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover colaborador",
+        variant: "destructive",
+      });
     }
   };
 
@@ -236,8 +319,8 @@ const ManagerDashboard = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 grid gap-4 md:grid-cols-4">
-          <MetricCard 
-            title="Total de Cursos" 
+          <MetricCard
+            title="Total de Cursos"
             value={allCourses.length}
             icon={BookOpen}
             iconColor="text-primary"
@@ -252,19 +335,15 @@ const ManagerDashboard = () => {
             onClick={() => setViewType("favorites")}
             isActive={viewType === "favorites"}
           />
-          <MetricCard 
-            title="Concluídos" 
-            value={completedCount} 
-            icon={CheckCircle2} 
+          <MetricCard
+            title="Concluídos"
+            value={completedCount}
+            icon={CheckCircle2}
             iconColor="text-green-500"
             onClick={() => setViewType("completed")}
             isActive={viewType === "completed"}
           />
-          <MetricCard
-            title="Colaboradores"
-            value={profile?.employee_count || "0"}
-            icon={Users}
-          />
+          <MetricCard title="Colaboradores" value={profile?.employee_count || "0"} icon={Users} />
         </div>
 
         {activeView === "courses" && (
@@ -279,7 +358,7 @@ const ManagerDashboard = () => {
                   className="pl-10"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <p className="text-sm font-medium text-muted-foreground">Categoria</p>
                 <div className="flex flex-wrap gap-2">
@@ -314,13 +393,15 @@ const ManagerDashboard = () => {
             </div>
 
             {displayedCourses.length === 0 ? (
-              <EmptyState 
-                icon={viewType === "favorites" ? Heart : viewType === "completed" ? CheckCircle2 : Search} 
+              <EmptyState
+                icon={viewType === "favorites" ? Heart : viewType === "completed" ? CheckCircle2 : Search}
                 message={
-                  viewType === "favorites" ? "Nenhum curso favoritado ainda" :
-                  viewType === "completed" ? "Nenhum curso concluído ainda" :
-                  "Nenhum curso encontrado"
-                } 
+                  viewType === "favorites"
+                    ? "Nenhum curso favoritado ainda"
+                    : viewType === "completed"
+                      ? "Nenhum curso concluído ainda"
+                      : "Nenhum curso encontrado"
+                }
               />
             ) : (
               <>
@@ -395,9 +476,7 @@ const ManagerDashboard = () => {
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Alterar Senha</DialogTitle>
-                      <DialogDescription>
-                        Insira sua senha atual e escolha uma nova senha
-                      </DialogDescription>
+                      <DialogDescription>Insira sua senha atual e escolha uma nova senha</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                       <div className="space-y-2">
@@ -461,9 +540,7 @@ const ManagerDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>Colaboradores</CardTitle>
-                  <CardDescription>
-                    Ative seu plano para gerenciar colaboradores
-                  </CardDescription>
+                  <CardDescription>Ative seu plano para gerenciar colaboradores</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center py-8">
                   <p className="text-center text-muted-foreground mb-4">
@@ -482,20 +559,57 @@ const ManagerDashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              <EmployeeManagement 
-                employees={employees} 
-                onRefresh={fetchEmployees}
-              />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Colaboradores</CardTitle>
+                  <CardDescription>Gerencie seus colaboradores</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* FORM INLINE */}
+                  <div className="flex gap-2 flex-wrap items-center">
+                    <Input
+                      placeholder="Nome"
+                      value={newEmployeeName}
+                      onChange={(e) => setNewEmployeeName(e.target.value)}
+                      className="flex-1 min-w-[150px]"
+                    />
+                    <Input
+                      placeholder="E-mail"
+                      value={newEmployeeEmail}
+                      onChange={(e) => setNewEmployeeEmail(e.target.value)}
+                      className="flex-1 min-w-[150px]"
+                    />
+                    <Button onClick={handleAddEmployee} disabled={addingEmployee}>
+                      {addingEmployee ? "..." : "Adicionar"}
+                    </Button>
+                  </div>
+
+                  {/* LISTA DE EMPLOYEES */}
+                  <div className="space-y-2 mt-4">
+                    {employees.length === 0 ? (
+                      <p className="text-muted-foreground text-sm">Nenhum colaborador adicionado ainda</p>
+                    ) : (
+                      employees.map((emp) => (
+                        <div key={emp.id} className="flex justify-between items-center border rounded p-2">
+                          <div>
+                            <p className="font-medium">{emp.name}</p>
+                            <p className="text-sm text-muted-foreground">{emp.email}</p>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteEmployee(emp.id)}>
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </>
         )}
       </div>
 
-      <CourseDetailModal
-        course={selectedCourse}
-        isOpen={!!selectedCourse}
-        onClose={() => setSelectedCourse(null)}
-      />
+      <CourseDetailModal course={selectedCourse} isOpen={!!selectedCourse} onClose={() => setSelectedCourse(null)} />
     </div>
   );
 };
