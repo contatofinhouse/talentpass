@@ -179,17 +179,6 @@ const Signup = () => {
                   "Começar Agora"
                 )}
               </Button>
-
-              <div className="text-center mt-4">
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => navigate("/auth")}
-                  className="text-sm text-muted-foreground hover:text-primary"
-                >
-                  Esqueci minha senha
-                </Button>
-              </div>
             </form>
           </CardContent>
         </Card>
