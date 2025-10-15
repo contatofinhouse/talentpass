@@ -12,14 +12,15 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Iniciando função invite-employee");
+
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
     const { email, name, manager_id } = await req.json();
-
-    console.log("Enviando convite para:", email, "Manager:", manager_id);
+    console.log("Recebido:", { email, name, manager_id });
 
     // Verificar se o manager tem status active
     const { data: managerProfile, error: profileError } = await supabaseClient
@@ -29,10 +30,14 @@ serve(async (req) => {
       .single();
 
     if (profileError || !managerProfile) {
+      console.error("Erro ao buscar manager:", profileError, "managerProfile:", managerProfile);
       throw new Error("Manager não encontrado");
     }
 
+    console.log("Manager encontrado:", managerProfile);
+
     if (managerProfile.status !== "active") {
+      console.error("Manager não ativo:", managerProfile);
       throw new Error("Apenas managers com plano ativo podem adicionar colaboradores");
     }
 
@@ -40,10 +45,7 @@ serve(async (req) => {
     const { data: inviteData, error: inviteError } = await supabaseClient.auth.admin.inviteUserByEmail(
       email,
       {
-        data: {
-          name: name,
-          manager_id: manager_id,
-        },
+        data: { name, manager_id },
         redirectTo: `${Deno.env.get("SUPABASE_URL")}/auth/v1/verify`,
       }
     );
@@ -55,21 +57,15 @@ serve(async (req) => {
 
     console.log("Convite enviado com sucesso:", inviteData);
 
-    return new Response(
-      JSON.stringify({ success: true, user: inviteData.user }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
-    );
+    return new Response(JSON.stringify({ success: true, user: inviteData.user }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
   } catch (error: any) {
     console.error("Erro na função invite-employee:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 400,
+    });
   }
 });
