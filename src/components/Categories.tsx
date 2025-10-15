@@ -1,16 +1,16 @@
-import { TrendingUp, Sparkles, Users, Shield, Megaphone } from "lucide-react";
+import { TrendingUp, Sparkles, Users, Shield, Megaphone, Cpu } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const categories = [
   {
     icon: TrendingUp,
-    title: "Vendas & Marketing",
-    description: "Técnicas e estratégias para aumentar o sucesso em vendas da sua equipe",
+    title: "Sales Success",
+    description: "Técnicas e estratégias para aumentar o sucesso em vendas",
     color: "from-green-500 to-emerald-500",
   },
   {
     icon: Users,
-    title: "Liderança & Desenvolvimento Pessoal",
+    title: "Liderança",
     description: "Desenvolva habilidades para liderar equipes de forma eficaz",
     color: "from-blue-500 to-cyan-500",
   },
@@ -28,9 +28,15 @@ const categories = [
   },
   {
     icon: Megaphone,
-    title: "Comunicação & Cultura",
-    description: "Aprimore a comunicação interpessoal e corporativa da equipe",
+    title: "Comunicação",
+    description: "Aprimore sua comunicação interpessoal e corporativa",
     color: "from-red-500 to-rose-500",
+  },
+  {
+    icon: Cpu,
+    title: "Automação",
+    description: "Use ferramentas e processos para automatizar tarefas e aumentar produtividade",
+    color: "from-indigo-500 to-violet-500",
   },
 ];
 
