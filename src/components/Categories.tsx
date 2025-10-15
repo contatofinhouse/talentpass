@@ -1,24 +1,33 @@
-import { TrendingUp, Sparkles, Users } from "lucide-react";
-import { Card } from "@/components/ui/card";
-
 const categories = [
   {
     icon: TrendingUp,
-    title: "Vendas e Marketing",
-    description: "Técnicas modernas de vendas, SEO e estratégias de marketing digital",
+    title: "Vendas & Marketing",
+    description: "Técnicas e estratégias para aumentar o sucesso em vendas da sua equipe",
     color: "from-green-500 to-emerald-500",
   },
   {
+    icon: Users,
+    title: "Liderança & Desenvolvimento Pessoal",
+    description: "Desenvolva habilidades para liderar equipes de forma eficaz",
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
     icon: Sparkles,
-    title: "Automação com IA",
-    description: "Ferramentas de IA para automatizar processos e aumentar produtividade",
+    title: "Gestão estratégica",
+    description: "Aprenda a planejar e executar estratégias corporativas",
     color: "from-purple-500 to-pink-500",
   },
   {
-    icon: Users,
-    title: "Gestão, Liderança e Comunicação",
-    description: "Desenvolva habilidades de gestão, liderança e comunicação efetiva",
-    color: "from-blue-500 to-cyan-500",
+    icon: Shield,
+    title: "ESG & Compliance",
+    description: "Entenda governança, sustentabilidade e conformidade",
+    color: "from-yellow-500 to-orange-500",
+  },
+  {
+    icon: Megaphone,
+    title: "Comunicação & Cultura",
+    description: "Aprimore a comunicação interpessoal e corporativa da equipe",
+    color: "from-red-500 to-rose-500",
   },
 ];
 
@@ -27,14 +36,12 @@ const Categories = () => {
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold lg:text-5xl">
-            Áreas de conhecimento
-          </h2>
+          <h2 className="mb-4 text-4xl font-bold lg:text-5xl">Áreas de conhecimento</h2>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Conteúdo especializado para desenvolver as competências mais importantes do mercado
           </p>
         </div>
-        
+
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category, index) => {
             const Icon = category.icon;
@@ -43,7 +50,9 @@ const Categories = () => {
                 key={index}
                 className="group cursor-pointer overflow-hidden border-2 bg-gradient-to-br from-card to-secondary p-6 transition-all hover:scale-105 hover:shadow-[0_20px_50px_-10px_hsl(var(--primary)/0.2)]"
               >
-                <div className={`mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${category.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
+                <div
+                  className={`mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${category.color} text-white shadow-lg transition-transform group-hover:scale-110`}
+                >
                   <Icon className="h-7 w-7" />
                 </div>
                 <h3 className="mb-2 text-xl font-bold">{category.title}</h3>
