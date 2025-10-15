@@ -121,21 +121,16 @@ const ManagerDashboard = () => {
 
     setAddingEmployee(true);
     try {
-      // Cria usuário no Supabase Auth e envia convite
-      const { data: userData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(newEmployeeEmail, {
-        data: { name: newEmployeeName, user_role: "employee" },
+      // Chama a função Edge do Supabase
+      const { data, error } = await supabase.functions.invoke("invite-employee", {
+        body: JSON.stringify({
+          name: newEmployeeName,
+          email: newEmployeeEmail,
+          manager_id: user.id,
+        }),
       });
 
-      if (inviteError) throw inviteError;
-
-      // Cria profile vinculado ao manager
-      await supabase.from("profiles").insert({
-        id: userData.user.id,
-        name: newEmployeeName,
-        email: newEmployeeEmail,
-        user_role: "employee",
-        manager_id: user.id,
-      });
+      if (error) throw error;
 
       toast({
         title: "Sucesso",
@@ -145,11 +140,11 @@ const ManagerDashboard = () => {
       setNewEmployeeName("");
       setNewEmployeeEmail("");
       fetchEmployees(); // atualiza lista
-    } catch (error: any) {
-      console.error(error);
+    } catch (err: any) {
+      console.error(err);
       toast({
         title: "Erro",
-        description: error.message || "Não foi possível adicionar colaborador",
+        description: err.message || "Não foi possível adicionar colaborador",
         variant: "destructive",
       });
     } finally {
