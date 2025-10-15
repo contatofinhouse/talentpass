@@ -9,7 +9,7 @@ const plans = [
     icon: "🟣",
     price: "R$ 49",
     period: "/mês",
-    subtitle: "(até 50 colaboradores)",
+    subtitle: "(até 40 colaboradores)",
     additional: "+ R$ 0,99 por colaborador adicional",
     description: "Microlearning corporativo para equipes que querem crescer juntas.",
     features: [
