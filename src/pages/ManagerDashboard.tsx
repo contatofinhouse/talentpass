@@ -547,7 +547,7 @@ const ManagerDashboard = () => {
                     Você está no plano trial. Para adicionar e gerenciar colaboradores, ative seu plano.
                   </p>
                   <Button
-                    className="w-full sm:max-w-xs"
+                    className="w-full"
                     onClick={() => {
                       const phoneNumber = "5511955842951";
                       const message = "Olá! Gostaria de ativar o plano para gerenciar colaboradores.";
