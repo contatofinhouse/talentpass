@@ -18,7 +18,7 @@ interface ManagerHeaderProps {
 export const ManagerHeader = ({ profile, onNavigate, onLogout }: ManagerHeaderProps) => {
   const handleActivatePlan = () => {
     const message = encodeURIComponent(
-      "Olá! Quero ativar o plano Starter na plataforma de educação com IA. \nVi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. \nGostaria de incluir minha equipe e garantir acesso imediato.",
+      "Olá! Quero ativar o plano Teams na plataforma de educação com IA. \nVi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. \nGostaria de incluir minha equipe e garantir acesso imediato.",
     );
     window.open(`https://wa.me/5511955842951?text=${message}`, "_blank");
   };
