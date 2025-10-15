@@ -92,7 +92,7 @@ const Auth = () => {
                   Não tem conta? Cadastre-se
                 </Button>
                 <Button type="button" variant="link" onClick={() => navigate("/reset-password")}>
-                  Esqueceu sua senha?
+                  Esqueceu sua senha bobo?
                 </Button>
                 <Button type="button" variant="link" onClick={() => navigate("/")}>
                   Voltar para página inicial
