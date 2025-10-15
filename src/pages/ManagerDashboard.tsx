@@ -109,48 +109,60 @@ const ManagerDashboard = () => {
   };
 
   // NOVO: função para adicionar employee
-  const handleAddEmployee = async () => {
-    if (!newEmployeeName || !newEmployeeEmail) {
-      toast({
-        title: "Erro",
-        description: "Preencha nome e e-mail",
-        variant: "destructive",
-      });
-      return;
+const EDGE_FUNCTION_URL = "https://tpwafkhuetbrdlykyegy.supabase.co/functions/v1/hyper-endpoint";
+
+const handleAddEmployee = async () => {
+  if (!newEmployeeName || !newEmployeeEmail) {
+    toast({
+      title: "Erro",
+      description: "Preencha nome e e-mail",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setAddingEmployee(true);
+  try {
+    const res = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Se quiser autenticar, pode adicionar o Bearer token:
+        // "Authorization": `Bearer ${user?.access_token}`
+      },
+      body: JSON.stringify({
+        name: newEmployeeName,
+        email: newEmployeeEmail,
+        manager_id: user.id,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Erro ao adicionar colaborador");
     }
 
-    setAddingEmployee(true);
-    try {
-      // Chama a função Edge do Supabase
-      const { data, error } = await supabase.functions.invoke("invite-employee", {
-        body: JSON.stringify({
-          name: newEmployeeName,
-          email: newEmployeeEmail,
-          manager_id: user.id,
-        }),
-      });
+    toast({
+      title: "Sucesso",
+      description: "Colaborador adicionado e convite enviado",
+    });
 
-      if (error) throw error;
+    setNewEmployeeName("");
+    setNewEmployeeEmail("");
+    fetchEmployees(); // atualiza lista
+  } catch (err: any) {
+    console.error(err);
+    toast({
+      title: "Erro",
+      description: err.message || "Não foi possível adicionar colaborador",
+      variant: "destructive",
+    });
+  } finally {
+    setAddingEmployee(false);
+  }
+};
 
-      toast({
-        title: "Sucesso",
-        description: "Colaborador adicionado e convite enviado",
-      });
-
-      setNewEmployeeName("");
-      setNewEmployeeEmail("");
-      fetchEmployees(); // atualiza lista
-    } catch (err: any) {
-      console.error(err);
-      toast({
-        title: "Erro",
-        description: err.message || "Não foi possível adicionar colaborador",
-        variant: "destructive",
-      });
-    } finally {
-      setAddingEmployee(false);
-    }
-  };
 
   // NOVO: função para excluir employee
   const handleDeleteEmployee = async (id: string) => {
