@@ -91,7 +91,7 @@ const Auth = () => {
                 <Button type="button" variant="link" onClick={() => navigate("/signup")}>
                   Não tem conta? Cadastre-se
                 </Button>
-                <Button type="button" variant="link" onClick={() => navigate("/reset-password")}>
+                <Button type="button" variant="link" onClick={() => navigate("/resetpassword")}>
                   Esqueceu sua senha?
                 </Button>
                 <Button type="button" variant="link" onClick={() => navigate("/")}>
