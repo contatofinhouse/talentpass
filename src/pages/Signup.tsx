@@ -106,7 +106,7 @@ const Signup = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="companyName">Nome da Empresa *</Label>
+                <Label htmlFor="companyName">Nome da Empresa</Label>
                 <Input
                   id="companyName"
                   value={formData.companyName}
@@ -116,7 +116,7 @@ const Signup = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="managerName">Nome *</Label>
+                <Label htmlFor="managerName">Nome</Label>
                 <Input
                   id="managerName"
                   value={formData.managerName}
@@ -126,7 +126,7 @@ const Signup = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email de trabalho *</Label>
+                <Label htmlFor="email">Email de trabalho</Label>
                 <Input
                   id="email"
                   type="email"
@@ -137,7 +137,7 @@ const Signup = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="phone">Telefone *</Label>
+                <Label htmlFor="phone">Telefone</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -149,7 +149,7 @@ const Signup = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="password">Senha *</Label>
+                <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
                   type="password"
