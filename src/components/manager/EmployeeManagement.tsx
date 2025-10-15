@@ -41,11 +41,10 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [employeeName, setEmployeeName] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
-  const [employeePassword, setEmployeePassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAddEmployee = async () => {
-    if (!employeeName || !employeeEmail || !employeePassword) {
+    if (!employeeName || !employeeEmail) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos",
@@ -54,74 +53,37 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
       return;
     }
 
-    if (employeePassword.length < 6) {
-      toast({
-        title: "Erro",
-        description: "A senha deve ter no mínimo 6 caracteres",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // 1. Criar o usuário no auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: employeeEmail,
-        password: employeePassword,
-        options: {
-          data: {
-            name: employeeName,
-          },
-        },
-      });
-
-      if (authError) throw authError;
-
-      if (!authData.user) {
-        throw new Error("Falha ao criar usuário");
-      }
-
-      // 2. Obter o ID do manager atual
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // 3. Adicionar role de employee
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({
-          user_id: authData.user.id,
-          role: "employee",
-        });
-
-      if (roleError) throw roleError;
-
-      // 4. Criar vínculo na tabela employees
-      const { error: employeeError } = await supabase
-        .from("employees")
-        .insert({
+      // Chamar edge function para enviar convite
+      const { data, error } = await supabase.functions.invoke("invite-employee", {
+        body: {
+          email: employeeEmail,
+          name: employeeName,
           manager_id: user.id,
-          employee_id: authData.user.id,
-        });
+        },
+      });
 
-      if (employeeError) throw employeeError;
+      if (error) throw error;
 
       toast({
-        title: "Sucesso",
-        description: "Colaborador adicionado com sucesso",
+        title: "Convite enviado",
+        description: "Um e-mail de convite foi enviado para o colaborador",
       });
 
       setIsAddDialogOpen(false);
       setEmployeeName("");
       setEmployeeEmail("");
-      setEmployeePassword("");
       await onRefresh();
     } catch (error: any) {
-      console.error("Erro ao adicionar colaborador:", error);
+      console.error("Erro ao enviar convite:", error);
       toast({
         title: "Erro",
-        description: error.message || "Erro ao adicionar colaborador",
+        description: error.message || "Erro ao enviar convite",
         variant: "destructive",
       });
     } finally {
@@ -219,16 +181,6 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
                     placeholder="email@empresa.com"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="employee-password">Senha</Label>
-                  <Input
-                    id="employee-password"
-                    type="password"
-                    value={employeePassword}
-                    onChange={(e) => setEmployeePassword(e.target.value)}
-                    placeholder="Mínimo 6 caracteres"
-                  />
-                </div>
               </div>
               <DialogFooter>
                 <Button
@@ -237,7 +189,6 @@ export const EmployeeManagement = ({ employees, onRefresh }: EmployeeManagementP
                     setIsAddDialogOpen(false);
                     setEmployeeName("");
                     setEmployeeEmail("");
-                    setEmployeePassword("");
                   }}
                 >
                   Cancelar
