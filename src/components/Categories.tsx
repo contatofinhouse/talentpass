@@ -1,3 +1,6 @@
+import { TrendingUp, Sparkles, Users, Shield, Megaphone } from "lucide-react";
+import { Card } from "@/components/ui/card";
+
 const categories = [
   {
     icon: TrendingUp,
