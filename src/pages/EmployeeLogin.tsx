@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabaseClient"; // ⚠️ Certifique-se que este import está configurado corretamente
+import { supabase } from "@/lib/supabaseClient";
 
 const EmployeeLogin = () => {
   const navigate = useNavigate();
@@ -98,20 +98,26 @@ const EmployeeLogin = () => {
               <Button type="submit" size="lg" className="w-full">
                 Acessar Dashboard
               </Button>
-
-              {/* 🔹 Link de esqueci a senha */}
-              <div className="text-center mt-2">
-                <Button type="button" variant="link" disabled={isResetting} onClick={handleForgotPassword}>
-                  {isResetting ? "Enviando..." : "Esqueceu sua senha?"}
-                </Button>
-              </div>
-
-              <div className="text-center">
-                <Button type="button" variant="link" onClick={() => navigate("/")}>
-                  Voltar para página inicial
-                </Button>
-              </div>
             </form>
+
+            {/* 🔹 Link de esqueci a senha — AGORA FORA DO FORM */}
+            <div className="text-center mt-4">
+              <Button
+                type="button"
+                variant="link"
+                className="text-sm text-primary underline-offset-4 hover:underline"
+                disabled={isResetting}
+                onClick={handleForgotPassword}
+              >
+                {isResetting ? "Enviando..." : "Esqueceu sua senha?"}
+              </Button>
+            </div>
+
+            <div className="text-center mt-2">
+              <Button type="button" variant="link" onClick={() => navigate("/")}>
+                Voltar para página inicial
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
