@@ -18,11 +18,7 @@ const Welcome = () => {
 
     const fetchProfile = async () => {
       try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("id, name")
-          .eq("id", user.id)
-          .maybeSingle();
+        const { data, error } = await supabase.from("profiles").select("id, name").eq("id", user.id).maybeSingle();
 
         if (error) {
           console.error("Erro ao buscar perfil:", error);
@@ -113,7 +109,7 @@ const Welcome = () => {
                 onClick={() => {
                   const phoneNumber = "5511955842951";
                   const message = `
-Olá! Quero ativar o plano Starter na plataforma de educação com IA.
+Olá! Quero ativar o plano Teams na plataforma de educação com IA.
 Vi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional.
 Gostaria de incluir minha equipe e garantir acesso imediato.
                   `.trim();
