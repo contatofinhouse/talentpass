@@ -48,9 +48,7 @@ const Auth = () => {
         <Card className="mx-auto max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>
-              Entre com suas credenciais para acessar a plataforma
-            </CardDescription>
+            <CardDescription>Entre com suas credenciais para acessar a plataforma</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -60,9 +58,7 @@ const Auth = () => {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="seu@email.com"
                   required
                 />
@@ -74,9 +70,7 @@ const Auth = () => {
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
                   required
                 />
@@ -94,18 +88,13 @@ const Auth = () => {
               </Button>
 
               <div className="text-center space-y-2">
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => navigate("/signup")}
-                >
+                <Button type="button" variant="link" onClick={() => navigate("/signup")}>
                   Não tem conta? Cadastre-se
                 </Button>
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => navigate("/")}
-                >
+                <Button type="button" variant="link" onClick={() => navigate("/reset-password")}>
+                  Esqueceu sua senha?
+                </Button>
+                <Button type="button" variant="link" onClick={() => navigate("/")}>
                   Voltar para página inicial
                 </Button>
               </div>
