@@ -8,8 +8,15 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   name text,
   email text,
+  company_name text,
+  phone text,
+  cnpj text,
+  employee_count text,
   status text default 'trial' check (status in ('trial', 'active')),
-  created_at timestamptz default now()
+  manager_id uuid references public.profiles(id),
+  company_id uuid,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 -- 2. Enable RLS
@@ -47,11 +54,13 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, name, email, status)
+  insert into public.profiles (id, name, email, company_name, phone, status)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'name', ''),
     new.email,
+    coalesce(new.raw_user_meta_data->>'company_name', ''),
+    coalesce(new.raw_user_meta_data->>'phone', ''),
     'trial'
   )
   on conflict (id) do nothing;
@@ -66,11 +75,13 @@ create trigger on_auth_user_created
   for each row execute function public.handle_new_user();
 
 -- 7. Criar perfis para usuários existentes que não têm perfil
-insert into public.profiles (id, name, email, status)
+insert into public.profiles (id, name, email, company_name, phone, status)
 select 
   au.id,
   coalesce(au.raw_user_meta_data->>'name', ''),
   au.email,
+  coalesce(au.raw_user_meta_data->>'company_name', ''),
+  coalesce(au.raw_user_meta_data->>'phone', ''),
   'trial'
 from auth.users au
 where not exists (
