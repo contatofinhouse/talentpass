@@ -207,6 +207,9 @@ const ManagerDashboard = () => {
           console.error("Error fetching profile:", profileError);
         }
 
+        console.log("Profile data from DB:", profileData);
+        console.log("User metadata:", user.user_metadata);
+
         const combinedProfile = {
           ...profileData,
           name: profileData?.name || user.user_metadata?.name || "",
@@ -218,9 +221,11 @@ const ManagerDashboard = () => {
           status: (profileData?.status ?? user.user_metadata?.status ?? "trial") || "trial",
         };
 
+        console.log("Combined profile:", combinedProfile);
         setProfile(combinedProfile);
 
         const supabaseCourses = await fetchCoursesFromSupabase();
+        console.log("Courses loaded:", supabaseCourses.length);
         setAllCourses(supabaseCourses);
 
         await fetchTracking();
