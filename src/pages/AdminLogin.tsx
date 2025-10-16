@@ -100,6 +100,12 @@ const AdminLogin = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Entrando..." : "Entrar"}
             </Button>
+
+            <div className="text-center mt-4">
+              <Button type="button" variant="link" onClick={() => navigate("/resetpassword")}>
+                Esqueci minha senha
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
