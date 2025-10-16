@@ -172,32 +172,45 @@ const ManagerDashboard = () => {
   // === Load profile and data ===
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user) return;
+      if (!user) {
+        console.log("❌ ManagerDashboard: Sem usuário");
+        return;
+      }
 
+      console.log("🔄 ManagerDashboard: Iniciando carregamento para user:", user.id);
       setLoading(true);
       try {
-        const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+        const { data: profileData, error: profileError } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+        
+        console.log("📊 Profile Data do Supabase:", profileData);
+        console.log("📊 User Metadata:", user.user_metadata);
+        console.log("❌ Profile Error:", profileError);
 
         const combinedProfile = {
+          id: user.id,
           ...profileData,
           name: profileData?.name || user.user_metadata?.name || "",
           email: user.email || profileData?.email || "",
-          company_name: user.user_metadata?.company_name || "",
-          cnpj: user.user_metadata?.cnpj || "",
-          phone: user.user_metadata?.phone || "",
-          employee_count: user.user_metadata?.employee_count || "",
+          company_name: profileData?.company_name || user.user_metadata?.company_name || "",
+          cnpj: profileData?.cnpj || user.user_metadata?.cnpj || "",
+          phone: profileData?.phone || user.user_metadata?.phone || "",
+          employee_count: profileData?.employee_count || user.user_metadata?.employee_count || "",
           status: (profileData?.status ?? user.user_metadata?.status ?? "trial") || "trial",
         };
 
+        console.log("✅ Combined Profile:", combinedProfile);
         setProfile(combinedProfile);
 
         const supabaseCourses = await fetchCoursesFromSupabase();
+        console.log("📚 Cursos carregados:", supabaseCourses.length);
         setAllCourses(supabaseCourses);
 
         await fetchTracking();
         await fetchEmployees();
+        
+        console.log("✅ ManagerDashboard: Carregamento concluído");
       } catch (e) {
-        console.error("Erro ao carregar perfil:", e);
+        console.error("❌ Erro ao carregar perfil:", e);
       } finally {
         setLoading(false);
       }
@@ -254,10 +267,22 @@ const ManagerDashboard = () => {
     }
   };
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    console.error("❌ Profile é null mesmo após loading!");
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive">Erro ao carregar perfil</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">Recarregar</Button>
+        </div>
       </div>
     );
   }
