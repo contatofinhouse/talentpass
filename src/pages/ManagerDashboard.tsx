@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen, Key, Trash2 } from "lucide-react";
+import { Heart, CheckCircle2, Search, Users, Loader2, BookOpen, Key } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +27,7 @@ import { EmptyState } from "@/components/manager/EmptyState";
 import { useCourseFilters } from "@/hooks/useCourseFilters";
 import { useCourseTracking } from "@/hooks/useCourseTracking";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+// import { Trash2 } from "lucide-react"; // comentado pois não é usado agora
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
@@ -42,12 +43,11 @@ const ManagerDashboard = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [employees, setEmployees] = useState<any[]>([]);
-  const [newEmployeeName, setNewEmployeeName] = useState("");
-  const [newEmployeeEmail, setNewEmployeeEmail] = useState("");
-  const [addingEmployee, setAddingEmployee] = useState(false);
 
-  const EDGE_FUNCTION_URL = "https://tpwafkhuetbrdlykyegy.supabase.co/functions/v1/hyper-endpoint";
+  // const [employees, setEmployees] = useState<any[]>([]);
+  // const [newEmployeeName, setNewEmployeeName] = useState("");
+  // const [newEmployeeEmail, setNewEmployeeEmail] = useState("");
+  // const [addingEmployee, setAddingEmployee] = useState(false);
 
   const { courseTracking, toggleFavorite, toggleCompleted, fetchTracking, favoriteCount, completedCount } =
     useCourseTracking(user?.id);
@@ -68,149 +68,33 @@ const ManagerDashboard = () => {
 
   const { displayedItems: displayedCourses, hasMore, loadMoreRef } = useInfiniteScroll(filteredCourses);
 
-  // === Fetch employees ===
-  const fetchEmployees = async () => {
-    if (!user) return;
-    try {
-      const { data, error } = await supabase
-        .from("employees")
-        .select(
-          `
-          employee_id,
-          created_at,
-          profiles!employees_employee_id_fkey (
-            id,
-            name,
-            email
-          )
-        `,
-        )
-        .eq("manager_id", user.id);
-
-      if (error) throw error;
-
-      const employeesData =
-        data?.map((item: any) => ({
-          id: item.profiles.id,
-          name: item.profiles.name,
-          email: item.profiles.email,
-          created_at: item.created_at,
-        })) || [];
-
-      setEmployees(employeesData);
-    } catch (error) {
-      console.error("Erro ao buscar colaboradores:", error);
-    }
-  };
-
-  // === Add employee ===
-  const handleAddEmployee = async () => {
-    if (!newEmployeeName || !newEmployeeEmail) {
-      toast({
-        title: "Erro",
-        description: "Preencha nome e e-mail",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setAddingEmployee(true);
-    try {
-      const res = await fetch(EDGE_FUNCTION_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: newEmployeeName,
-          email: newEmployeeEmail,
-          manager_id: user.id,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        console.error("Erro ao adicionar colaborador:", data);
-        toast({
-          title: "Erro ao adicionar colaborador",
-          description: data.error || JSON.stringify(data),
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({ title: "Sucesso", description: "Colaborador adicionado e convite enviado" });
-      setNewEmployeeName("");
-      setNewEmployeeEmail("");
-      fetchEmployees();
-    } catch (err: any) {
-      console.error("Erro inesperado ao adicionar colaborador:", err);
-      toast({
-        title: "Erro inesperado",
-        description: err.message || JSON.stringify(err),
-        variant: "destructive",
-      });
-    } finally {
-      setAddingEmployee(false);
-    }
-  };
-
-  // === Delete employee ===
-  const handleDeleteEmployee = async (id: string) => {
-    try {
-      await supabase.from("profiles").delete().eq("id", id).eq("manager_id", user.id);
-      toast({ title: "Sucesso", description: "Colaborador removido" });
-      fetchEmployees();
-    } catch (error: any) {
-      console.error(error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível remover colaborador",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // === Load profile and data ===
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user) {
-        console.log("❌ ManagerDashboard: Sem usuário");
-        return;
-      }
+      if (!user) return;
 
-      console.log("🔄 ManagerDashboard: Iniciando carregamento para user:", user.id);
       setLoading(true);
       try {
-        const { data: profileData, error: profileError } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-        
-        console.log("📊 Profile Data do Supabase:", profileData);
-        console.log("📊 User Metadata:", user.user_metadata);
-        console.log("❌ Profile Error:", profileError);
+        const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
 
         const combinedProfile = {
-          id: user.id,
           ...profileData,
           name: profileData?.name || user.user_metadata?.name || "",
           email: user.email || profileData?.email || "",
-          company_name: profileData?.company_name || user.user_metadata?.company_name || "",
-          cnpj: profileData?.cnpj || user.user_metadata?.cnpj || "",
-          phone: profileData?.phone || user.user_metadata?.phone || "",
-          employee_count: profileData?.employee_count || user.user_metadata?.employee_count || "",
+          company_name: user.user_metadata?.company_name || "",
+          cnpj: user.user_metadata?.cnpj || "",
+          phone: user.user_metadata?.phone || "",
+          employee_count: user.user_metadata?.employee_count || "",
           status: (profileData?.status ?? user.user_metadata?.status ?? "trial") || "trial",
         };
 
-        console.log("✅ Combined Profile:", combinedProfile);
         setProfile(combinedProfile);
 
         const supabaseCourses = await fetchCoursesFromSupabase();
-        console.log("📚 Cursos carregados:", supabaseCourses.length);
         setAllCourses(supabaseCourses);
-
         await fetchTracking();
-        await fetchEmployees();
-        
-        console.log("✅ ManagerDashboard: Carregamento concluído");
+        // await fetchEmployees(); // comentado
       } catch (e) {
-        console.error("❌ Erro ao carregar perfil:", e);
+        console.error("Erro ao carregar perfil:", e);
       } finally {
         setLoading(false);
       }
@@ -267,7 +151,7 @@ const ManagerDashboard = () => {
     }
   };
 
-  if (loading) {
+  if (loading || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -275,21 +159,6 @@ const ManagerDashboard = () => {
     );
   }
 
-  if (!profile) {
-    console.error("❌ Profile é null mesmo após loading!");
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-destructive">Erro ao carregar perfil</p>
-          <Button onClick={() => window.location.reload()} className="mt-4">Recarregar</Button>
-        </div>
-      </div>
-    );
-  }
-
-  // ======================================
-  // PAGE START
-  // ======================================
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} />
@@ -300,7 +169,7 @@ const ManagerDashboard = () => {
           <MetricCard title="Total de Cursos" value={allCourses.length} icon={BookOpen} iconColor="text-primary" />
           <MetricCard title="Favoritos" value={favoriteCount} icon={Heart} iconColor="text-red-500 fill-red-500" />
           <MetricCard title="Concluídos" value={completedCount} icon={CheckCircle2} iconColor="text-green-500" />
-          <MetricCard title="Colaboradores" value={employees.length.toString()} icon={Users} />
+          <MetricCard title="Colaboradores" value={"0"} icon={Users} />
         </div>
 
         {/* === Cursos === */}
@@ -317,16 +186,7 @@ const ManagerDashboard = () => {
             </div>
 
             {displayedCourses.length === 0 ? (
-              <EmptyState
-                icon={Search}
-                message={
-                  viewType === "favorites"
-                    ? "Nenhum curso favoritado ainda"
-                    : viewType === "completed"
-                      ? "Nenhum curso concluído ainda"
-                      : "Nenhum curso encontrado"
-                }
-              />
+              <EmptyState icon={Search} message="Nenhum curso encontrado" />
             ) : (
               <>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -434,73 +294,22 @@ const ManagerDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Colaboradores</CardTitle>
-              {(profile?.status ?? "trial").toString().toLowerCase().trim() === "trial" ? (
-                <CardDescription>
-                  Sua conta está no modo de avaliação — explore tudo livremente e ative o plano para adicionar
-                  colaboradores.
-                </CardDescription>
-              ) : (
-                <CardDescription>Gerencie seus colaboradores</CardDescription>
-              )}
+              <CardDescription>Recursos de gestão de colaboradores estarão disponíveis no plano ativo.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {(profile?.status ?? "trial").toString().toLowerCase().trim() === "trial" ? (
-                <div className="flex flex-col items-center justify-center py-8">
-                  <p className="text-center text-muted-foreground mb-4">
-                    Aproveite os cursos e recursos. Para ativar colaboradores, fale conosco.
-                  </p>
-                  <Button
-                    className="w-full sm:w-auto"
-                    onClick={() => {
-                      const phone = "5511955842951";
-                      const msg = "Olá! Gostaria de ativar o plano para gerenciar colaboradores.";
-                      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
-                    }}
-                  >
-                    Ativar Plano
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  {/* Add employee form */}
-                  <div className="flex gap-2 flex-wrap items-center">
-                    <Input
-                      placeholder="Nome"
-                      value={newEmployeeName}
-                      onChange={(e) => setNewEmployeeName(e.target.value)}
-                      className="flex-1 min-w-[150px]"
-                    />
-                    <Input
-                      placeholder="E-mail"
-                      value={newEmployeeEmail}
-                      onChange={(e) => setNewEmployeeEmail(e.target.value)}
-                      className="flex-1 min-w-[150px]"
-                    />
-                    <Button onClick={handleAddEmployee} disabled={addingEmployee}>
-                      {addingEmployee ? "..." : "Adicionar"}
-                    </Button>
-                  </div>
-
-                  {/* Employee list */}
-                  <div className="space-y-2 mt-4">
-                    {employees.length === 0 ? (
-                      <p className="text-muted-foreground text-sm">Nenhum colaborador adicionado ainda</p>
-                    ) : (
-                      employees.map((emp) => (
-                        <div key={emp.id} className="flex justify-between items-center border rounded p-2">
-                          <div>
-                            <p className="font-medium">{emp.name}</p>
-                            <p className="text-sm text-muted-foreground">{emp.email}</p>
-                          </div>
-                          <Button variant="ghost" size="sm" onClick={() => handleDeleteEmployee(emp.id)}>
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </>
-              )}
+            <CardContent className="flex flex-col items-center justify-center py-8">
+              <p className="text-center text-muted-foreground mb-4">
+                Você está no plano trial. Para adicionar e gerenciar colaboradores, ative seu plano.
+              </p>
+              <Button
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  const phone = "5511955842951";
+                  const msg = "Olá! Gostaria de ativar o plano para gerenciar colaboradores.";
+                  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+                }}
+              >
+                Ativar Plano
+              </Button>
             </CardContent>
           </Card>
         )}
