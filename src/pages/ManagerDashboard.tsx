@@ -195,7 +195,9 @@ const ManagerDashboard = () => {
     const fetchProfile = async () => {
       if (!user) return;
 
-      // Busca dados do profile (name, email, status)
+      setLoading(true);
+
+      // Busca o profile do Supabase
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
@@ -206,20 +208,21 @@ const ManagerDashboard = () => {
         console.error("Error fetching profile:", profileError);
       }
 
-      // Combina dados do profile com metadata do user
-      const combinedProfile = {
-        ...profileData,
-        name: profileData?.name || user.user_metadata?.name || "",
-        email: user.email || profileData?.email || "",
+      // 🔒 Proteção: se não veio nada, cria um perfil local temporário
+      const safeProfile = profileData || {
+        id: user.id,
+        name: user.user_metadata?.name || user.email,
+        email: user.email,
+        phone: user.user_metadata?.phone || "",
         company_name: user.user_metadata?.company_name || "",
         cnpj: user.user_metadata?.cnpj || "",
-        phone: user.user_metadata?.phone || "",
         employee_count: user.user_metadata?.employee_count || "",
-        status: profileData?.status ?? user.user_metadata?.status ?? "trial",
+        status: user.user_metadata?.status || "trial",
       };
 
-      setProfile(combinedProfile);
+      setProfile(safeProfile);
 
+      // Busca os cursos normalmente
       const supabaseCourses = await fetchCoursesFromSupabase();
       setAllCourses(supabaseCourses);
 
@@ -548,7 +551,7 @@ const ManagerDashboard = () => {
 
         {activeView === "employees" && (
           <>
-            {profile?.status.toLowerCase().trim() === "trial" ? (
+            {profile?.status?.toLowerCase().trim() === "trial" ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Colaboradores</CardTitle>
