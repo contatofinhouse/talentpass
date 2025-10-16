@@ -196,40 +196,40 @@ const ManagerDashboard = () => {
       if (!user) return;
 
       setLoading(true);
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
 
-      // Busca o profile do Supabase
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+        }
 
-      if (profileError) {
-        console.error("Error fetching profile:", profileError);
+        const combinedProfile = {
+          ...profileData,
+          name: profileData?.name || user.user_metadata?.name || "",
+          email: user.email || profileData?.email || "",
+          company_name: user.user_metadata?.company_name || "",
+          cnpj: user.user_metadata?.cnpj || "",
+          phone: user.user_metadata?.phone || "",
+          employee_count: user.user_metadata?.employee_count || "",
+          status: (profileData?.status ?? user.user_metadata?.status ?? "trial") || "trial",
+        };
+
+        setProfile(combinedProfile);
+
+        const supabaseCourses = await fetchCoursesFromSupabase();
+        setAllCourses(supabaseCourses);
+
+        await fetchTracking();
+        await fetchEmployees();
+      } catch (e) {
+        console.error("Erro ao carregar perfil:", e);
+      } finally {
+        setLoading(false);
       }
-
-      // 🔒 Proteção: se não veio nada, cria um perfil local temporário
-      const safeProfile = profileData || {
-        id: user.id,
-        name: user.user_metadata?.name || user.email,
-        email: user.email,
-        phone: user.user_metadata?.phone || "",
-        company_name: user.user_metadata?.company_name || "",
-        cnpj: user.user_metadata?.cnpj || "",
-        employee_count: user.user_metadata?.employee_count || "",
-        status: user.user_metadata?.status || "trial",
-      };
-
-      setProfile(safeProfile);
-
-      // Busca os cursos normalmente
-      const supabaseCourses = await fetchCoursesFromSupabase();
-      setAllCourses(supabaseCourses);
-
-      await fetchTracking();
-      await fetchEmployees();
-
-      setLoading(false);
     };
 
     fetchProfile();
@@ -551,7 +551,7 @@ const ManagerDashboard = () => {
 
         {activeView === "employees" && (
           <>
-            {profile?.status?.toLowerCase().trim() === "trial" ? (
+            {(profile?.status ?? "trial").toString().toLowerCase().trim() === "trial" ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Colaboradores</CardTitle>
