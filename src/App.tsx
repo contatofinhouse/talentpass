@@ -11,12 +11,9 @@ import Welcome from "./pages/Welcome";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import EmployeeLogin from "./pages/EmployeeLogin";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
 import ResetPassword from "./pages/resetpassword";
 import UpdatePassword from "./pages/update-password";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -33,9 +30,6 @@ const App = () => (
           <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
           <Route path="/manager/dashboard" element={<ProtectedRoute role="manager"><ManagerDashboard /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute role="employee"><EmployeeDashboard /></ProtectedRoute>} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/updatepassword" element={<UpdatePassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
