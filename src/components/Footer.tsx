@@ -1,10 +1,11 @@
 import { Send } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
     <footer className="border-t bg-secondary/30">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
@@ -58,9 +59,25 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
-                  Carreiras
-                </a>
+                <Link to="/guia-educacao-corporativa" className="hover:text-foreground">
+                  Guia de Educação Corporativa
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-4 font-semibold">Legal</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link to="/termos-e-condicoes" className="hover:text-foreground">
+                  Termos e Condições
+                </Link>
+              </li>
+              <li>
+                <Link to="/politica-de-privacidade" className="hover:text-foreground">
+                  Política de Privacidade
+                </Link>
               </li>
             </ul>
           </div>

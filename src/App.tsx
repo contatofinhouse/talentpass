@@ -14,6 +14,9 @@ import EmployeeLogin from "./pages/EmployeeLogin";
 import ResetPassword from "./pages/resetpassword";
 import UpdatePassword from "./pages/update-password";
 import ProtectedRoute from "./components/ProtectedRoute";
+import TermsConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CorporateEducationGuide from "./pages/CorporateEducationGuide";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +35,9 @@ const App = () => (
           <Route path="/dashboard" element={<ProtectedRoute role="employee"><EmployeeDashboard /></ProtectedRoute>} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/updatepassword" element={<UpdatePassword />} />
+          <Route path="/termos-e-condicoes" element={<TermsConditions />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
+          <Route path="/guia-educacao-corporativa" element={<CorporateEducationGuide />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
