@@ -74,7 +74,7 @@ const Signup = () => {
 
     toast({
       title: "Cadastro realizado!",
-      description: "Bem-vindo ao FinHero",
+      description: "Bem-vindo ao TalentPass",
     });
 
     navigate("/welcome");

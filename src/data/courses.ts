@@ -135,7 +135,7 @@ export const courses: Course[] = [
     description:
       "Descubra como ferramentas de IA podem automatizar suas campanhas de marketing e gerar melhores resultados.",
     videoUrl:
-      "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-finhero/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4",
+      "https://grdoyz4c9f0i.objectstorage.sa-saopaulo-1.oci.customer-oci.com/n/grdoyz4c9f0i/b/videos-TalentPass/o/Automacao_de_mkt_iaAutomacao_de_mkt_ia.mp4",
     image: "https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/course-images/course-marketing.webp",
     content: `
       **Ferramentas de IA para marketing:**

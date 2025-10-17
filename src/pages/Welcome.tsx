@@ -73,7 +73,7 @@ const Welcome = () => {
               <div className="flex items-center justify-center gap-2 text-primary">
                 <Sparkles className="w-5 h-5" />
                 <span className="text-lg font-semibold">
-                  Bem-vindo{profile?.name ? `, ${profile.name}` : ""} ao FinHero
+                  Bem-vindo{profile?.name ? `, ${profile.name}` : ""} ao TalentPass
                 </span>
                 <Sparkles className="w-5 h-5" />
               </div>

@@ -10,14 +10,14 @@ const Footer = () => {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
                 <Send className="h-6 w-6 text-white" fill="white" />
               </div>
-              <span className="text-xl font-bold">FinHero</span>
+              <span className="text-xl font-bold">TalentPass</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Transforme sua equipe com microlearning Comece hoje e veja resultados em semanas, não meses. Conteúdo que
               de fato transforma e nivela conhecimento. Desenvolve competências de verdade.
             </p>
             <p className="text-sm text-muted-foreground">
-              FinHero. Educação corporativa que se encaixa na sua rotina. IA que cria. Humanos que garantem qualidade. O
+              TalentPass. Educação corporativa que se encaixa na sua rotina. IA que cria. Humanos que garantem qualidade. O
               fim dos treinamentos caros e chatos.
             </p>
             <p className="text-xs text-muted-foreground">CNPJ: 60.806.192/0001-50</p>
@@ -93,7 +93,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 FinHero. Todos os direitos reservados.</p>
+          <p>&copy; 2025 TalentPass. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

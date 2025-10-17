@@ -12,7 +12,7 @@ const Navbar = () => {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
             <Send className="h-6 w-6 text-white" fill="white" />
           </div>
-          <span className="text-xl font-bold">FinHero</span>
+          <span className="text-xl font-bold">TalentPass</span>
         </div>
 
         <div className="hidden items-center gap-8 md:flex">
