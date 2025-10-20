@@ -35,9 +35,7 @@ const Signup = () => {
     formLoadTime: Date.now(),
   });
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

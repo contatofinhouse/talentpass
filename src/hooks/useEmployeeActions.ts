@@ -6,6 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 const EDGE_FUNCTION_URL =
   "https://tpwafkhuetbrdlykyegy.supabase.co/functions/v1/hyper-endpoint";
 
+  const DELETE_EDGE_URL = "https://tpwafkhuetbrdlykyegy.supabase.co/functions/v1/delete-employee";
+
+
 export interface Employee {
   id: string;
   name: string;
@@ -99,40 +102,48 @@ export const useEmployeeActions = ({ userId, role }: UseEmployeeActionsProps) =>
     [role, userId, toast, fetchEmployees]
   );
 
-  // 🔹 Remover colaborador
-  const deleteEmployee = useCallback(
-    async (employeeId: string) => {
-      if (role !== "manager") return;
 
-      try {
-        const { error: relError } = await supabase
-          .from("employees")
-          .delete()
-          .eq("employee_id", employeeId)
-          .eq("manager_id", userId ?? "");
+// 🔹 Remover colaborador via Edge Function
+const deleteEmployee = useCallback(
+  async (employeeId: string) => {
+    if (role !== "manager") return;
 
-        if (relError) throw relError;
+    try {
+      setLoading(true);
 
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .delete()
-          .eq("id", employeeId);
-
-        if (profileError) throw profileError;
-
-        toast({ title: "Sucesso", description: "Colaborador removido com sucesso." });
-        await fetchEmployees();
-      } catch (error) {
-        console.error("Erro ao deletar colaborador:", error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível remover o colaborador.",
-          variant: "destructive",
-        });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast({ title: "Erro", description: "Sessão inválida.", variant: "destructive" });
+        return;
       }
-    },
-    [role, userId, toast, fetchEmployees]
-  );
+
+      const response = await fetch(DELETE_EDGE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ employee_id: employeeId, manager_id: userId }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Erro ao excluir colaborador");
+
+      toast({ title: "Sucesso", description: "Colaborador excluído com sucesso." });
+      await fetchEmployees();
+    } catch (error: any) {
+      console.error("Erro ao excluir colaborador:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível remover o colaborador.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  },
+  [role, userId, toast, fetchEmployees]
+);
 
   return {
     employees,

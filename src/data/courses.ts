@@ -29,7 +29,7 @@ function getResourceType(url: string, title?: string) {
 
 // ✅ NOVA FUNÇÃO: busca cursos da tabela "courses" no Supabase
 export async function fetchCoursesFromSupabase(): Promise<Course[]> {
-  const { data, error } = await supabase.from("courses").select("*");
+  const { data, error } = await supabase.from("courses").select("*").order("created_at", { ascending: false }); ;
 
   if (error) {
     console.error("Erro ao buscar cursos do Supabase:", error.message);

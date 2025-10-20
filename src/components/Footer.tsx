@@ -110,7 +110,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 TalentPass. Todos os direitos reservados.</p>
+          <p>&copy; 2025 TalentPass. Todos os direitos reservados. CNPJ 60.806.192/0001-50 </p>
         </div>
       </div>
     </footer>

@@ -258,46 +258,75 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
                   : "Gerencie seus colaboradores"}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {!isTrial && (
-                <>
-                  <div className="flex gap-2 flex-wrap items-center">
-                    <Input
-                      placeholder="Nome"
-                      value={employeeForm.name}
-                      onChange={(e) => setEmployeeForm({ ...employeeForm, name: e.target.value })}
-                    />
-                    <Input
-                      placeholder="E-mail"
-                      value={employeeForm.email}
-                      onChange={(e) => setEmployeeForm({ ...employeeForm, email: e.target.value })}
-                    />
-                    <Button
-                      onClick={() => addEmployee(employeeForm.name, employeeForm.email)}
-                      disabled={employeesLoading}
-                    >
-                      Adicionar
-                    </Button>
-                  </div>
+       <CardContent className="space-y-4">
+  {(() => {
+    const normalizedStatus = profile?.status?.trim()?.toLowerCase();
+    const isTrial = normalizedStatus === "trial";
 
-                  {employees.length === 0 ? (
-                    <p className="text-muted-foreground text-sm">Nenhum colaborador adicionado</p>
-                  ) : (
-                    employees.map((emp) => (
-                      <div key={emp.id} className="flex justify-between items-center border rounded p-2">
-                        <div>
-                          <p className="font-medium">{emp.name}</p>
-                          <p className="text-sm text-muted-foreground">{emp.email}</p>
-                        </div>
-                        <Button variant="ghost" size="sm" onClick={() => deleteEmployee(emp.id)}>
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
-                    ))
-                  )}
-                </>
-              )}
-            </CardContent>
+    if (isTrial) {
+      return (
+      <div className="flex flex-col items-center justify-center py-8 px-4 text-center bg-primary/5 rounded-xl border border-primary/10">
+  <h3 className="text-lg font-semibold mb-2 text-primary">Plano Teams</h3>
+  <p className="text-sm text-muted-foreground mb-3 max-w-sm">
+    Adicione até <strong>40 colaboradores</strong> e turbine o aprendizado da sua equipe.  
+    Apenas <strong>R$ 49,90/mês</strong> + <strong>R$ 0,99</strong> por colaborador adicional.
+  </p>
+  <p className="text-xs text-muted-foreground mb-5 italic">
+    Ative agora e libere todos os recursos de gestão de equipe.
+  </p>
+  <Button
+    onClick={() => navigate("/ativar-plano")}
+    className="w-full sm:w-auto bg-primary text-white text-base py-3 font-medium hover:bg-primary/90 transition-all rounded-lg shadow-md"
+  >
+    🚀 Ativar Plano Teams
+  </Button>
+</div>
+
+      );
+    }
+
+    // 👇 exibe normalmente se plano ativo
+    return (
+      <>
+        <div className="flex gap-2 flex-wrap items-center">
+          <Input
+            placeholder="Nome"
+            value={employeeForm.name}
+            onChange={(e) => setEmployeeForm({ ...employeeForm, name: e.target.value })}
+          />
+          <Input
+            placeholder="E-mail"
+            value={employeeForm.email}
+            onChange={(e) => setEmployeeForm({ ...employeeForm, email: e.target.value })}
+          />
+          <Button
+            onClick={() => addEmployee(employeeForm.name, employeeForm.email)}
+            disabled={employeesLoading}
+          >
+            Adicionar
+          </Button>
+        </div>
+
+        {employees.length === 0 ? (
+          <p className="text-muted-foreground text-sm">Nenhum colaborador adicionado</p>
+        ) : (
+          employees.map((emp) => (
+            <div key={emp.id} className="flex justify-between items-center border rounded p-2">
+              <div>
+                <p className="font-medium">{emp.name}</p>
+                <p className="text-sm text-muted-foreground">{emp.email}</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => deleteEmployee(emp.id)}>
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+          ))
+        )}
+      </>
+    );
+  })()}
+</CardContent>
+
           </Card>
         )}
       </div>
