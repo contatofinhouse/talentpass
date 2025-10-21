@@ -23,11 +23,14 @@ export const ManagerHeader = ({
   onLogout,
   isEmployee = false, // 👈 padrão: false = manager
 }: ManagerHeaderProps) => {
-  const handleActivatePlan = () => {
-    const message = encodeURIComponent(
-      "Olá! Quero ativar o plano Teams na plataforma de educação com IA. \nVi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. \nGostaria de incluir minha equipe e garantir acesso imediato."
-    );
-    window.open(`https://wa.me/5511955842951?text=${message}`, "_blank");
+  const handleManagePlan = () => {
+    const isActive = profile?.status === "active";
+    
+    const message = isActive
+      ? "Olá! Gostaria de gerenciar meu Plano Teams na plataforma de educação com IA. \nPreciso de ajuda para ajustar colaboradores, fazer upgrade ou tirar dúvidas sobre meu plano atual."
+      : "Olá! Quero ativar o plano Teams na plataforma de educação com IA. \nVi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. \nGostaria de incluir minha equipe e garantir acesso imediato.";
+    
+    window.open(`https://wa.me/5511955842951?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   return (
@@ -82,11 +85,11 @@ export const ManagerHeader = ({
                 </DropdownMenuItem>
               )}
 
-              {/* Exibe "Ativar Plano" apenas se for manager */}
+              {/* Exibe "Gerenciar Plano" ou "Ativar Plano" apenas se for manager */}
               {!isEmployee && (
-                <DropdownMenuItem onClick={handleActivatePlan}>
+                <DropdownMenuItem onClick={handleManagePlan}>
                   <Users className="mr-2 h-4 w-4" />
-                  Ativar Plano
+                  {profile?.status === "active" ? "Gerenciar Plano" : "Ativar Plano"}
                 </DropdownMenuItem>
               )}
 
