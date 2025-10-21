@@ -1,21 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Heart, CheckCircle2, Search, Users, BookOpen, Key, Trash2, Award } from "lucide-react";
+import { Loader2, Heart, CheckCircle2, Search, Users, BookOpen, Key, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useCourseFilters, CourseViewType } from "@/hooks/useCourseFilters";
+import { useCourseFilters, CourseViewType } from "@/hooks/useCourseFilters"; // ✅ importa tipo aqui
 import { useCourseTracking } from "@/hooks/useCourseTracking";
-import { useBadges } from "@/hooks/useBadges";
 import { fetchCoursesFromSupabase, Course } from "@/data/courses";
 import { useEmployeeActions } from "@/hooks/useEmployeeActions";
 import { ManagerHeader } from "@/components/manager/ManagerHeader";
 import { MetricCard } from "@/components/manager/MetricCard";
 import { CourseCard } from "@/components/manager/CourseCard";
 import { CourseDetailModal } from "@/components/manager/CourseDetailModal";
-import { BadgesModal } from "@/components/manager/BadgesModal";
 import { EmptyState } from "@/components/manager/EmptyState";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -42,28 +40,14 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
   const [activeView, setActiveView] = useState<"courses" | "profile" | "employees">("courses");
   const [passwordForm, setPasswordForm] = useState({ current: "", new: "", confirm: "", loading: false });
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-  const [showBadgesModal, setShowBadgesModal] = useState(false);
   const [employeeForm, setEmployeeForm] = useState({ name: "", email: "" });
 
   // === Hooks customizados ===
   const { employees, fetchEmployees, addEmployee, deleteEmployee, loading: employeesLoading } =
     useEmployeeActions({ userId: user?.id, role });
 
-  const { courseTracking, toggleFavorite: toggleFavoriteBase, toggleCompleted: toggleCompletedBase, fetchTracking, favoriteCount, completedCount } =
+  const { courseTracking, toggleFavorite, toggleCompleted, fetchTracking, favoriteCount, completedCount } =
     useCourseTracking(user?.id);
-
-  const { badges, earnedCount, checkAndAwardBadges } = useBadges(user?.id, completedCount, favoriteCount);
-
-  // Wraps para verificar badges após ações
-  const toggleFavorite = useCallback(async (courseId: string, e: React.MouseEvent) => {
-    await toggleFavoriteBase(courseId, e);
-    await checkAndAwardBadges();
-  }, [toggleFavoriteBase, checkAndAwardBadges]);
-
-  const toggleCompleted = useCallback(async (courseId: string, e: React.MouseEvent) => {
-    await toggleCompletedBase(courseId, e);
-    await checkAndAwardBadges();
-  }, [toggleCompletedBase, checkAndAwardBadges]);
 
   const { filteredCourses, searchQuery, setSearchQuery, viewType, setViewType } =
     useCourseFilters(allCourses, courseTracking);
@@ -122,9 +106,8 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
         fetchEmployees(),
       ]);
       setAllCourses(courses);
-      await checkAndAwardBadges();
     })();
-  }, [user, fetchTracking, fetchEmployees, checkAndAwardBadges]);
+  }, [user, fetchTracking, fetchEmployees]);
 
   if (loading || !profile)
     return (
@@ -136,11 +119,10 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
   const isTrial = String(profile.status ?? "trial").toLowerCase() === "trial";
 
   // ✅ Array de métricas com tipo explícito
-  const metricCards: { title: string; value: number | string; icon: any; view: CourseViewType | null }[] = [
+  const metricCards: { title: string; value: number; icon: any; view: CourseViewType }[] = [
     { title: "Total de Cursos", value: allCourses.length, icon: BookOpen, view: "all" },
     { title: "Favoritos", value: favoriteCount, icon: Heart, view: "favorites" },
     { title: "Concluídos", value: completedCount, icon: CheckCircle2, view: "completed" },
-    { title: "Badges", value: `${earnedCount}/5`, icon: Award, view: null },
   ];
 
   // === Render ===
@@ -155,12 +137,8 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
             <div
               key={title}
               onClick={() => {
-                if (view) {
-                  setActiveView("courses");
-                  setViewType(view);
-                } else if (title === "Badges") {
-                  setShowBadgesModal(true);
-                }
+                setActiveView("courses");
+                setViewType(view); // ✅ tipado corretamente
               }}
               className="cursor-pointer hover:scale-105 transition"
             >
@@ -354,12 +332,6 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
       </div>
 
       <CourseDetailModal course={selectedCourse} isOpen={!!selectedCourse} onClose={() => setSelectedCourse(null)} />
-      <BadgesModal 
-        open={showBadgesModal} 
-        onOpenChange={setShowBadgesModal}
-        badges={badges}
-        earnedCount={earnedCount}
-      />
     </div>
   );
 }
