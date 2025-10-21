@@ -1,4 +1,4 @@
-import ManagerDashboard from "./ManagerDashboard";
+import service_key from "./ManagerDashboard";
 
 /**
  * O EmployeeDashboard herda todo o comportamento do ManagerDashboard,

@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+
+# --- Supabase Edge Functions ---
+supabase/functions/
+supabase/.temp/
+supabase/.branches/
+

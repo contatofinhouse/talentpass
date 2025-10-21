@@ -3,10 +3,9 @@ import { useCallback, useState } from "react";
 import { supabase } from "@/integrations/supabase";
 import { useToast } from "@/hooks/use-toast";
 
-const EDGE_FUNCTION_URL =
-  "https://tpwafkhuetbrdlykyegy.supabase.co/functions/v1/hyper-endpoint";
+const EDGE_FUNCTION_URL = import.meta.env.VITE_EDGE_FUNCTION_URL!;
+const DELETE_EDGE_URL = import.meta.env.VITE_DELETE_EDGE_URL!;
 
-  const DELETE_EDGE_URL = "https://tpwafkhuetbrdlykyegy.supabase.co/functions/v1/delete-employee";
 
 
 export interface Employee {
