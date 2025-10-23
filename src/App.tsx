@@ -11,7 +11,8 @@ import Welcome from "./pages/Welcome";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import EmployeeLogin from "./pages/EmployeeLogin";
-import ResetPassword from "./pages/ResetPassword";
+import ResetPassword from "./pages/resetpassword";
+import PublicCourse from "./pages/PublicCourse";
 import SignupEmployee from "./pages/SignupEmployee";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/guia-educacao-corporativa" element={<CorporateEducationGuide />} />
           <Route path="/signupemployee" element={<SignupEmployee />} />
+          <Route path="/curso/:id" element={<PublicCourse />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

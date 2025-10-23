@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Clock, Heart, CheckCircle2 } from "lucide-react";
+import { Play, Clock, Heart, CheckCircle2, Share2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface CourseCardProps {
   course: any;
@@ -34,6 +35,22 @@ export const CourseCard = ({
             className="w-full h-full object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute top-2 right-2 flex gap-2">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                const shareUrl = `${window.location.origin}/curso/${course.id}`;
+                navigator.clipboard.writeText(shareUrl);
+                toast({
+                  title: "Link copiado! 🔗",
+                  description: "Compartilhe este curso com sua equipe",
+                });
+              }}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
             <Button
               size="icon"
               variant="secondary"

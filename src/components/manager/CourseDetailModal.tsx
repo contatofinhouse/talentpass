@@ -2,8 +2,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Download } from "lucide-react";
+import { Clock, Download, Share2 } from "lucide-react";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { toast } from "@/hooks/use-toast";
 
 interface CourseDetailModalProps {
   course: any;
@@ -99,6 +100,20 @@ export const CourseDetailModal = ({ course, isOpen, onClose }: CourseDetailModal
           )}
 
           <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                const shareUrl = `${window.location.origin}/curso/${course.id}`;
+                navigator.clipboard.writeText(shareUrl);
+                toast({
+                  title: "Link copiado! 🔗",
+                  description: "Compartilhe este curso com sua equipe",
+                });
+              }}
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Compartilhar
+            </Button>
             <Button onClick={onClose} className="flex-1">
               Fechar
             </Button>
