@@ -69,13 +69,11 @@ export const ManagerHeader = ({
                 Cursos
               </DropdownMenuItem>
 
-              {/* Exibe "Minha Conta" apenas se NÃO for employee */}
-              {!isEmployee && (
-                <DropdownMenuItem onClick={() => onNavigate("profile")}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Cadastro
-                </DropdownMenuItem>
-              )}
+            {/* Exibe "Minha Conta" (sempre), muda o texto conforme o papel */}
+<DropdownMenuItem onClick={() => onNavigate("profile")}>
+  <Settings className="mr-2 h-4 w-4" />
+  {isEmployee ? "Meu Perfil" : "Cadastro"}
+</DropdownMenuItem>
 
               {/* Exibe "Colaboradores" apenas se for manager */}
               {!isEmployee && (

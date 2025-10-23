@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import comunicacaoImg from "@/assets/course-comunicacao.jpg";
 import vendasImg from "@/assets/course-vendas.jpg";
 //import marketingImg from "@/assets/course-marketing.jpg";

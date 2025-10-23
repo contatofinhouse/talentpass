@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session,  } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase";
 import { useToast } from "@/hooks/use-toast";
+import type { UserAttributes } from "@supabase/supabase-js";
+
 
 interface SignUpData {
   name: string;
@@ -100,6 +103,17 @@ export const useAuth = () => {
     }
   };
 
+const updateUser = async (data: UserAttributes) => {
+  try {
+    const { error } = await supabase.auth.updateUser(data);
+    if (error) return { error: error.message };
+    return { error: null };
+  } catch (err: any) {
+    return { error: err.message };
+  }
+};
+
+
   return {
     user,
     session,
@@ -107,5 +121,6 @@ export const useAuth = () => {
     signUp,
     signIn,
     signOut,
+    updateUser
   };
 };
