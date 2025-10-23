@@ -18,6 +18,7 @@ export interface Course {
   image: string;
   level?: string;
   resourceFiles?: { name: string; data: string; type: string }[];
+  views?: number; 
 }
 
 function getResourceType(url: string, title?: string) {

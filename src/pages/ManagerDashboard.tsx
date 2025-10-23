@@ -105,7 +105,16 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
         fetchTracking(),
         fetchEmployees(),
       ]);
-      setAllCourses(courses);
+     // ✅ Adiciona um número de views fake caso não exista
+const seeded = courses.map((c) => ({
+  ...c,
+  views:
+    c.views ??
+    Math.floor(Math.random() * (150 - 30 + 1)) + 30, // 🎯 30 → 150
+}));
+
+setAllCourses(seeded);
+
     })();
   }, [user, fetchTracking, fetchEmployees]);
 
@@ -186,7 +195,17 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
                     courseTracking={courseTracking[course.id]}
                     onToggleFavorite={toggleFavorite}
                     onToggleCompleted={toggleCompleted}
-                    onClick={() => setSelectedCourse(course)}
+                   onClick={() => {
+  // ✅ Incrementa visualizações apenas localmente
+  setAllCourses((prev) =>
+    prev.map((c) =>
+      c.id === course.id ? { ...c, views: (c.views || 0) + 1 } : c
+    )
+  );
+
+  setSelectedCourse(course);
+}}
+
                   />
                 ))}
               </div>

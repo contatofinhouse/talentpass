@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Clock, Heart, CheckCircle2, Share2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { Eye } from "lucide-react";
+
 
 interface CourseCardProps {
   course: any;
@@ -34,6 +37,12 @@ export const CourseCard = ({
             alt={course.title}
             className="w-full h-full object-cover transition-transform group-hover:scale-105"
           />
+          {course.views > 100 && (
+  <span className="absolute top-2 left-2 bg-primary text-white text-xs font-sans font-semibold px-2 py-1 rounded shadow-sm">
+    ⭐ Destaque
+  </span>
+)}
+
           <div className="absolute top-2 right-2 flex gap-2">
             <Button
               size="icon"
@@ -81,6 +90,11 @@ export const CourseCard = ({
       <CardHeader>
         <div className="mb-2 flex items-start justify-between">
           <Badge variant="secondary">{course.category || "Geral"}</Badge>
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+  <Eye className="h-3 w-3" />
+  {course.views ?? 0}
+</div>
+
           {course.duration && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Clock className="h-3 w-3" />
