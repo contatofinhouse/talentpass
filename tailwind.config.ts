@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+import type { PluginAPI } from "tailwindcss/types/config";
 
 export default {
   darkMode: ["class"],
@@ -23,6 +25,7 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
+
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -65,20 +68,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -87,5 +82,19 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+ plugins: [
+    tailwindcssAnimate,
+
+    // ✅ tipagem correta sem erros TS
+    function ({ addUtilities }: PluginAPI) {
+      addUtilities({
+        ".img-crisp": {
+          imageRendering: "-webkit-optimize-contrast",
+        },
+        ".img-pixel": {
+          imageRendering: "crisp-edges",
+        },
+      });
+    },
+  ],
 } satisfies Config;

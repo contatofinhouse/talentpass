@@ -18,6 +18,8 @@ import { EmptyState } from "@/components/manager/EmptyState";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SelectAreaRole } from "@/components/manager/SelectAreaRole";
+
 import {
   Dialog,
   DialogContent,
@@ -97,26 +99,19 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
   }, [passwordForm, toast, user]);
 
   // === Load inicial ===
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      const [courses] = await Promise.all([
-        fetchCoursesFromSupabase(),
-        fetchTracking(),
-        fetchEmployees(),
-      ]);
-     // ✅ Adiciona um número de views fake caso não exista
-const seeded = courses.map((c) => ({
-  ...c,
-  views:
-    c.views ??
-    Math.floor(Math.random() * (150 - 30 + 1)) + 30, // 🎯 30 → 150
-}));
+ useEffect(() => {
+  if (!user) return;
 
-setAllCourses(seeded);
+  (async () => {
+    const courses = await fetchCoursesFromSupabase();
+    setAllCourses(courses);
 
-    })();
-  }, [user, fetchTracking, fetchEmployees]);
+    fetchTracking();
+    fetchEmployees();
+  })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [user]);
+
 
   if (loading || !profile)
     return (
@@ -136,10 +131,21 @@ setAllCourses(seeded);
 
   // === Render ===
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+<div className="relative min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} isEmployee={isEmployee} />
+  
+
 
       <div className="container mx-auto px-4 py-8">
+
+            <SelectAreaRole
+  user={user}
+  profile={profile}
+  onUpdated={(newValue) => {
+    
+    // render imediato, sem refresh
+  }}
+/>
         {/* === Métricas === */}
         <div className="mb-8 grid gap-4 md:grid-cols-4">
           {metricCards.map(({ title, value, icon, view }) => (
@@ -195,16 +201,12 @@ setAllCourses(seeded);
                     courseTracking={courseTracking[course.id]}
                     onToggleFavorite={toggleFavorite}
                     onToggleCompleted={toggleCompleted}
-                   onClick={() => {
-  // ✅ Incrementa visualizações apenas localmente
-  setAllCourses((prev) =>
-    prev.map((c) =>
-      c.id === course.id ? { ...c, views: (c.views || 0) + 1 } : c
-    )
-  );
-
+onClick={() => {
+  document.body.style.overflow = "hidden";
   setSelectedCourse(course);
 }}
+
+
 
                   />
                 ))}
@@ -349,8 +351,21 @@ setAllCourses(seeded);
           </Card>
         )}
       </div>
+{selectedCourse && (
+  <CourseDetailModal
+    course={selectedCourse}
+    allCourses={allCourses}
+    onSelectCourse={(c) => setSelectedCourse(c)}
+    isOpen={true}
+    onClose={() => {
+  document.body.style.overflow = "";
+  setSelectedCourse(null);
+}}
 
-      <CourseDetailModal course={selectedCourse} isOpen={!!selectedCourse} onClose={() => setSelectedCourse(null)} />
+  />
+)}
+
+
     </div>
   );
 }
