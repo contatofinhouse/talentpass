@@ -11,7 +11,7 @@
   import ManagerDashboard from "./pages/ManagerDashboard";
   import EmployeeDashboard from "./pages/EmployeeDashboard";
   import EmployeeLogin from "./pages/EmployeeLogin";
-  import ResetPassword from "./pages/ResetPassword";
+  import ResetPassword from "./pages/resetpassword";
   import PublicCourse from "./pages/PublicCourse";
   import SignupEmployee from "./pages/SignupEmployee";
 import { SpeedInsights } from "@vercel/speed-insights/next"
