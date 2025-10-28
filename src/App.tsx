@@ -15,7 +15,7 @@
   import PublicCourse from "./pages/PublicCourse";
   import SignupEmployee from "./pages/SignupEmployee";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-
+import { Analytics } from "@vercel/analytics/next"
   import ProtectedRoute from "./components/ProtectedRoute";
   import TermsConditions from "./pages/TermsConditions";
   import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -51,6 +51,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
           </Routes>
         </BrowserRouter>
           <SpeedInsights />
+          <Analytics />
       </TooltipProvider>
     </QueryClientProvider>
     
