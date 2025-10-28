@@ -38,26 +38,28 @@ export async function fetchCoursesFromSupabase(): Promise<Course[]> {
     return [];
   }
 
-  return (
-    data?.map((c) => ({
-      id: c.id,
-      title: c.title,
-      category: c.category,
-      duration: c.duration,
-      description: c.description,
-      videoUrl: c.video_url,
-      image: c.image_url,
-      content: c.content,
-      skills: c.skills || [],
-      level: c.level,
-      resourceFiles:
-        c.resources?.map((r: any) => ({
-          name: r.title || "Recurso",
-          data: r.url,
-          type: getResourceType(r.url, r.title),
-        })) || [],
-    })) || []
-  );
+ return (
+  data?.map((c) => ({
+    id: c.id,
+    title: c.title,
+    category: c.category,
+    duration: c.duration,
+    description: c.description,
+    videoUrl: c.video_url,
+    image: c.image_url,
+    content: c.content,
+    skills: c.skills || [],
+    level: c.level,
+    views: c.views ?? 0, // ✅ <- ADICIONE ESTA LINHA
+    resourceFiles:
+      c.resources?.map((r: any) => ({
+        name: r.title || "Recurso",
+        data: r.url,
+        type: getResourceType(r.url, r.title),
+      })) || [],
+  })) || []
+);
+
 }
 
 export const courses: Course[] = [

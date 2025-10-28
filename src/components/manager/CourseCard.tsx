@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Clock, Heart, CheckCircle2, Share2, Eye } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import React from "react";
 
 interface CourseCardProps {
   course: any;
@@ -16,7 +17,7 @@ interface CourseCardProps {
   onClick: () => void;
 }
 
-export const CourseCard = ({
+export const CourseCard = React.memo(({
   course,
   courseTracking,
   onToggleFavorite,
@@ -31,29 +32,35 @@ export const CourseCard = ({
       className="group cursor-pointer transition-shadow hover:shadow-lg overflow-hidden"
       onClick={onClick}
     >
-      {course.image && (
-<div className="w-full h-[160px] relative rounded-md overflow-hidden">
-  {/* 🔹 Fundo com blur bem leve e mais transparente */}
-  <img
-    src={fallbackUrl}
-    alt=""
-    aria-hidden="true"
-    className="absolute inset-0 w-full h-full object-cover blur-[6px] scale-110 opacity-[0.18]"
-  />
+  {course.image && (
+  <div className="w-full h-[160px] relative rounded-md overflow-hidden">
+    
+    {(course.views ?? 0) > 150 && (
+      <div className="absolute top-2 left-2 z-20">
+        <Badge variant="default" className="bg-primary text-white px-2 py-0.5 text-xs rounded-md shadow">
+          Destaque 🔥
+        </Badge>
+      </div>
+    )}
 
-  {/* 🔹 Imagem principal */}
-  <img
-    src={fallbackUrl}
-    alt={course.title}
-    loading="lazy"
-    className="relative mx-auto h-full object-contain z-10 transition-transform group-hover:scale-[1.03]"
-  />
-</div>
+    {/* 🔹 Fundo com blur leve */}
+    <img
+      src={fallbackUrl}
+      alt=""
+      aria-hidden="true"
+      className="absolute inset-0 w-full h-full object-cover blur-[6px] scale-110 opacity-[0.18]"
+    />
 
+    {/* 🔹 Imagem principal */}
+    <img
+      src={fallbackUrl}
+      alt={course.title}
+      loading="lazy"
+      className="relative mx-auto h-full object-contain z-10 transition-transform group-hover:scale-[1.03]"
+    />
+  </div>
+)}
 
-
-
-      )}
 
       <CardHeader>
         <div className="mb-2 flex items-start justify-between">
@@ -85,4 +92,4 @@ export const CourseCard = ({
       </CardContent>
     </Card>
   );
-};
+});

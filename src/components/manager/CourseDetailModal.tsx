@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Download, Share2 } from "lucide-react";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { toast } from "@/hooks/use-toast";
+
 
 
 interface CourseDetailModalProps {
@@ -17,7 +18,7 @@ interface CourseDetailModalProps {
   isPage?: boolean;
 }
 
-export const CourseDetailModal = ({
+export const CourseDetailModal = React.memo(({
   course,
   allCourses = [],
   onSelectCourse = () => {},
@@ -37,6 +38,9 @@ const relatedCourses = useMemo(() => {
     .slice(0, 3);
 }, [course, allCourses]);
 
+
+
+
 if (!course) return null;
 if (!isPage && !isOpen) return null;
 
@@ -45,6 +49,20 @@ if (!isPage && !isOpen) return null;
 const Wrapper = isPage ? "div" : "div";
 const videoSrc = course?.videoUrl ?? course?.video_url;
 const posterSrc = course?.image ?? "/placeholder.svg";
+
+
+
+
+
+
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/curso/${course.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link copiado!",
+      description: "Compartilhe com sua equipe ✨",
+    });};
 
 
   return (
@@ -130,6 +148,9 @@ const posterSrc = course?.image ?? "/placeholder.svg";
                     <img
                       src={rc.image}
                       loading="lazy"
+                      decoding="async"
+                      width={180}
+                      height={96}
                       className="w-full h-24 object-cover rounded-t-lg"
                       alt={rc.title}
                     />
@@ -147,7 +168,7 @@ const posterSrc = course?.image ?? "/placeholder.svg";
             <Button
               variant="outline"
               onClick={() => {
-                const shareUrl = `${window.location.origin}/curso/${course.id}`;
+                 const shareUrl = `${window.location.origin}/curso/${course.id}`;
                 navigator.clipboard.writeText(shareUrl);
                 toast({
                   title: "Link copiado!",
@@ -169,4 +190,4 @@ const posterSrc = course?.image ?? "/placeholder.svg";
       </Card>
     </Wrapper>
   );
-};
+});

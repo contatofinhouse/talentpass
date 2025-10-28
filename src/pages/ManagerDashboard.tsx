@@ -19,6 +19,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SelectAreaRole } from "@/components/manager/SelectAreaRole";
+import { useDeferredValue } from "react";
+import { useTransition } from "react";
+
+
 
 import {
   Dialog,
@@ -51,8 +55,22 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
   const { courseTracking, toggleFavorite, toggleCompleted, fetchTracking, favoriteCount, completedCount } =
     useCourseTracking(user?.id);
 
-  const { filteredCourses, searchQuery, setSearchQuery, viewType, setViewType } =
-    useCourseFilters(allCourses, courseTracking);
+const {
+  filteredCourses,
+  searchQuery,
+  setSearchQuery,
+  viewType,
+  setViewType,
+  selectedCategory,
+  setSelectedCategory,
+  categories,
+} = useCourseFilters(allCourses, courseTracking);
+
+  const deferredCourses = useDeferredValue(filteredCourses);
+  
+
+const [isPending, startTransition] = useTransition();
+
 
   // === Logout ===
   const handleLogout = useCallback(async () => {
@@ -151,10 +169,13 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
           {metricCards.map(({ title, value, icon, view }) => (
             <div
               key={title}
-              onClick={() => {
-                setActiveView("courses");
-                setViewType(view); // ✅ tipado corretamente
-              }}
+             onClick={() => {
+  startTransition(() => {
+    setActiveView("courses");
+    setViewType(view);
+  });
+}}
+
               className="cursor-pointer hover:scale-105 transition"
             >
               <MetricCard title={title} value={value} icon={icon} />
@@ -162,7 +183,10 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
           ))}
 
           {!isEmployee && (
-            <div onClick={() => setActiveView("employees")} className="cursor-pointer hover:scale-105 transition">
+            <div onClick={() =>
+  startTransition(() => setActiveView("employees"))
+}
+className="cursor-pointer hover:scale-105 transition">
               <MetricCard title="Colaboradores" value={employees.length} icon={Users} />
             </div>
           )}
@@ -171,17 +195,45 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
         {/* === Cursos === */}
         {activeView === "courses" && (
           <div className="space-y-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar cursos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+       {/* Campo de busca com ícone */}
+<div className="relative">
+  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+  <Input
+    placeholder="Buscar cursos..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="pl-10"
+  />
+</div>
 
-            {filteredCourses.length === 0 ? (
+{/* Filtro de categorias abaixo */}
+<div className="relative overflow-x-auto no-scrollbar -mx-2 px-2 py-2">
+  <div className="inline-flex gap-2">
+    {categories.map((category) => {
+      const label = category === "all" ? "Todas" : category;
+      const isSelected = selectedCategory === category;
+
+      return (
+        <button
+          key={category}
+          onClick={() => setSelectedCategory(category)}
+          className={`px-3 py-1 text-sm whitespace-nowrap rounded-full border transition-colors
+            ${
+              isSelected
+                ? "bg-primary text-white border-primary"
+                : "bg-background text-muted-foreground border-muted-foreground/20 hover:bg-muted"
+            }`}
+        >
+          {label}
+        </button>
+      );
+    })}
+  </div>
+</div>
+
+
+           {deferredCourses.length === 0 ? (
+
               <EmptyState
                 icon={Search}
                 message={
@@ -193,24 +245,50 @@ export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: 
                 }
               />
             ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {filteredCourses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    courseTracking={courseTracking[course.id]}
-                    onToggleFavorite={toggleFavorite}
-                    onToggleCompleted={toggleCompleted}
-onClick={() => {
-  document.body.style.overflow = "hidden";
-  setSelectedCourse(course);
+         <div
+  className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+  style={{
+    contentVisibility: "auto",
+    containIntrinsicSize: "1px 600px",
+  }}
+>
+{deferredCourses.map((course) => (
+
+    <CourseCard
+      key={course.id}
+      course={course}
+      courseTracking={courseTracking[course.id]}
+      onToggleFavorite={toggleFavorite}
+      onToggleCompleted={toggleCompleted}
+   onClick={() => {
+  document.body.classList.add("overflow-hidden");
+
+  const nextViews = (course.views ?? 0) + 1;
+
+  // ✅ Abre modal imediatamente
+  setSelectedCourse({
+    ...course,
+    views: nextViews,
+  });
+
+  // ✅ Atualiza views localmente sem bloquear UI
+  setAllCourses((prev) =>
+    prev.map((c) =>
+      c.id === course.id ? { ...c, views: nextViews } : c
+    )
+  );
+
+  // ✅ Atualiza Supabase em background (sem await)
+  supabase
+    .from("courses")
+    .update({ views: nextViews })
+    .eq("id", course.id);
 }}
 
+    />
+  ))}
+</div>
 
-
-                  />
-                ))}
-              </div>
             )}
           </div>
         )}
@@ -358,7 +436,8 @@ onClick={() => {
     onSelectCourse={(c) => setSelectedCourse(c)}
     isOpen={true}
     onClose={() => {
-  document.body.style.overflow = "";
+document.body.classList.remove("overflow-hidden");
+
   setSelectedCourse(null);
 }}
 

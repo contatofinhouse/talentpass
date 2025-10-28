@@ -9,24 +9,47 @@ export const useCourseFilters = (allCourses: any[], courseTracking: Record<strin
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
   const [viewType, setViewType] = useState<CourseViewType>("all");
 
-  const filteredCourses = useMemo(() => {
-    return allCourses.filter((course) => {
-      const matchesSearch =
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.skills?.some((skill: string) => skill.toLowerCase().includes(searchQuery.toLowerCase()));
+ const filteredCourses = useMemo(() => {
+  const normalizedSearch = searchQuery.toLowerCase();
 
-      const matchesCategory = selectedCategory === "all" || course.category === selectedCategory;
-      const matchesLevel = selectedLevel === "all" || course.level === selectedLevel;
-      
-      const matchesViewType = 
-        viewType === "all" || 
-        (viewType === "favorites" && courseTracking[course.id]?.is_favorite) ||
-        (viewType === "completed" && courseTracking[course.id]?.is_completed);
+  return allCourses.filter((course) => {
+    const tracking = courseTracking[course.id];
 
-      return matchesSearch && matchesCategory && matchesLevel && matchesViewType;
-    });
-  }, [allCourses, searchQuery, selectedCategory, selectedLevel, viewType, courseTracking]);
+    const matchesSearch =
+      normalizedSearch === "" ||
+      course.title.toLowerCase().includes(normalizedSearch) ||
+      course.description.toLowerCase().includes(normalizedSearch) ||
+      course.skills?.some((skill: string) =>
+        skill.toLowerCase().includes(normalizedSearch)
+      );
+
+    const matchesCategory =
+      selectedCategory === "all" || course.category === selectedCategory;
+
+    const matchesLevel =
+      selectedLevel === "all" || course.level === selectedLevel;
+
+    const matchesViewType =
+      viewType === "all" ||
+      (viewType === "favorites" && tracking?.is_favorite) ||
+      (viewType === "completed" && tracking?.is_completed);
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesLevel &&
+      matchesViewType
+    );
+  });
+}, [
+  allCourses,
+  searchQuery,
+  selectedCategory,
+  selectedLevel,
+  viewType,
+  courseTracking // ✅ continua, mas com menos operações
+]);
+
 
   const categories = useMemo(() => {
     return ["all", ...Array.from(new Set(allCourses.map((c) => c.category || "Geral")))];
