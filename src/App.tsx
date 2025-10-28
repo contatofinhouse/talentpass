@@ -11,10 +11,11 @@
   import ManagerDashboard from "./pages/ManagerDashboard";
   import EmployeeDashboard from "./pages/EmployeeDashboard";
   import EmployeeLogin from "./pages/EmployeeLogin";
-  import ResetPassword from "./pages/resetpassword";
+  import ResetPassword from "./pages/ResetPassword";
   import PublicCourse from "./pages/PublicCourse";
   import SignupEmployee from "./pages/SignupEmployee";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/react";
+
   import ProtectedRoute from "./components/ProtectedRoute";
   import TermsConditions from "./pages/TermsConditions";
   import PrivacyPolicy from "./pages/PrivacyPolicy";
