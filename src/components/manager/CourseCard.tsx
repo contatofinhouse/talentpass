@@ -1,9 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Clock, Eye } from "lucide-react";
+import {
+  Play,
+  Clock,
+  Eye,
+  Heart,
+  CheckCircle2,
+} from "lucide-react";
 
 interface CourseCardProps {
   course: any;
@@ -41,39 +53,79 @@ export const CourseCard = React.memo(
           backfaceVisibility: "hidden",
         }}
       >
-        {course.image && (
-          <div className="w-full h-[160px] relative rounded-md overflow-hidden">
-            {(course.views ?? 0) > 150 && (
-              <div className="absolute top-2 left-2 z-20">
-                <Badge
-                  variant="default"
-                  className="bg-primary text-white px-2 py-0.5 text-xs rounded-md shadow"
-                >
-                  Destaque 🔥
-                </Badge>
-              </div>
-            )}
+  {course.image && (
+  <div className="w-full h-[160px] relative rounded-md overflow-hidden">
+    {(course.views ?? 0) > 150 && (
+      <div className="absolute top-2 left-2 z-20">
+        <Badge
+          variant="default"
+          className="bg-primary text-white px-2 py-0.5 text-xs rounded-md shadow"
+        >
+          Destaque 🔥
+        </Badge>
+      </div>
+    )}
 
-            {/* 🔹 Fundo desfocado leve para destaque visual */}
-            <img
-              src={course.image}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover blur-[6px] scale-110 opacity-[0.18]"
-              draggable={false}
-              decoding="auto"
-            />
+    {/* 🔹 Botões de ação: favoritar / concluir */}
+    <div className="absolute top-2 right-2 z-20 flex flex-col gap-2">
+      <button
+        onClick={(e) => onToggleFavorite(course.id, e)}
+        className={`p-1.5 rounded-full shadow transition transform hover:scale-110 ${
+          courseTracking?.is_favorite
+            ? "bg-red-500 text-white"
+            : "bg-white/80 text-gray-700"
+        }`}
+        title={
+          courseTracking?.is_favorite ? "Remover dos favoritos" : "Favoritar curso"
+        }
+      >
+        <Heart
+          className="h-4 w-4"
+          fill={courseTracking?.is_favorite ? "white" : "none"}
+        />
+      </button>
 
-            {/* 🔹 Imagem principal */}
-            <img
-              src={imageUrl || course.image}
-              alt={course.title}
-              className="relative mx-auto h-full object-contain z-10 transition-transform duration-300 group-hover:scale-[1.03]"
-              draggable={false}
-              decoding="auto"
-            />
-          </div>
-        )}
+      <button
+        onClick={(e) => onToggleCompleted(course.id, e)}
+        className={`p-1.5 rounded-full shadow transition transform hover:scale-110 ${
+          courseTracking?.is_completed
+            ? "bg-green-500 text-white"
+            : "bg-white/80 text-gray-700"
+        }`}
+        title={
+          courseTracking?.is_completed
+            ? "Marcar como não concluído"
+            : "Marcar como concluído"
+        }
+      >
+        <CheckCircle2
+          className="h-4 w-4"
+          fill={courseTracking?.is_completed ? "white" : "none"}
+        />
+      </button>
+    </div>
+
+    {/* 🔹 Fundo desfocado leve para destaque visual */}
+    <img
+      src={course.image}
+      alt=""
+      aria-hidden="true"
+      className="absolute inset-0 w-full h-full object-cover blur-[6px] scale-110 opacity-[0.18]"
+      draggable={false}
+      decoding="auto"
+    />
+
+    {/* 🔹 Imagem principal */}
+    <img
+      src={imageUrl || course.image}
+      alt={course.title}
+      className="relative mx-auto h-full object-contain z-10 transition-transform duration-300 group-hover:scale-[1.03]"
+      draggable={false}
+      decoding="auto"
+    />
+  </div>
+)}
+
 
         <CardHeader>
           <div className="mb-2 flex items-start justify-between flex-wrap gap-1">
