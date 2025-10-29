@@ -7,16 +7,34 @@ const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary-glow py-20 lg:py-32">
-      {/* Animated floating blobs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -left-20 top-20 h-96 w-96 animate-float rounded-full bg-accent/30 blur-3xl"></div>
-        <div className="absolute right-10 top-40 h-80 w-80 animate-float-slow rounded-full bg-primary-glow/40 blur-3xl"></div>
-        <div className="absolute -bottom-20 left-1/3 h-96 w-96 animate-float rounded-full bg-accent-glow/20 blur-3xl"></div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-accent py-20 lg:py-32">
+      {/* Geometric hexagonal pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNTAgMEwyNSAxNC40MzM4VjQzLjMwMTNMNTAgNTcuNzM1MUw3NSA0My4zMDEzVjE0LjQzMzhMNTAgMFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')] bg-repeat"></div>
+      </div>
+      
+      {/* Diagonal grid lines with 3D perspective */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%), 
+                           linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%)`,
+          backgroundSize: '60px 60px',
+          transform: 'perspective(1000px) rotateX(60deg)',
+          transformOrigin: 'center bottom'
+        }}></div>
       </div>
 
-      {/* Subtle grid overlay */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bTAtOHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-40"></div>
+      {/* Accent geometric shapes */}
+      <div className="absolute right-0 top-0 h-96 w-96 opacity-30">
+        <div className="h-full w-full bg-gradient-to-br from-accent-glow/40 to-transparent" style={{
+          clipPath: 'polygon(100% 0, 100% 50%, 50% 100%, 0 50%)'
+        }}></div>
+      </div>
+      <div className="absolute bottom-0 left-0 h-80 w-80 opacity-20">
+        <div className="h-full w-full bg-gradient-to-tr from-primary-glow/40 to-transparent" style={{
+          clipPath: 'polygon(0 100%, 50% 0, 100% 50%, 50% 100%)'
+        }}></div>
+      </div>
 
       <div className="container relative mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2">
