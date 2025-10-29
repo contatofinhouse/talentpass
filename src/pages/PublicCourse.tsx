@@ -5,29 +5,42 @@ import { supabase } from "@/integrations/supabase";
 import { Loader2 } from "lucide-react";
 import { PublicNavbar } from "@/components/PublicNavbar";
 import { CourseDetailModal } from "@/components/manager/CourseDetailModal";
+import { courses as hardcodedCourses } from "@/data/courses";
 
 const PublicCourse = () => {
   const { id } = useParams();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  supabase
-    .from("courses")
-    .select("*")
-    .eq("id", id)
-    .single()
-    .then(({ data }) => {
-      if (data?.resources) {
-        data.resourceFiles = data.resources.map((file: any) => ({
-          name: file.title ?? file.name,
-          url: file.url ?? file.data,
-        }));
+  useEffect(() => {
+    const fetchCourse = async () => {
+      // Primeiro tenta buscar do Supabase
+      const { data } = await supabase
+        .from("courses")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (data) {
+        if (data.resources) {
+          data.resourceFiles = data.resources.map((file: any) => ({
+            name: file.title ?? file.name,
+            url: file.url ?? file.data,
+            type: file.type,
+          }));
+        }
+        setCourse(data);
+      } else {
+        // Se não encontrar no Supabase, busca nos cursos hardcoded
+        const hardcodedCourse = hardcodedCourses.find((c) => c.id === id);
+        setCourse(hardcodedCourse || null);
       }
-      setCourse(data);
+      
       setLoading(false);
-    });
-}, [id]);
+    };
+
+    fetchCourse();
+  }, [id]);
 
   if (loading)
     return (
