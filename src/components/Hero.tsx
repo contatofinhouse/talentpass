@@ -7,8 +7,16 @@ const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary/90 via-primary to-primary/80 py-20 lg:py-32">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bTAtOHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary-glow py-20 lg:py-32">
+      {/* Animated floating blobs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -left-20 top-20 h-96 w-96 animate-float rounded-full bg-accent/30 blur-3xl"></div>
+        <div className="absolute right-10 top-40 h-80 w-80 animate-float-slow rounded-full bg-primary-glow/40 blur-3xl"></div>
+        <div className="absolute -bottom-20 left-1/3 h-96 w-96 animate-float rounded-full bg-accent-glow/20 blur-3xl"></div>
+      </div>
+
+      {/* Subtle grid overlay */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bTAtOHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-40"></div>
 
       <div className="container relative mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2">
