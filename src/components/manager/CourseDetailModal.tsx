@@ -130,6 +130,45 @@ const posterSrc = course?.image ?? "/placeholder.svg";
             </div>
           )}
 
+          {/* ✅ Recursos para download */}
+          {(course.resourceFiles?.length > 0 || course.resources?.length > 0) && (
+            <div className="border-t pt-4">
+              <h4 className="mb-3 font-semibold flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Materiais de Apoio
+              </h4>
+              <div className="space-y-2">
+                {(course.resourceFiles || course.resources)?.map((resource: any, i: number) => {
+                  const resourceUrl = resource.url || resource.data;
+                  const resourceName = resource.name || resource.title || `Recurso ${i + 1}`;
+                  const resourceType = resource.type || 'Arquivo';
+                  
+                  return (
+                    <Button
+                      key={i}
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <a
+                        href={resourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium">{resourceName}</span>
+                          <span className="text-xs text-muted-foreground">{resourceType}</span>
+                        </div>
+                      </a>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* ✅ Carrossel de cursos relacionados */}
           {relatedCourses.length > 0 && (
             <div className="border-t pt-4">
