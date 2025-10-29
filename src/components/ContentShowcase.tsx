@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Play, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import spinSellingImg from "@/assets/content-spin-selling.jpg";
 import seoImg from "@/assets/content-seo.jpg";
 import escutaAtivaImg from "@/assets/content-escuta-ativa.jpg";
@@ -54,6 +55,8 @@ const contentItems = [
 ];
 
 const ContentShowcase = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-secondary/30 py-20 lg:py-32">
       <div className="container mx-auto px-4">
@@ -71,6 +74,7 @@ const ContentShowcase = () => {
             <Card
               key={index}
               className="group cursor-pointer overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-[0_20px_50px_-10px_hsl(var(--primary)/0.2)]"
+              onClick={() => navigate("/signup")}
             >
               <div className="relative h-48 overflow-hidden">
                 <img
