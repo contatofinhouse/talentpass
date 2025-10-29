@@ -67,40 +67,40 @@ const Welcome = () => {
   const isActive = profile?.status === "active";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center py-12">
-      <div className="container mx-auto px-4">
-        <Card className="mx-auto max-w-2xl border-2 border-primary/20">
-          <CardHeader className="text-center space-y-4 pb-8">
-            <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-              {isActive ? <Trophy className="w-12 h-12 text-primary" /> : <CheckCircle2 className="w-12 h-12 text-primary" />}
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <Card className="border-2 border-primary/20">
+          <CardHeader className="text-center space-y-3 pb-6">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              {isActive ? <Trophy className="w-10 h-10 text-primary" /> : <CheckCircle2 className="w-10 h-10 text-primary" />}
             </div>
-            <div className="space-y-2">
-              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                {isActive ? "Parabéns por Investir no Seu Aprimoramento Profissional!" : "Parabéns pelo Primeiro Passo!"}
+            <div className="space-y-1">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                {isActive ? "Parabéns por Investir no Seu Aprimoramento!" : "Parabéns pelo Primeiro Passo!"}
               </CardTitle>
               <div className="flex items-center justify-center gap-2 text-primary">
-                <Sparkles className="w-5 h-5" />
-                <span className="text-lg font-semibold">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-base font-semibold">
                   Bem-vindo{profile?.name ? `, ${profile.name}` : ""} ao TalentPass
                 </span>
-                <Sparkles className="w-5 h-5" />
+                <Sparkles className="w-4 h-4" />
               </div>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6 text-center">
+          <CardContent className="space-y-4 text-center">
             {isActive ? (
               <>
-                <div className="bg-accent/10 rounded-lg p-6 space-y-4">
-                  <p className="text-lg leading-relaxed">
+                <div className="bg-accent/10 rounded-lg p-4 space-y-2">
+                  <p className="text-base leading-relaxed">
                     Você está investindo no que há de mais importante: <span className="font-bold text-primary">o seu desenvolvimento contínuo</span>.
                   </p>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Explore todo o conteúdo disponível, acompanhe o progresso da sua equipe e transforme o aprendizado em resultados concretos.
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Explore todo o conteúdo disponível e transforme aprendizado em resultados.
                   </p>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-2">
                   <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
                     Continuar para o Painel
                   </Button>
@@ -108,21 +108,20 @@ const Welcome = () => {
               </>
             ) : (
               <>
-                <div className="bg-accent/10 rounded-lg p-6 space-y-4">
-                  <p className="text-lg leading-relaxed">
+                <div className="bg-accent/10 rounded-lg p-4 space-y-2">
+                  <p className="text-base leading-relaxed">
                     Você agora tem{" "}
                     <span className="font-bold text-primary text-xl">
                       {daysRemaining} {daysRemaining === 1 ? "dia" : "dias"}
                     </span>{" "}
-                    para testar a ferramenta e explorar todo o conteúdo disponível.
+                    para testar e explorar todo o conteúdo.
                   </p>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Gostou do teste? Clique em Ativar Plano para cadastrarmos a sua equipe, que poderá também utilizar toda
-                    a plataforma de educação corporativa.
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Gostou? Clique em Ativar Plano para cadastrar sua equipe na plataforma.
                   </p>
                 </div>
 
-                <div className="pt-4 space-y-3">
+                <div className="pt-2 space-y-3">
                   {daysRemaining! > 0 && (
                     <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
                       Continuar para o Painel
