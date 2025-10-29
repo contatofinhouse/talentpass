@@ -14,12 +14,11 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
   const [hasRequiredRole, setHasRequiredRole] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndRole = async (session: any) => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
         if (!session) {
           setIsAuthenticated(false);
+          setHasRequiredRole(false);
           setLoading(false);
           return;
         }
@@ -50,11 +49,24 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
       } catch (error) {
         console.error("Auth check error:", error);
         setIsAuthenticated(false);
+        setHasRequiredRole(false);
         setLoading(false);
       }
     };
 
-    checkAuth();
+    // Listen to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        checkAuthAndRole(session);
+      }
+    );
+
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      checkAuthAndRole(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, [role]);
 
   if (loading) {
