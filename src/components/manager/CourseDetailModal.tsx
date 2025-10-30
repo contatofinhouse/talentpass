@@ -121,14 +121,36 @@ const posterSrc = course?.image ?? "/placeholder.svg";
     link.href = imageDataUrl;
     link.click();
 
-    // Abrir compartilhamento do LinkedIn
-    const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}`;
-    window.open(linkedInShareUrl, '_blank', 'width=600,height=600');
+    // Preparar texto do post
+    const skillsText = course.skills && course.skills.length > 0 
+      ? `\n\nCompetências desenvolvidas: ${course.skills.join(', ')}` 
+      : '';
+    
+    const postText = `Acabo de concluir o curso "${course.title}" na plataforma de educação corporativa trainingpass.com.br 🎓${skillsText}\n\n#EducaçãoCorporativa #DesenvolvimentoProfissional #TrainingPass`;
 
-    toast({
-      title: "Imagem baixada! 📥",
-      description: "Anexe a imagem do certificado no seu post do LinkedIn"
-    });
+    // Copiar texto para clipboard
+    try {
+      await navigator.clipboard.writeText(postText);
+      
+      toast({
+        title: "Texto copiado! 📋",
+        description: "Cole no LinkedIn (Ctrl+V) e anexe o certificado baixado",
+        duration: 6000,
+      });
+    } catch (err) {
+      console.error('Erro ao copiar texto:', err);
+      toast({
+        title: "Imagem baixada! 📥",
+        description: "Copie o texto manualmente e anexe o certificado no LinkedIn",
+        duration: 6000,
+      });
+    }
+
+    // Abrir compartilhamento do LinkedIn (após 1 segundo para dar tempo de ver o toast)
+    setTimeout(() => {
+      const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://trainingpass.com.br')}`;
+      window.open(linkedInShareUrl, '_blank', 'width=600,height=600');
+    }, 1000);
   };
 
 
