@@ -441,6 +441,9 @@ className="cursor-pointer hover:scale-105 transition">
     }}
     courseTracking={courseTracking[selectedCourse.id]}
     userName={profile?.name}
+    onToggleCompleted={(courseId) => {
+      toggleCompleted(courseId, { stopPropagation: () => {} } as React.MouseEvent);
+    }}
   />
 )}
 

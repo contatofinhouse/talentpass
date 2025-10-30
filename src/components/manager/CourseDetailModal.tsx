@@ -3,10 +3,10 @@ import React, { useMemo, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Download, Share2, Linkedin } from "lucide-react";
+import { Clock, Download, Share2, Linkedin, Check } from "lucide-react";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { toast } from "@/hooks/use-toast";
-import { generateCertificate } from "@/lib/certificateGenerator";
+import { generateCertificate, generateCertificateImage } from "@/lib/certificateGenerator";
 
 
 
@@ -19,6 +19,7 @@ interface CourseDetailModalProps {
   isPage?: boolean;
   courseTracking?: { is_favorite: boolean; is_completed: boolean };
   userName?: string;
+  onToggleCompleted?: (courseId: string) => void;
 }
 
 export const CourseDetailModal = React.memo(({
@@ -30,6 +31,7 @@ export const CourseDetailModal = React.memo(({
   isPage = false,
   courseTracking,
   userName,
+  onToggleCompleted = () => {},
 }: CourseDetailModalProps) => {
 
 
@@ -94,19 +96,38 @@ const posterSrc = course?.image ?? "/placeholder.svg";
     });
   };
 
-  const handleShareLinkedIn = () => {
-    const url = new URL('https://www.linkedin.com/profile/add');
-    url.searchParams.set('startTask', 'CERTIFICATION_NAME');
-    url.searchParams.set('name', course.title);
-    url.searchParams.set('organizationName', 'TalentPass');
-    url.searchParams.set('issueYear', new Date().getFullYear().toString());
-    url.searchParams.set('issueMonth', (new Date().getMonth() + 1).toString());
-    
-    window.open(url.toString(), '_blank');
-    
+  const handleShareLinkedIn = async () => {
+    if (!userName) {
+      toast({
+        title: "Erro",
+        description: "Nome do usuário não encontrado",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Gerar imagem do certificado
+    const imageDataUrl = await generateCertificateImage({
+      courseName: course.title,
+      category: course.category || "Geral",
+      skills: course.skills || [],
+      userName: userName,
+      completionDate: new Date(),
+    });
+
+    // Baixar imagem automaticamente
+    const link = document.createElement('a');
+    link.download = `Certificado_${course.title.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
+    link.href = imageDataUrl;
+    link.click();
+
+    // Abrir compartilhamento do LinkedIn
+    const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}`;
+    window.open(linkedInShareUrl, '_blank', 'width=600,height=600');
+
     toast({
-      title: "LinkedIn aberto! 🎓",
-      description: "Adicione o certificado ao seu perfil"
+      title: "Imagem baixada! 📥",
+      description: "Anexe a imagem do certificado no seu post do LinkedIn"
     });
   };
 
@@ -249,32 +270,45 @@ const posterSrc = course?.image ?? "/placeholder.svg";
           )}
 
           {/* ✅ Botões */}
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={handleShare}>
-              <Share2 className="mr-2 h-4 w-4" />
-              Compartilhar
-            </Button>
-
-            {courseTracking?.is_completed && (
-              <>
-                <Button variant="outline" onClick={handleDownloadCertificate}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Certificado
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" onClick={handleShare}>
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Compartilhar
                 </Button>
 
-                <Button variant="outline" onClick={handleShareLinkedIn}>
-                  <Linkedin className="mr-2 h-4 w-4" />
-                  LinkedIn
-                </Button>
-              </>
-            )}
+                {!courseTracking?.is_completed && (
+                  <Button 
+                    variant="outline" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleCompleted(course.id);
+                    }}
+                  >
+                    <Check className="mr-2 h-4 w-4" />
+                    Concluir Curso
+                  </Button>
+                )}
 
-            {!isPage && (
-              <Button onClick={onClose} className="flex-1">
-                Fechar
-              </Button>
-            )}
-          </div>
+                {courseTracking?.is_completed && (
+                  <>
+                    <Button variant="outline" onClick={handleDownloadCertificate}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Certificado
+                    </Button>
+
+                    <Button variant="outline" onClick={handleShareLinkedIn}>
+                      <Linkedin className="mr-2 h-4 w-4" />
+                      LinkedIn
+                    </Button>
+                  </>
+                )}
+
+                {!isPage && (
+                  <Button onClick={onClose} className="flex-1">
+                    Fechar
+                  </Button>
+                )}
+              </div>
         </CardContent>
       </Card>
     </Wrapper>
