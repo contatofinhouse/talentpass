@@ -436,11 +436,11 @@ className="cursor-pointer hover:scale-105 transition">
     onSelectCourse={(c) => setSelectedCourse(c)}
     isOpen={true}
     onClose={() => {
-document.body.classList.remove("overflow-hidden");
-
-  setSelectedCourse(null);
-}}
-
+      document.body.classList.remove("overflow-hidden");
+      setSelectedCourse(null);
+    }}
+    courseTracking={courseTracking[selectedCourse.id]}
+    userName={profile?.name}
   />
 )}
 

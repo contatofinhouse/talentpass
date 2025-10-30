@@ -3,9 +3,10 @@ import React, { useMemo, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Download, Share2 } from "lucide-react";
+import { Clock, Download, Share2, Linkedin } from "lucide-react";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { toast } from "@/hooks/use-toast";
+import { generateCertificate } from "@/lib/certificateGenerator";
 
 
 
@@ -16,6 +17,8 @@ interface CourseDetailModalProps {
   isOpen?: boolean;
   onClose?: () => void;
   isPage?: boolean;
+  courseTracking?: { is_favorite: boolean; is_completed: boolean };
+  userName?: string;
 }
 
 export const CourseDetailModal = React.memo(({
@@ -24,7 +27,9 @@ export const CourseDetailModal = React.memo(({
   onSelectCourse = () => {},
   isOpen = true,
   onClose = () => {},
-  isPage = false, 
+  isPage = false,
+  courseTracking,
+  userName,
 }: CourseDetailModalProps) => {
 
 
@@ -62,7 +67,48 @@ const posterSrc = course?.image ?? "/placeholder.svg";
     toast({
       title: "Link copiado!",
       description: "Compartilhe com sua equipe ✨",
-    });};
+    });
+  };
+
+  const handleDownloadCertificate = () => {
+    if (!userName) {
+      toast({
+        title: "Erro",
+        description: "Nome de usuário não encontrado",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    generateCertificate({
+      courseName: course.title,
+      category: course.category || "Geral",
+      skills: course.skills || [],
+      userName: userName,
+      completionDate: new Date()
+    });
+
+    toast({
+      title: "Certificado gerado! 🎓",
+      description: "Download iniciado com sucesso"
+    });
+  };
+
+  const handleShareLinkedIn = () => {
+    const url = new URL('https://www.linkedin.com/profile/add');
+    url.searchParams.set('startTask', 'CERTIFICATION_NAME');
+    url.searchParams.set('name', course.title);
+    url.searchParams.set('organizationName', 'TalentPass');
+    url.searchParams.set('issueYear', new Date().getFullYear().toString());
+    url.searchParams.set('issueMonth', (new Date().getMonth() + 1).toString());
+    
+    window.open(url.toString(), '_blank');
+    
+    toast({
+      title: "LinkedIn aberto! 🎓",
+      description: "Adicione o certificado ao seu perfil"
+    });
+  };
 
 
   return (
@@ -203,21 +249,25 @@ const posterSrc = course?.image ?? "/placeholder.svg";
           )}
 
           {/* ✅ Botões */}
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                 const shareUrl = `${window.location.origin}/curso/${course.id}`;
-                navigator.clipboard.writeText(shareUrl);
-                toast({
-                  title: "Link copiado!",
-                  description: "Compartilhe com sua equipe ✨",
-                });
-              }}
-            >
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" onClick={handleShare}>
               <Share2 className="mr-2 h-4 w-4" />
               Compartilhar
             </Button>
+
+            {courseTracking?.is_completed && (
+              <>
+                <Button variant="outline" onClick={handleDownloadCertificate}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Certificado
+                </Button>
+
+                <Button variant="outline" onClick={handleShareLinkedIn}>
+                  <Linkedin className="mr-2 h-4 w-4" />
+                  LinkedIn
+                </Button>
+              </>
+            )}
 
             {!isPage && (
               <Button onClick={onClose} className="flex-1">
