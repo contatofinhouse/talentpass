@@ -136,102 +136,129 @@ export const generateCertificateImage = (data: CertificateData): Promise<string>
     canvas.width = 3508;
     canvas.height = 2480;
 
-    // Fundo branco
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Carregar favicon/logo
+    const logo = new Image();
+    logo.crossOrigin = 'anonymous';
+    logo.src = '/favicon.png';
+    
+    logo.onload = () => {
+      drawCertificate();
+    };
+    
+    logo.onerror = () => {
+      // Se falhar ao carregar logo, desenha sem ele
+      drawCertificate();
+    };
 
-    // Bordas decorativas
-    ctx.strokeStyle = '#4F46E5';
-    ctx.lineWidth = 8;
-    ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
-    ctx.lineWidth = 2;
-    ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
+    const drawCertificate = () => {
 
-    // Logo/Título TalentPass
-    ctx.fillStyle = '#4F46E5';
-    ctx.font = 'bold 120px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('🎓 TALENTPASS', canvas.width / 2, 250);
+      // Fundo branco
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Subtítulo
-    ctx.font = '72px Arial';
-    ctx.fillStyle = '#646464';
-    ctx.fillText('Certificado de Conclusão', canvas.width / 2, 360);
+      // Bordas decorativas
+      ctx.strokeStyle = '#4F46E5';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
 
-    // Linha divisória
-    ctx.strokeStyle = '#4F46E5';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(600, 420);
-    ctx.lineTo(canvas.width - 600, 420);
-    ctx.stroke();
+      // Desenhar logo/favicon se carregou
+      if (logo.complete && logo.naturalHeight !== 0) {
+        const logoSize = 120;
+        ctx.drawImage(logo, canvas.width / 2 - logoSize / 2, 120, logoSize, logoSize);
+      }
 
-    // Texto "Certificamos que"
-    ctx.font = '48px Arial';
-    ctx.fillStyle = '#323232';
-    ctx.fillText('Certificamos que', canvas.width / 2, 560);
+      // Logo/Título TalentPass
+      ctx.fillStyle = '#4F46E5';
+      ctx.font = 'bold 120px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('TALENTPASS', canvas.width / 2, 300);
 
-    // Nome do usuário
-    ctx.font = 'bold 88px Arial';
-    ctx.fillStyle = '#000000';
-    ctx.fillText(userName, canvas.width / 2, 700);
+      // Subtítulo
+      ctx.font = '72px Arial';
+      ctx.fillStyle = '#646464';
+      ctx.fillText('Certificado de Conclusão', canvas.width / 2, 400);
 
-    // Texto "concluiu com sucesso o curso:"
-    ctx.font = '48px Arial';
-    ctx.fillStyle = '#323232';
-    ctx.fillText('concluiu com sucesso o curso:', canvas.width / 2, 800);
+      // Linha divisória
+      ctx.strokeStyle = '#4F46E5';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(600, 460);
+      ctx.lineTo(canvas.width - 600, 460);
+      ctx.stroke();
 
-    // Nome do curso
-    ctx.font = 'bold 72px Arial';
-    ctx.fillStyle = '#4F46E5';
-    const maxWidth = canvas.width - 600;
-    ctx.fillText(courseName, canvas.width / 2, 940, maxWidth);
-
-    // Categoria
-    ctx.font = 'italic 44px Arial';
-    ctx.fillStyle = '#646464';
-    ctx.fillText(`Categoria: ${category}`, canvas.width / 2, 1040);
-
-    // Skills
-    if (skills && skills.length > 0) {
-      ctx.font = 'bold 44px Arial';
+      // Texto "Certificamos que"
+      ctx.font = '48px Arial';
       ctx.fillStyle = '#323232';
-      ctx.fillText('Competências desenvolvidas:', canvas.width / 2, 1180);
+      ctx.fillText('Certificamos que', canvas.width / 2, 600);
 
+      // Nome do usuário
+      ctx.font = 'bold 88px Arial';
+      ctx.fillStyle = '#000000';
+      ctx.fillText(userName, canvas.width / 2, 740);
+
+      // Texto "concluiu com sucesso o curso:"
+      ctx.font = '48px Arial';
+      ctx.fillStyle = '#323232';
+      ctx.fillText('concluiu com sucesso o curso:', canvas.width / 2, 840);
+
+      // Nome do curso
+      ctx.font = 'bold 72px Arial';
+      ctx.fillStyle = '#4F46E5';
+      const maxWidth = canvas.width - 600;
+      ctx.fillText(courseName, canvas.width / 2, 980, maxWidth);
+
+      // Categoria
+      ctx.font = 'italic 44px Arial';
+      ctx.fillStyle = '#646464';
+      ctx.fillText(`Categoria: ${category}`, canvas.width / 2, 1080);
+
+      // Skills
+      if (skills && skills.length > 0) {
+        ctx.font = 'bold 44px Arial';
+        ctx.fillStyle = '#323232';
+        ctx.fillText('Competências desenvolvidas:', canvas.width / 2, 1220);
+
+        ctx.font = '40px Arial';
+        const skillsText = skills.slice(0, 5).map((skill) => `• ${skill}`).join('   ');
+        ctx.fillText(skillsText, canvas.width / 2, 1300, maxWidth);
+      }
+
+      // Data de conclusão
       ctx.font = '40px Arial';
-      const skillsText = skills.slice(0, 5).map((skill) => `• ${skill}`).join('   ');
-      ctx.fillText(skillsText, canvas.width / 2, 1260, maxWidth);
-    }
+      ctx.fillStyle = '#505050';
+      const formattedDate = completionDate.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+      ctx.fillText(`Data de conclusão: ${formattedDate}`, canvas.width / 2, canvas.height - 400);
 
-    // Data de conclusão
-    ctx.font = '40px Arial';
-    ctx.fillStyle = '#505050';
-    const formattedDate = completionDate.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-    ctx.fillText(`Data de conclusão: ${formattedDate}`, canvas.width / 2, canvas.height - 400);
+      // Linha de assinatura
+      ctx.strokeStyle = '#646464';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2 - 300, canvas.height - 280);
+      ctx.lineTo(canvas.width / 2 + 300, canvas.height - 280);
+      ctx.stroke();
 
-    // Linha de assinatura
-    ctx.strokeStyle = '#646464';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2 - 300, canvas.height - 280);
-    ctx.lineTo(canvas.width / 2 + 300, canvas.height - 280);
-    ctx.stroke();
+      // Assinatura
+      ctx.font = 'bold 40px Arial';
+      ctx.fillStyle = '#4F46E5';
+      ctx.fillText('TalentPass Team', canvas.width / 2, canvas.height - 220);
 
-    // Assinatura
-    ctx.font = 'bold 40px Arial';
-    ctx.fillStyle = '#4F46E5';
-    ctx.fillText('TalentPass Team', canvas.width / 2, canvas.height - 220);
+      // Rodapé com logo pequeno
+      if (logo.complete && logo.naturalHeight !== 0) {
+        const logoSize = 40;
+        ctx.drawImage(logo, canvas.width / 2 - 150, canvas.height - 160, logoSize, logoSize);
+      }
+      ctx.font = 'italic 32px Arial';
+      ctx.fillStyle = '#787878';
+      ctx.fillText('www.talentpass.com.br', canvas.width / 2 - 40, canvas.height - 130);
 
-    // Rodapé
-    ctx.font = 'italic 32px Arial';
-    ctx.fillStyle = '#787878';
-    ctx.fillText('www.talentpass.com.br', canvas.width / 2, canvas.height - 130);
-
-    // Converter para data URL
-    resolve(canvas.toDataURL('image/png'));
+      // Converter para JPG ao invés de PNG
+      resolve(canvas.toDataURL('image/jpeg', 0.95));
+    };
   });
 };

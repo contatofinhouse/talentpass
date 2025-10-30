@@ -117,7 +117,7 @@ const posterSrc = course?.image ?? "/placeholder.svg";
 
     // Baixar imagem automaticamente
     const link = document.createElement('a');
-    link.download = `Certificado_${course.title.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
+    link.download = `Certificado_${course.title.replace(/[^a-zA-Z0-9]/g, "_")}.jpg`;
     link.href = imageDataUrl;
     link.click();
 
