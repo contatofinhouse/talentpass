@@ -14,25 +14,40 @@ const PublicCourse = () => {
 
 useEffect(() => {
   const fetchCourse = async () => {
-    // Primeiro tenta buscar do Supabase
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("courses")
       .select("*")
       .eq("id", id)
       .single();
 
+    if (error) {
+      console.error("Erro ao buscar curso:", error);
+      setLoading(false);
+      return;
+    }
+
     if (data) {
-      // 🔧 Normaliza imagem pública
-      if (data.image && !data.image.startsWith("http")) {
-        data.image = `https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/${data.image.replace(/^\/+/, "")}`;
+      // ✅ Corrige URL da imagem (usa endpoint render do Supabase)
+      if (data.image) {
+        if (data.image.includes("/storage/v1/object/public/")) {
+          data.image = data.image.replace(
+            "/storage/v1/object/public/",
+            "/storage/v1/render/image/public/"
+          );
+        } else if (!data.image.startsWith("http")) {
+          data.image = `https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/render/image/public/${data.image.replace(
+            /^\/+/,
+            ""
+          )}`;
+        }
       }
 
-      // 🔧 Corrige compatibilidade entre videoUrl / video_url
+      // ✅ Corrige videoUrl
       if (!data.videoUrl && data.video_url) {
         data.videoUrl = data.video_url;
       }
 
-      // 🔧 Normaliza recursos (igual ao modal)
+      // ✅ Normaliza recursos
       if (data.resources) {
         data.resourceFiles = data.resources.map((file: any) => ({
           name: file.title ?? file.name,
@@ -43,7 +58,7 @@ useEffect(() => {
 
       setCourse(data);
     } else {
-      // Se não encontrar no Supabase, busca nos cursos hardcoded
+      // fallback pros hardcoded
       const hardcodedCourse = hardcodedCourses.find((c) => c.id === id);
       setCourse(hardcodedCourse || null);
     }
@@ -53,6 +68,7 @@ useEffect(() => {
 
   fetchCourse();
 }, [id]);
+
 
 
   if (loading)
