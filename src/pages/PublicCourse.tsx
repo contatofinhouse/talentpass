@@ -12,35 +12,48 @@ const PublicCourse = () => {
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCourse = async () => {
-      // Primeiro tenta buscar do Supabase
-      const { data } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("id", id)
-        .single();
+useEffect(() => {
+  const fetchCourse = async () => {
+    // Primeiro tenta buscar do Supabase
+    const { data } = await supabase
+      .from("courses")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-      if (data) {
-        if (data.resources) {
-          data.resourceFiles = data.resources.map((file: any) => ({
-            name: file.title ?? file.name,
-            url: file.url ?? file.data,
-            type: file.type,
-          }));
-        }
-        setCourse(data);
-      } else {
-        // Se não encontrar no Supabase, busca nos cursos hardcoded
-        const hardcodedCourse = hardcodedCourses.find((c) => c.id === id);
-        setCourse(hardcodedCourse || null);
+    if (data) {
+      // 🔧 Normaliza imagem pública
+      if (data.image && !data.image.startsWith("http")) {
+        data.image = `https://tpwafkhuetbrdlykyegy.supabase.co/storage/v1/object/public/${data.image.replace(/^\/+/, "")}`;
       }
-      
-      setLoading(false);
-    };
 
-    fetchCourse();
-  }, [id]);
+      // 🔧 Corrige compatibilidade entre videoUrl / video_url
+      if (!data.videoUrl && data.video_url) {
+        data.videoUrl = data.video_url;
+      }
+
+      // 🔧 Normaliza recursos (igual ao modal)
+      if (data.resources) {
+        data.resourceFiles = data.resources.map((file: any) => ({
+          name: file.title ?? file.name,
+          url: file.url ?? file.data,
+          type: file.type,
+        }));
+      }
+
+      setCourse(data);
+    } else {
+      // Se não encontrar no Supabase, busca nos cursos hardcoded
+      const hardcodedCourse = hardcodedCourses.find((c) => c.id === id);
+      setCourse(hardcodedCourse || null);
+    }
+
+    setLoading(false);
+  };
+
+  fetchCourse();
+}, [id]);
+
 
   if (loading)
     return (
