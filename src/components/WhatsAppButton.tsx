@@ -1,9 +1,13 @@
 import { MessageCircle } from "lucide-react";
 
-const WhatsAppButton = () => {
+export const getWhatsAppUrl = (customMessage?: string) => {
   const phoneNumber = "5511955842951";
-  const message = "Olá! Gostaria de saber mais sobre a TalentPass.";
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  const message = customMessage || "Olá! Gostaria de saber mais sobre a TalentPass.";
+  return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+};
+
+const WhatsAppButton = () => {
+  const whatsappUrl = getWhatsAppUrl();
 
   return (
     <a

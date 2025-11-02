@@ -69,6 +69,69 @@ const Pricing = () => {
           </p>
         </div>
 
+        {/* Plano especial Open2Work */}
+        <Card className="relative mb-8 max-w-2xl mx-auto border-2 border-dashed border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-600 px-4 py-1 text-xs font-semibold text-white shadow-lg">
+            🎯 Promoção Especial
+          </div>
+          
+          <CardHeader className="pb-6 pt-8 text-center">
+            <div className="mb-2 flex items-center justify-center gap-2">
+              <span className="text-3xl">👩‍💼</span>
+              <CardTitle className="text-2xl">Open2Work</CardTitle>
+            </div>
+            <CardDescription className="text-base">
+              Para quem está buscando recolocação profissional
+            </CardDescription>
+            <div className="mt-4">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl text-muted-foreground line-through">R$ 49</span>
+                <span className="text-4xl font-bold text-indigo-600">R$ 9,80</span>
+                <span className="text-muted-foreground">/mês</span>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-indigo-600">80% de desconto enquanto durar a promoção</p>
+            </div>
+          </CardHeader>
+
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />
+                <span>Acesso completo a todas as trilhas de aprendizado</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />
+                <span>Certificados para enriquecer seu currículo</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />
+                <span>Foco em soft skills e hard skills valorizadas pelo mercado</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />
+                <span>Sem fidelidade - cancele quando quiser</span>
+              </li>
+            </ul>
+            
+            <div className="mt-4 rounded-lg bg-white/60 p-3 border border-indigo-200">
+              <p className="text-xs text-muted-foreground text-center">
+                💡 <span className="font-semibold">Dica:</span> Adicione os certificados do TalentPass ao seu LinkedIn para aumentar sua visibilidade com recrutadores
+              </p>
+            </div>
+          </CardContent>
+
+          <CardFooter>
+            <Button
+              variant="hero"
+              size="lg"
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600"
+              onClick={() => navigate("/signup")}
+            >
+              Quero aproveitar 🚀
+            </Button>
+          </CardFooter>
+        </Card>
+
         <div className="mb-12 grid gap-8 lg:grid-cols-2">
           {plans.map((plan, index) => (
             <Card
