@@ -35,8 +35,6 @@ const Signup = () => {
     formLoadTime: Date.now(),
   });
 
-  
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -124,7 +122,7 @@ const Signup = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email de trabalho</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
