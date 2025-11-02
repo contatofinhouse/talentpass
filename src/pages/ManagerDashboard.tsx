@@ -34,7 +34,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export default function ManagerDashboard({ isEmployee = false }: { isEmployee?: boolean }) {
+export default function ManagerDashboard({ isEmployee = false, isOpen2Work = false }: { isEmployee?: boolean; isOpen2Work?: boolean }) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
@@ -182,7 +182,7 @@ const [isPending, startTransition] = useTransition();
             </div>
           ))}
 
-          {!isEmployee && (
+          {!isEmployee && !isOpen2Work && (
             <div onClick={() =>
   startTransition(() => setActiveView("employees"))
 }
@@ -347,7 +347,7 @@ className="cursor-pointer hover:scale-105 transition">
         )}
 
         {/* === Colaboradores === */}
-        {!isEmployee && activeView === "employees" && (
+        {!isEmployee && !isOpen2Work && activeView === "employees" && (
           <Card>
             <CardHeader>
               <CardTitle>Colaboradores</CardTitle>

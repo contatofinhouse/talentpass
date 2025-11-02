@@ -8,10 +8,11 @@ import type { UserAttributes } from "@supabase/supabase-js";
 
 interface SignUpData {
   name: string;
-  company_name: string;
+  company_name?: string;
   cnpj?: string;
   phone: string;
   employee_count?: string;
+  plan_type?: string;
 }
 
 export const useAuth = () => {

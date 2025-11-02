@@ -13,6 +13,7 @@ const Welcome = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -26,6 +27,16 @@ const Welcome = () => {
         }
 
         setProfile(data);
+
+        // Buscar role do usuário
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        const userRole = roleData?.role || "manager";
+        setRole(userRole);
 
         // Se o usuário já é ativo, não precisa calcular dias restantes
         if (data?.status === "active") {
@@ -66,6 +77,16 @@ const Welcome = () => {
 
   const isActive = profile?.status === "active";
 
+  const handleContinue = () => {
+    if (role === "open2work") {
+      navigate("/dashboard/open2work");
+    } else if (role === "employee") {
+      navigate("/dashboard");
+    } else {
+      navigate("/manager/dashboard");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
@@ -101,7 +122,7 @@ const Welcome = () => {
                 </div>
 
                 <div className="pt-2">
-                  <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
+                  <Button size="lg" className="w-full max-w-md" onClick={handleContinue}>
                     Continuar para o Painel
                   </Button>
                 </div>
@@ -123,7 +144,7 @@ const Welcome = () => {
 
                 <div className="pt-2 space-y-3">
                   {daysRemaining! > 0 && (
-                    <Button size="lg" className="w-full max-w-md" onClick={() => navigate("/manager/dashboard")}>
+                    <Button size="lg" className="w-full max-w-md" onClick={handleContinue}>
                       Continuar para o Painel
                     </Button>
                   )}

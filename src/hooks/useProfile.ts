@@ -3,7 +3,7 @@
   import { supabase } from "@/integrations/supabase";
   import { useAuth } from "@/hooks/useAuth";
 
-  export type UserRole = "manager" | "employee" | null;
+  export type UserRole = "manager" | "employee" | "open2work" | null;
 
 export interface Profile {
   id: string;

@@ -10,6 +10,7 @@
   import Welcome from "./pages/Welcome";
   import ManagerDashboard from "./pages/ManagerDashboard";
   import EmployeeDashboard from "./pages/EmployeeDashboard";
+  import Open2WorkDashboard from "./pages/Open2WorkDashboard";
   import EmployeeLogin from "./pages/EmployeeLogin";
   import ResetPassword from "./pages/ResetPassword";
   import PublicCourse from "./pages/PublicCourse";
@@ -38,6 +39,7 @@ import { Analytics } from "@vercel/analytics/react"
             <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
             <Route path="/manager/dashboard" element={<ProtectedRoute role="manager"><ManagerDashboard /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute role="employee"><EmployeeDashboard /></ProtectedRoute>} />
+            <Route path="/dashboard/open2work" element={<ProtectedRoute role="open2work"><Open2WorkDashboard /></ProtectedRoute>} />
             <Route path="/resetpassword" element={<ResetPassword />} />
             
             <Route path="/termos-e-condicoes" element={<TermsConditions />} />
