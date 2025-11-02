@@ -115,8 +115,6 @@ const Index = () => {
             >
               Quero participar 🚀
             </Button>
-
-            <p className="text-xs text-muted-foreground mt-4">Sem custos.</p>
           </div>
         </div>
       </section>
