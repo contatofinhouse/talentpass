@@ -150,7 +150,7 @@ const [isPending, startTransition] = useTransition();
   // === Render ===
   return (
 <div className="relative min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} isEmployee={isEmployee} />
+      <ManagerHeader profile={profile} onNavigate={setActiveView} onLogout={handleLogout} isEmployee={isEmployee || isOpen2Work} />
   
 
 
