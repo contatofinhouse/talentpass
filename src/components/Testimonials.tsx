@@ -1,13 +1,7 @@
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface Testimonial {
   id: number;
@@ -38,8 +32,7 @@ const testimonials: Testimonial[] = [
     role: "Diretor de Pessoas",
     company: "Nubank",
     initials: "RS",
-    quote:
-      "Plataforma intuitiva e conteúdo de qualidade. Nossos colaboradores adoraram a experiência gamificada!",
+    quote: "Plataforma intuitiva e conteúdo de qualidade. Nossos colaboradores adoraram a experiência gamificada!",
     rating: 5,
     bgColor: "from-purple-500 to-pink-500",
   },
@@ -47,7 +40,7 @@ const testimonials: Testimonial[] = [
     id: 3,
     name: "Juliana Oliveira",
     role: "Head de T&D",
-    company: "Natura",
+    company: "",
     initials: "JO",
     quote:
       "Investimento que vale a pena. A facilidade de gestão e a qualidade dos cursos superaram nossas expectativas.",
@@ -58,7 +51,7 @@ const testimonials: Testimonial[] = [
     id: 4,
     name: "Fernando Silva",
     role: "Coordenador de Treinamento",
-    company: "Ambev",
+    company: "",
     initials: "FS",
     quote:
       "Implementamos em toda a operação. Os relatórios de progresso nos ajudam a acompanhar o desenvolvimento real.",
@@ -69,10 +62,9 @@ const testimonials: Testimonial[] = [
     id: 5,
     name: "Camila Rocha",
     role: "Gerente de Desenvolvimento",
-    company: "Localiza",
+    company: "",
     initials: "CR",
-    quote:
-      "Melhor custo-benefício do mercado. Conseguimos escalar o treinamento sem perder qualidade.",
+    quote: "Melhor custo-benefício do mercado. Conseguimos escalar o treinamento sem perder qualidade.",
     rating: 5,
     bgColor: "from-orange-500 to-red-500",
   },
@@ -87,9 +79,7 @@ const Testimonials = () => {
           <div className="inline-block bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-semibold mb-4">
             💬 Depoimentos
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            O que dizem nossos clientes
-          </h2>
+          <h2 className="text-3xl lg:text-4xl font-bold mb-4">O que dizem nossos clientes</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Empresas que já transformaram suas equipes com o TalentPass
           </p>
@@ -122,18 +112,13 @@ const Testimonials = () => {
 
                 {/* Quote */}
                 <div className="mb-4">
-                  <p className="text-sm text-muted-foreground italic">
-                    "{testimonial.quote}"
-                  </p>
+                  <p className="text-sm text-muted-foreground italic">"{testimonial.quote}"</p>
                 </div>
 
                 {/* Rating */}
                 <div className="flex justify-center gap-1">
                   {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                    />
+                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
               </CardContent>
@@ -158,7 +143,9 @@ const Testimonials = () => {
                       {/* Avatar */}
                       <div className="flex justify-center mb-4">
                         <Avatar className="h-16 w-16">
-                          <AvatarFallback className={`bg-gradient-to-br ${testimonial.bgColor} text-white font-semibold`}>
+                          <AvatarFallback
+                            className={`bg-gradient-to-br ${testimonial.bgColor} text-white font-semibold`}
+                          >
                             {testimonial.initials}
                           </AvatarFallback>
                         </Avatar>
@@ -174,18 +161,13 @@ const Testimonials = () => {
 
                       {/* Quote */}
                       <div className="mb-4">
-                        <p className="text-sm text-muted-foreground italic">
-                          "{testimonial.quote}"
-                        </p>
+                        <p className="text-sm text-muted-foreground italic">"{testimonial.quote}"</p>
                       </div>
 
                       {/* Rating */}
                       <div className="flex justify-center gap-1">
                         {Array.from({ length: testimonial.rating }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                          />
+                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         ))}
                       </div>
                     </CardContent>
