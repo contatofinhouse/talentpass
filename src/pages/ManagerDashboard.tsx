@@ -361,6 +361,7 @@ className="cursor-pointer hover:scale-105 transition">
   {(() => {
     const normalizedStatus = profile?.status?.trim()?.toLowerCase();
     const isTrial = normalizedStatus === "trial";
+    const isActive = normalizedStatus === "active";
 
     if (isTrial) {
       return (
@@ -384,7 +385,28 @@ className="cursor-pointer hover:scale-105 transition">
       );
     }
 
-    // 👇 exibe normalmente se plano ativo
+    if (isOpen2Work) {
+      return (
+        <div className="flex flex-col items-center justify-center py-8 px-4 text-center bg-accent/5 rounded-xl border border-accent/10">
+          <h3 className="text-lg font-semibold mb-2 text-accent">Colaboradores Disponíveis no Plano Teams</h3>
+          <p className="text-sm text-muted-foreground mb-3 max-w-sm">
+            O plano <strong>Open2Work</strong> é focado no aprendizado individual. 
+            Para gerenciar equipes, faça upgrade para o <strong>Plano Teams</strong>.
+          </p>
+          <p className="text-sm text-muted-foreground mb-5">
+            A partir de <strong>R$ 49,90/mês</strong> + <strong>R$ 0,99</strong> por colaborador adicional.
+          </p>
+          <Button
+            onClick={() => navigate("/upgrade-plano")}
+            className="w-full sm:w-auto bg-accent text-white text-base py-3 font-medium hover:bg-accent/90 transition-all rounded-lg shadow-md"
+          >
+            📈 Fazer Upgrade
+          </Button>
+        </div>
+      );
+    }
+
+    // 👇 exibe normalmente se manager com plano ativo
     return (
       <>
         <div className="flex gap-2 flex-wrap items-center">
