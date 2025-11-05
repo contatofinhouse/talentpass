@@ -5,6 +5,7 @@ import Categories from "@/components/Categories";
 import ContentShowcase from "@/components/ContentShowcase";
 import Benefits from "@/components/Benefits";
 import Pricing from "@/components/Pricing";
+import Testimonials from "@/components/Testimonials";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -58,6 +59,11 @@ const Index = () => {
       </div>
       <div id="planos">
         <Pricing />
+      </div>
+
+      {/* Seção de Depoimentos */}
+      <div id="depoimentos">
+        <Testimonials />
       </div>
 
       {/* Bloco Talent Partner */}
