@@ -14,14 +14,16 @@ interface ManagerHeaderProps {
   profile: any;
   onNavigate: (view: "courses" | "profile" | "employees") => void;
   onLogout: () => void;
-  isEmployee?: boolean; // 👈 nova prop para diferenciar visual
+  isEmployee?: boolean;
+  isOpen2Work?: boolean;
 }
 
 export const ManagerHeader = ({
   profile,
   onNavigate,
   onLogout,
-  isEmployee = false, // 👈 padrão: false = manager
+  isEmployee = false,
+  isOpen2Work = false,
 }: ManagerHeaderProps) => {
   const handleManagePlan = () => {
     const isActive = profile?.status === "active";
@@ -83,8 +85,8 @@ export const ManagerHeader = ({
                 </DropdownMenuItem>
               )}
 
-              {/* Exibe "Gerenciar Plano" ou "Ativar Plano" apenas se for manager */}
-              {!isEmployee && (
+              {/* Exibe "Gerenciar Plano" se for manager ou open2work */}
+              {(!isEmployee || isOpen2Work) && (
                 <DropdownMenuItem onClick={handleManagePlan}>
                   <Users className="mr-2 h-4 w-4" />
                   {profile?.status === "active" ? "Gerenciar Plano" : "Ativar Plano"}
