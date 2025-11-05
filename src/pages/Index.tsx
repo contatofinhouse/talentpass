@@ -90,7 +90,7 @@ const Index = () => {
             <div className="bg-white rounded-xl p-6 shadow-lg border border-indigo-100 mb-6 max-w-xl mx-auto">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-indigo-600">35%</div>
+                  <div className="text-2xl font-bold text-indigo-600">40%</div>
                   <div className="text-xs text-muted-foreground">Comissão recorrente</div>
                 </div>
                 <div>
