@@ -77,8 +77,8 @@ export const ManagerHeader = ({
   {isEmployee ? "Meu Perfil" : "Cadastro"}
 </DropdownMenuItem>
 
-              {/* Exibe "Colaboradores" apenas se for manager */}
-              {!isEmployee && (
+              {/* Exibe "Colaboradores" apenas se for manager (não employee e não open2work) */}
+              {!isEmployee && !isOpen2Work && (
                 <DropdownMenuItem onClick={() => onNavigate("employees")}>
                   <Users className="mr-2 h-4 w-4" />
                   Colaboradores
