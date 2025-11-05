@@ -19,7 +19,7 @@ const testimonials: Testimonial[] = [
     id: 1,
     name: "Carla Mendes",
     role: "Gerente de RH",
-    company: "Magazine Luiza",
+    company: "",
     initials: "CM",
     quote:
       "O TalentPass revolucionou o treinamento da nossa equipe. Em 3 meses, vimos um aumento de 40% no engajamento.",
@@ -30,7 +30,7 @@ const testimonials: Testimonial[] = [
     id: 2,
     name: "Rafael Santos",
     role: "Diretor de Pessoas",
-    company: "Nubank",
+    company: "",
     initials: "RS",
     quote: "Plataforma intuitiva e conteúdo de qualidade. Nossos colaboradores adoraram a experiência gamificada!",
     rating: 5,
@@ -46,27 +46,6 @@ const testimonials: Testimonial[] = [
       "Investimento que vale a pena. A facilidade de gestão e a qualidade dos cursos superaram nossas expectativas.",
     rating: 5,
     bgColor: "from-pink-500 to-rose-500",
-  },
-  {
-    id: 4,
-    name: "Fernando Silva",
-    role: "Coordenador de Treinamento",
-    company: "",
-    initials: "FS",
-    quote:
-      "Implementamos em toda a operação. Os relatórios de progresso nos ajudam a acompanhar o desenvolvimento real.",
-    rating: 5,
-    bgColor: "from-blue-500 to-indigo-500",
-  },
-  {
-    id: 5,
-    name: "Camila Rocha",
-    role: "Gerente de Desenvolvimento",
-    company: "",
-    initials: "CR",
-    quote: "Melhor custo-benefício do mercado. Conseguimos escalar o treinamento sem perder qualidade.",
-    rating: 5,
-    bgColor: "from-orange-500 to-red-500",
   },
 ];
 
