@@ -114,7 +114,7 @@ const Index = () => {
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
               onClick={() =>
                 window.open(
-                  "https://wa.me/5511955842951?text=Olá!%20Quero%20participar%20do%20programa%20Talent%20Partner%20e%20indicar%20empresas%20para%20o%20TalentPass.",
+                  "https://orbita.eduzz.com/affiliate/invite/2768338",
                   "_blank",
                 )
               }
