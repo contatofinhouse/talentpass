@@ -375,7 +375,7 @@ className="cursor-pointer hover:scale-105 transition">
     Ative agora e libere todos os recursos de gestão de equipe.
   </p>
   <Button
-    onClick={() => navigate("/ativar-plano")}
+    onClick={() => window.open("https://chk.eduzz.com/1W3ZZ5XQW2", "_blank")}
     className="w-full sm:w-auto bg-primary text-white text-base py-3 font-medium hover:bg-primary/90 transition-all rounded-lg shadow-md"
   >
     🚀 Ativar Plano Teams
@@ -397,7 +397,7 @@ className="cursor-pointer hover:scale-105 transition">
             A partir de <strong>R$ 49,90/mês</strong> + <strong>R$ 0,99</strong> por colaborador adicional.
           </p>
           <Button
-            onClick={() => navigate("/upgrade-plano")}
+            onClick={() => window.open("https://chk.eduzz.com/1W3ZZ5XQW2", "_blank")}
             className="w-full sm:w-auto bg-accent text-white text-base py-3 font-medium hover:bg-accent/90 transition-all rounded-lg shadow-md"
           >
             📈 Fazer Upgrade

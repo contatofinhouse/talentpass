@@ -28,11 +28,17 @@ export const ManagerHeader = ({
   const handleManagePlan = () => {
     const isActive = profile?.status === "active";
     
-    const message = isActive
-      ? "Olá! Gostaria de gerenciar meu Plano Teams na plataforma de educação com IA. \nPreciso de ajuda para ajustar colaboradores, fazer upgrade ou tirar dúvidas sobre meu plano atual."
-      : "Olá! Quero ativar o plano Teams na plataforma de educação com IA. \nVi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional. \nGostaria de incluir minha equipe e garantir acesso imediato.";
-    
-    window.open(`https://wa.me/5511955842951?text=${encodeURIComponent(message)}`, "_blank");
+    if (isActive) {
+      // Se já ativo, continua com WhatsApp para gerenciar
+      const message = "Olá! Gostaria de gerenciar meu Plano Teams na plataforma de educação com IA. \nPreciso de ajuda para ajustar colaboradores, fazer upgrade ou tirar dúvidas sobre meu plano atual.";
+      window.open(`https://wa.me/5511955842951?text=${encodeURIComponent(message)}`, "_blank");
+    } else {
+      // Se não ativo, redireciona para checkout da Eduzz baseado no role
+      const checkoutUrl = isOpen2Work 
+        ? "https://chk.eduzz.com/E9OO513Q9B"  // Open2Work
+        : "https://chk.eduzz.com/1W3ZZ5XQW2";  // Manager
+      window.open(checkoutUrl, "_blank");
+    }
   };
 
   return (

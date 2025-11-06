@@ -154,14 +154,10 @@ const Welcome = () => {
                     variant="outline"
                     className="w-full max-w-md"
                     onClick={() => {
-                      const phoneNumber = "5511955842951";
-                      const message = `
-Olá! Quero ativar o plano Teams na plataforma de educação com IA.
-Vi que o Plano Teams é R$49/mês até 40 funcionários e R$0,99 por funcionário adicional.
-Gostaria de incluir minha equipe e garantir acesso imediato.
-                      `.trim();
-                      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-                      window.open(url, "_blank");
+                      const checkoutUrl = role === "open2work"
+                        ? "https://chk.eduzz.com/E9OO513Q9B"  // Open2Work
+                        : "https://chk.eduzz.com/1W3ZZ5XQW2"; // Manager
+                      window.open(checkoutUrl, "_blank");
                     }}
                   >
                     Ativar Plano
