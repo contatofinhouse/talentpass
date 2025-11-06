@@ -47,10 +47,10 @@ const Navbar = () => {
         </div>
 
         {/* Ações */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button
             variant="ghost"
-            className="text-sm px-3"
+            className="text-xs sm:text-sm px-2 sm:px-3"
             onClick={() => navigate("/login")}
           >
             Entrar
@@ -58,14 +58,15 @@ const Navbar = () => {
 
           {/* CTA cheio ✅ */}
           <Button
-            className="text-sm px-4 py-2 shadow-lg hover:brightness-110 transition-all"
+            className="text-xs sm:text-sm px-3 sm:px-4 py-2 shadow-lg hover:brightness-110 transition-all whitespace-nowrap"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               navigate("/signup");
             }}
           >
-            Começar grátis
+            <span className="hidden sm:inline">Começar grátis</span>
+            <span className="sm:hidden">Começar</span>
           </Button>
         </div>
       </div>
