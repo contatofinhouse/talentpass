@@ -95,7 +95,7 @@ const Index = () => {
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-indigo-600">♾️</div>
-                  <div className="text-xs text-muted-foreground">Ganhos vitalícios</div>
+                  <div className="text-xs text-muted-foreground">Ganhos recorrentes</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-indigo-600">🤝</div>
@@ -112,12 +112,7 @@ const Index = () => {
             <Button
               size="lg"
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
-              onClick={() =>
-                window.open(
-                  "https://orbita.eduzz.com/affiliate/invite/2768338",
-                  "_blank",
-                )
-              }
+              onClick={() => window.open("https://orbita.eduzz.com/affiliate/invite/2768338", "_blank")}
             >
               Quero participar 🚀
             </Button>
