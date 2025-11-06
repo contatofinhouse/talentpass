@@ -51,7 +51,7 @@ const testimonials: Testimonial[] = [
 
 const Testimonials = () => {
   return (
-    <section className="py-16 bg-gradient-to-br from-muted/30 to-background">
+    <section className="py-16 bg-gradient-to-br from-muted/30 to-background overflow-x-hidden">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
@@ -106,13 +106,13 @@ const Testimonials = () => {
         </div>
 
         {/* Mobile Carousel */}
-        <div className="lg:hidden">
+        <div className="lg:hidden px-4">
           <Carousel
             opts={{
               align: "start",
               loop: true,
             }}
-            className="w-full"
+            className="w-full max-w-full"
           >
             <CarouselContent>
               {testimonials.map((testimonial) => (
@@ -154,8 +154,8 @@ const Testimonials = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
           </Carousel>
         </div>
       </div>

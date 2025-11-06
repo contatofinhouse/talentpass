@@ -30,7 +30,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       {/* Banner Open2Work com scroll logic */}
       <div
         className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-3 text-sm sticky top-0 z-[60] shadow-md transition-transform duration-300"
