@@ -1,7 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowRight, Play } from "lucide-react";
 import heroImage from "@/assets/hero-learning.jpg";
 import { useNavigate } from "react-router-dom";
+
+const heroAvatars = [
+  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1500336624523-d727130c3328?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=96&h=96&q=80",
+];
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -54,8 +63,13 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Button variant="hero" size="lg" className="group" onClick={() => navigate("/signup")}>
-                Começar agora
+              <Button
+                variant="hero"
+                size="lg"
+                className="group inline-flex items-center gap-2"
+                onClick={() => navigate("/signup")}
+              >
+                <span className="font-semibold">Começar agora</span>
                 <ArrowRight className="transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
@@ -67,6 +81,18 @@ const Hero = () => {
                 <Play className="h-5 w-5" />
                 Ver demonstração
               </Button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 text-sm text-white">
+              <div className="flex items-center -space-x-2">
+                {heroAvatars.map((url, idx) => (
+                  <Avatar key={url} className="h-8 w-8 border border-white/80 shadow-sm">
+                    <AvatarImage src={url} alt={`Pessoa ${idx + 1}`} />
+                    <AvatarFallback className="bg-slate-200 text-xs font-semibold text-slate-700">TP</AvatarFallback>
+                  </Avatar>
+                ))}
+              </div>
+              <span>Junte-se a centenas de empresas que já oferecem o benefício aos seus colaboradores.</span>
             </div>
 
             <div className="flex items-center gap-8 pt-4">
