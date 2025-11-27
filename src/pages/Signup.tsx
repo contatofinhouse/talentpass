@@ -131,12 +131,9 @@ const Signup = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden py-12">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.18),transparent_32%),radial-gradient(circle_at_80%_0%,rgba(56,189,248,0.16),transparent_30%),radial-gradient(circle_at_30%_80%,rgba(16,185,129,0.14),transparent_32%),linear-gradient(135deg,#0b1224_0%,#0f172a_55%,#0b1224_100%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08) 1px,transparent 1px),linear-gradient(180deg,rgba(255,255,255,0.05) 1px,transparent 1px)] bg-[size:120px_120px] opacity-30" />
-
-      <div className="relative container mx-auto px-4">
-        <Card className="mx-auto max-w-2xl shadow-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12">
+      <div className="container mx-auto px-4">
+        <Card className="mx-auto max-w-2xl">
           <CardHeader>
             <CardTitle className="text-3xl">Comece sua Jornada</CardTitle>
             <CardDescription>
